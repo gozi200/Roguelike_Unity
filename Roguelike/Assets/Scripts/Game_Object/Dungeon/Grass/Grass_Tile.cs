@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour {
+public class Grass_Tile : MonoBehaviour {
+    public int width = 30;
+
+    public int height = 30;
+
 
 	// Use this for initialization
 	void Start () {
