@@ -1,0 +1,4 @@
+ID,name,ask,price,damage,width,height,graphic_handle
+int,strinng,int,int,int,int,int,int
+1,Keep_Pot,600,300,1,30,30,0
+2,,,,,,,

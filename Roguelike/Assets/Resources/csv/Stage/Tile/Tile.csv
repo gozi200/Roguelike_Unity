@@ -1,0 +1,6 @@
+ID,name,whidth,height
+int,string,int,int
+0,Up stairs,30,30
+1,Down stairs,30,30
+2,Grass,30,30
+3,Cave,30,30

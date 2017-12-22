@@ -1,0 +1,7 @@
+ID,name,effect,add_capacity,ask,price,damage,width,height
+int,string,int,int,int,int,int,int,int
+1,Bronze_Apple,50,2,25,50,1,30,30
+2,Silver_Apple,100,5,50,100,1,30,30
+3,Gold_Apple,100,10,125,250,1,30,30
+4,Rot_Apple,30,0,5,10,1,30,30
+5,Chaos_Apple,10,0,5,10,1,30,30

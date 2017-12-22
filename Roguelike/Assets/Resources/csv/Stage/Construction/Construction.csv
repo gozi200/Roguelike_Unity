@@ -1,0 +1,3 @@
+ID,name,x,y,width,height,graphic_handle
+int,string,int,int,int,int,int
+1,house1,0,0,5,5,0

@@ -1,0 +1,4 @@
+ID,name,ask,price,level,attack,peculiar_seal,slot,damage,evolution_level,reinforcement_value,width,height
+int,string,int,int,int,int,int,int,int,int,int,int,int
+1,Excalibur,5000,10000,0,50,1,8,50,80,0,30,30
+2,Awakening_Excalibur,10000,20000,50,100,2,12,100,0,0,30,30
