@@ -7,14 +7,14 @@ using System.Collections;
 public class Camera_Controller : MonoBehaviour
 {
     public GameObject target;
-//    private Vector2 offsetPosition;
+    //private Vector2 offsetPosition;
     private Decide_Rectangle decide_rectangle;
 
     /// <summary>
     /// プレイヤーキャラまでの距離。固定で設定
     /// </summary>
     [SerializeField]
-    private float distance = 10f;
+    private float distance = 5f;
 
     /// <summary>
     /// カメラの表示領域表示用
@@ -43,7 +43,7 @@ public class Camera_Controller : MonoBehaviour
         /// <summary>
         /// ステージコントローラーを取得
         /// </summary>
-        //decide_rectangle = GameObject.Find("Tilemap").GetComponent<Decide_Rectangle>();
+        decide_rectangle = GameObject.Find("Map").GetComponent<Decide_Rectangle>();
     }
 
     void Update()

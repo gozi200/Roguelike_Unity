@@ -11,7 +11,7 @@ using UnityEngine.Tilemaps;
 public class Decide_Rectangle : MonoBehaviour
 {
    // [SerializeField]
-   // GameObject Tilemap;
+   // GameObject Dungeon_Generator;
 
     //private Transform floor;
 

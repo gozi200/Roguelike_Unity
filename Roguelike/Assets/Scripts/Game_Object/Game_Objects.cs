@@ -6,9 +6,6 @@ public class Game_Objects : MonoBehaviour {
     [SerializeField]
     List<GameObject> objects;
 
-    [SerializeField]
-    List<Sprite> sprites;
-
     // Use this for initialization
     void Start () {
 	}
