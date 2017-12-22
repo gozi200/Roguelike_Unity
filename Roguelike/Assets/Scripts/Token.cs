@@ -6,7 +6,7 @@ public class Token : MonoBehaviour {
 
 	/// プレハブ取得
 	/// プレハブは必ず"Resources/Prefabs/"に配置すること
-	public static GameObject Get__Position_Prefab(GameObject prefab, string name) {
+	public static GameObject Get_Position_Prefab(GameObject prefab, string name) {
 		return prefab ?? (prefab = Resources.Load("Prefabs/"+name) as GameObject);
 	}
 

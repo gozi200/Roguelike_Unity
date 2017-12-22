@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Game_Objects : MonoBehaviour {
     [SerializeField]
-    List<Game_Objects> objects;
+    List<GameObject> objects;
+
+    [SerializeField]
+    List<Sprite> sprites;
 
     // Use this for initialization
     void Start () {
