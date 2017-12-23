@@ -2,3 +2,4 @@
 ID,name ,class,saint_graph,level,hit_point,max_hit_point,power,max_power,activity,attack,defence,hunger_point,skill,star_generator,keep_star,command_card,arts_card,arts_attack_count,quick_card,quick_attack_count,buster_card,buster_attack_count,extra_attack,noble_weapon,noble_phantasm,max_noble_phantasm,attack_rise_NP,defence_rise_NP,experience_point,turn_count
 int,string,int,int,int,int,int,int,int,int,int,int,int,,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int
 0,OKITA,1,1,1,15,15,8,16,1,10,10,100,1,10,0,5,1,2,2,5,2,1,1,1,0,100,10,10,0,0
+1,MASHU,2,1,1,16,16,8,16,1,7,13,100,1,10,0,5,2,2,1,2,2,1,2,2,0,100,8,8,0,0

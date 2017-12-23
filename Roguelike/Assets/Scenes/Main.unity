@@ -289,7 +289,7 @@ Transform:
   m_PrefabInternal: {fileID: 1754177712}
   m_GameObject: {fileID: 407745377}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.4, y: -0.88, z: 0}
+  m_LocalPosition: {x: -6.83, y: -1.5, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 14785367}
@@ -307,27 +307,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e407964af9d097438cb19108b80933a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saint_graph: 0
-  level: 0
-  hit_point: 0
-  max_hitpoint: 0
-  power: 0
-  max_power: 0
-  activity: 0
-  attack: 0
-  defence: 0
-  hunger_point: 0
-  star_generate: 0
-  command_card: 0
-  arts_card: 0
-  quick_card: 0
-  buster_card: 0
-  noble_phantasm: 0
-  max_noble_phantasm: 0
-  attack_rise_NP: 0
-  defence_rise_NP: 0
-  experience_point: 0
-  turn_count: 0
 --- !u!50 &407745381
 Rigidbody2D:
   serializedVersion: 4
@@ -359,6 +338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df8591ae63c21446ab734ad7cbe1616, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  is_dead: 0
 --- !u!1 &455232841
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,7 +538,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 879452168}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.81, y: -1.39, z: 0}
+  m_LocalPosition: {x: -0.49, y: -1.47, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -704,11 +684,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4002995228573538, guid: 1bd4d36e8e31eb8419da19e5942ce9b0, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -2.4
+      value: -6.83
       objectReference: {fileID: 0}
     - target: {fileID: 4002995228573538, guid: 1bd4d36e8e31eb8419da19e5942ce9b0, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -0.88
+      value: -1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4002995228573538, guid: 1bd4d36e8e31eb8419da19e5942ce9b0, type: 2}
       propertyPath: m_LocalPosition.z

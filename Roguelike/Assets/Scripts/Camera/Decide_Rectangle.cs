@@ -34,17 +34,13 @@ public class Decide_Rectangle : MonoBehaviour
     /// ステージ範囲の範囲を可視化するためにGizumoを表示
     /// </summary>
     void OnDrawGizmos() {
-        /// <summary>
-        /// 矩形の四隅の座用を取得
-        ///</summary>
+        // 矩形の四隅の座用を取得
         LowerLeft = new Vector2(StageRect.xMin, StageRect.yMax);
         UpperLeft = new Vector2(StageRect.xMin, StageRect.yMin);
         LowerRight = new Vector2(StageRect.xMax, StageRect.yMax);
         UpperRight = new Vector2(StageRect.xMax, StageRect.yMin);
 
-        /// <summary>
-        /// 四隅の座標を基準に矩形を赤色の線で描画
-        /// </summary>
+        // 四隅の座標を基準に矩形を赤色の線で描画
         Gizmos.color = Color.red;
         Gizmos.DrawLine(LowerLeft, UpperLeft);
         Gizmos.DrawLine(UpperLeft, UpperRight);

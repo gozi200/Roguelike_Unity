@@ -131,10 +131,10 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     /// 最初の区画を作る
     /// </summary>
-    /// <param name="left">左</param>
-    /// <param name="top">上</param>
-    /// <param name="right">右</param>
-    /// <param name="bottom">下</param>
+    /// <param name = "left"   >左 </param>
+    /// <param name = "top"    >上 </param>
+    /// <param name = "right"  >右 </param>
+    /// <param name = "bottom" >下 </param>
     void Create_Division(int left, int top, int right, int bottom) {
         Dungeon_Division div = new Dungeon_Division();
         div.Outer.Set_Position(left, top, right, bottom);
