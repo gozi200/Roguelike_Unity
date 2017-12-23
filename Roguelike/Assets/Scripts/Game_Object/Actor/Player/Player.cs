@@ -7,12 +7,18 @@ public class Player : MonoBehaviour {
 
     private float speed = 0.5f;
 
+    Vector3 move = Vector3.zero;
+
     // Use this for initialization
     void Start () {
     }
 
     // Update is called once per frame
     void Update () {
-        transform.Translate(Input.GetAxis("Horizontal") * speed, Input.GetAxis("Vertical") * speed, 0);
+        //transform.Translate(Input.GetAxis("Horizontal") * speed, Input.GetAxis("Vertical") * speed, 0);
     }
+
+   // void Attack(Enemy* target) {
+
+    //}
 }

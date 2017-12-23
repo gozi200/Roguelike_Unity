@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour {
+    private float speed = 0.5f;
 
 	// Use this for initialization
 	void Start () {
