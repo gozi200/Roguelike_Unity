@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-struct PLAYER_DATA_BASE {
+public struct PLAYER_DATA_BASE {
     public int ID;                 // 番号
     public new string name;        // 名前
     public int class_type;         // クラス
@@ -48,3 +48,5 @@ struct PLAYER_DATA_BASE {
 //		
 //	}
 //
+
+
