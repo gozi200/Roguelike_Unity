@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct PLAYER_DATA_BASE {
+public struct PLAYER_STATUS {
     public int ID;                 // 番号
-    public new string name;        // 名前
+    public string name;            // 名前
     public int class_type;         // クラス
     public int saint_graph;        // 再臨状態
     public int level;              // レベル
