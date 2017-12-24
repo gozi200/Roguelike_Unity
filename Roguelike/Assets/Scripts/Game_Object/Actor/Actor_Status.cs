@@ -7,7 +7,7 @@ public class Actor_Status : MonoBehaviour {
     Enemy_Data enemy_data;
 	// Use this for initialization
 	void Start () {
-		
+
 	}
 	
 	// Update is called once per frame

@@ -14,6 +14,7 @@ public class Player_Data : MonoBehaviour {
 
     public void Set_Parameter() {
         var player_data = csv_Reader.Load_csv("csv/Actor/Player/Player_csv", 3);
+
         PLAYER_STATUS player_status;
 
         for(int i = 0; i < 2; ++i) { // TODO: マジックナンバー 10騎分のデータができ次第SERVANT_NUMBERを使う
