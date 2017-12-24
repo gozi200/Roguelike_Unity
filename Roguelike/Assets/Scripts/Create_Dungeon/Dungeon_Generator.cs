@@ -9,12 +9,12 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     /// マップ全体の幅
     /// </summary>
-    const int WIDTH = 30; // TODO: 58に
+    const int WIDTH = 38; // TODO: 58に
 
     /// <summary>
     /// マップ全体の高さ
     /// </summary>
-    const int HEIGHT = 30; // TODO: 38に
+    const int HEIGHT = 38; // TODO: 38に
 
     /// <summary>
     /// 区画と部屋の余白サイズ
@@ -34,7 +34,7 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     /// 最大の部屋サイズ
     /// </summary>
-    const int MAX_ROOM = 8; // TODO: これより大きい数になると通路の位置がずれる
+    const int MAX_ROOM = 20; // TODO: 8より大きい数になると通路の位置がずれる(直った)
 
     /// <summary>
     /// 通路

@@ -28,6 +28,11 @@ public class Util {
 
         Token t = obj.GetComponent<Token>();
 
+        // Wallスプライトのレイヤー
+        SpriteRenderer sprite = obj.GetComponent<SpriteRenderer>();
+        if (objName == "Wall")
+            sprite.sortingOrder = 1;
+
         // スプライト設定
         t.Set_Position_Sprite(Get_Sprite(Sprite_File, Sprite_Name));
         
