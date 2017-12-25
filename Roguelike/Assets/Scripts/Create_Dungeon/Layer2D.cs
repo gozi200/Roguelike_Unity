@@ -104,7 +104,7 @@ public class Layer2D {
     /// <param name="val">埋める値</param>
     public void Fill_Rectangle(int x, int y, int w, int h, int val) {
         for (int j = 0; j < h; j++) {
-            for (int i = 0; i < w; i++) {
+            for (int i = 0;i < w; i++) {
                 int px = x + i;
                 int py = y + j;
                 Set(px, py, val);
