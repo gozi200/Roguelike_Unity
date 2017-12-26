@@ -1,6 +1,8 @@
 fileFormatVersion: 2
 guid: 6ce022600b4e0134cb8b7c4a7599eeea
-timeCreated: 1510618791
+labels:
+- Sprite1
+timeCreated: 1514112388
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
@@ -46,7 +48,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 25
+  spritePixelsToUnits: 25.6
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -92,11 +94,28 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+  - buildTarget: Android
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
   spriteSheet:
     serializedVersion: 2
     sprites: []
-    outline: []
-    physicsShape: []
+    outline:
+    - - {x: -64, y: 64}
+      - {x: -64, y: -64}
+      - {x: 64, y: -64}
+      - {x: 64, y: 64}
+    physicsShape:
+    - - {x: -64, y: 64}
+      - {x: -64, y: -64}
+      - {x: 64, y: -64}
+      - {x: 64, y: 64}
   spritePackingTag: 
   userData: 
   assetBundleName: 

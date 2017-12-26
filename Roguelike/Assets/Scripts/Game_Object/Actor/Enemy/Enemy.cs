@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour {
 	void Start () {
         enemy_data = GetComponent<Enemy_Data>();
         enemy_data.Set_Parameter();
+
 	}
 	
 	// Update is called once per frame
