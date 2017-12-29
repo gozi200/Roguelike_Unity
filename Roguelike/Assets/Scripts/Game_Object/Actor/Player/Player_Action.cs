@@ -2,31 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 現在行っているアクションを割り当てる
-/// </summary>
-public enum Action {
-    Invalid               // 0を格納
-  , Move                  // 移動処理
-  , Attack                // 攻撃処理
-  , Get_Item              // 落ちているアイテムを拾う
-  , Equip                 // アイテムの装備
-  , Drop_Item             // アイテムを捨てる
-  , Use_Item              // アイテムを使う
-  , Step                  // 階段移動確認
-  , Game_Over             // ゲームオーバー
-  , Action_Max            // CGameで宣言されているeACTIONの最大値
-};
-
 public class Player_Action : MonoBehaviour {
     Action action;
     Direction direction;
+    Mode mode;
 
-    Player player;
+    GameObject player;
+
+    int action_count; // 汎用変数
 
     // Use this for initialization
     void Start() {
+        mode = Mode.Nomal_Mode;
         action = Action.Move;
+        direction = Direction.Down;
+
+        action_count = 0;
+
+        player = GameObject.Find("Player");
     }
 
     // Update is called once per frame
@@ -50,35 +43,105 @@ public class Player_Action : MonoBehaviour {
 
             case Action.Game_Over: break;
         }
+
+        // 体力が 0 以下ならゲームオーバー処理に切り替える
+        if (action != Action.Game_Over && player.GetComponent<Player>().Is_Dead()) {
+            Set_Action(Action.Game_Over);
+        }
+    }
+
+#region Action.Move時の処理
+
+    void Set_Action(Action set_action) {
+        // 識別変数の変更
+        action = set_action;
+
+        // 汎用変数のゼロリセット
+        action_count = 0;
     }
 
     void Action_Move() {
+        Debug.Log(direction);
         // 現在位置をPositionに代入
         Vector2 Position = transform.position;
 
-        // 左キーを押し続けていたら
-        if (Input.GetKeyDown("left")) {
-            // 代入したPositionに対して加算減算を行う
-            Position.x -= player.SPEED.x;
-            direction = Direction.Left;
+        if (Input.GetKey("a")) {
+            mode = Mode.Diagonally_Mode;
         }
-        else if (Input.GetKeyDown("right")) { // 右キーを押し続けていたら
-            // 代入したPositionに対して加算減算を行う
-            Position.x += player.SPEED.x;
-            direction = Direction.Right;
+        if (Input.GetKeyUp("a")) {
+            mode = Mode.Nomal_Mode;
         }
-        else if (Input.GetKeyDown("up")) { // 上キーを押し続けていたら
-            // 代入したPositionに対して加算減算を行う
-            Position.y += player.SPEED.y;
-            direction = Direction.Up;
+
+        if (Input.GetKey("z")) {
+            mode = Mode.Change_Direction_Mode;
         }
-        else if (Input.GetKeyDown("down")) { // 下キーを押し続けていたら
-            // 代入したPositionに対して加算減算を行う
-            Position.y -= player.SPEED.y;
-            direction = Direction.Down;
+        if (Input.GetKeyUp("z")) {
+            mode = Mode.Nomal_Mode;
+        }
+
+        if (mode == Mode.Nomal_Mode) {
+            if (Input.GetKeyDown("right")) {
+                Position.x += player.GetComponent<Player>().SPEED.x;
+                direction = Direction.Right;
+            }
+            else if (Input.GetKeyDown("down")) {
+                Position.y -= player.GetComponent<Player>().SPEED.y;
+                direction = Direction.Down;
+            }
+            else if (Input.GetKeyDown("left")) {
+                Position.x -= player.GetComponent<Player>().SPEED.x;
+                direction = Direction.Left;
+            }
+            else if (Input.GetKeyDown("up")) {
+                Position.y += player.GetComponent<Player>().SPEED.y;
+                direction = Direction.Up;
+            }
+        }
+
+        else if (mode == Mode.Diagonally_Mode) {
+            if (Input.GetKeyDown("right") && Input.GetKeyDown("up")) {
+                Position.x += player.GetComponent<Player>().SPEED.x;
+                Position.y += player.GetComponent<Player>().SPEED.y;
+                direction = Direction.Upleft;
+            }
+            else if (Input.GetKeyDown("right") && Input.GetKeyDown("down")) {
+                Position.x += player.GetComponent<Player>().SPEED.x;
+                Position.y -= player.GetComponent<Player>().SPEED.y;
+                direction = Direction.Downleft;
+            }
+            else if (Input.GetKeyDown("left") && Input.GetKeyDown("down")) {
+                Position.x -= player.GetComponent<Player>().SPEED.x;
+                Position.y -= player.GetComponent<Player>().SPEED.y;
+                direction = Direction.Downleft;
+            }
+            else if (Input.GetKeyDown("left") && Input.GetKeyDown("up")) {
+                Position.x -= player.GetComponent<Player>().SPEED.x;
+                Position.y += player.GetComponent<Player>().SPEED.y;
+                direction = Direction.Upleft;
+            }
+        }
+
+        else if (mode == Mode.Change_Direction_Mode) {
+            if (Input.GetKeyDown("right")) {
+                direction = Direction.Right;
+            }
+            else if (Input.GetKeyDown("down")) {
+                direction = Direction.Down;
+            }
+            else if (Input.GetKeyDown("left")) {
+                direction = Direction.Left;
+            }
+            else if (Input.GetKeyDown("up")) {
+                direction = Direction.Up;
+            }
         }
 
         // 現在の位置に加算減算を行ったPositionを代入する
         transform.position = Position;
     }
+
+#endregion
+
+
+
 }

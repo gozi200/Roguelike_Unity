@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+
+
 public class Player : MonoBehaviour {
     public List<Player_Data> players = new List<Player_Data>();
-    Direction direction;
 
-    private Player_Status player_status;
+    public Player_Status player_status;
 
     public Vector2 SPEED = new Vector2(5f, 5f);
 
-    public bool is_dead = false;
+    //public bool is_dead = false;
     
     // Use this for initialization
     void Start() {
         player_status = new Player_Status();
         player_status.Set_Parameter();
-
-        direction = Direction.Down;
 
         Debug.Log(players[1].attack);
 
@@ -56,5 +55,14 @@ public class Player : MonoBehaviour {
 
         // 現在の位置に加算減算を行ったPositionを代入する
         transform.position = Position;
+    }
+
+    public bool Is_Dead() {
+        if (players[0].hit_point <= 0) {
+            players[0].hit_point = 0;
+            return true;
+        }
+
+        return false;
     }
 }

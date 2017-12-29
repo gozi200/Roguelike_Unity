@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<root>
-    <symbol name="ENABLE_DEBUG"   comment="デバッグモード有効化" />
-    <symbol name="ENABLE_RELEASE" comment="リリースモード有効化" />
-</root>
-
