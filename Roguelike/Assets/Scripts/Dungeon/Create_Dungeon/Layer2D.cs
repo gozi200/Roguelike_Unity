@@ -15,7 +15,7 @@ public class Layer2D {
             return width;
         }
     }
-    
+
     /// 高さ
     public int Height {
         get {
@@ -92,6 +92,11 @@ public class Layer2D {
                 Set(i, j, val);
             }
         }
+    }
+
+    public void Fill_Tile(int x, int y, int val = 0)
+    {
+         Set(x, y, val);
     }
 
     /// <summary>

@@ -137,27 +137,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e407964af9d097438cb19108b80933a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  saint_graph: 0
-  level: 0
-  hit_point: 0
-  max_hitpoint: 0
-  power: 0
-  max_power: 0
-  activity: 0
-  attack: 0
-  defence: 0
-  hunger_point: 0
-  star_generate: 0
-  command_card: 0
-  arts_card: 0
-  quick_card: 0
-  buster_card: 0
-  noble_phantasm: 0
-  max_noble_phantasm: 0
-  attack_rise_NP: 0
-  defence_rise_NP: 0
-  experience_point: 0
-  turn_count: 0
 --- !u!114 &114232181790970676
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -169,8 +148,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df8591ae63c21446ab734ad7cbe1616, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SPEED: {x: 5, y: 5}
-  is_dead: 0
 --- !u!114 &114680159308332932
 MonoBehaviour:
   m_ObjectHideFlags: 1
