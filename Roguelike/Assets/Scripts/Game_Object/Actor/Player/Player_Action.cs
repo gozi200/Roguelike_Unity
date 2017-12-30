@@ -7,6 +7,8 @@ public class Player_Action : MonoBehaviour {
     Direction direction;
     Mode mode;
 
+    Dungeon_Base dungeon_base;
+
     GameObject player;
 
     int action_count; // 汎用変数
@@ -17,6 +19,8 @@ public class Player_Action : MonoBehaviour {
         action = Action.Move;
         direction = Direction.Down;
 
+        dungeon_base = new Dungeon_Base();
+
         action_count = 0;
 
         player = GameObject.Find("Player");
@@ -24,6 +28,13 @@ public class Player_Action : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        Run_Action();
+    }
+
+    /// <summary>
+    /// 毎ループ呼び出す ここでゲームオーバー判定を行う
+    /// </summary>
+    public void Run_Action() {
         switch (action) {
             case Action.Move:
                 Action_Move();
@@ -50,8 +61,10 @@ public class Player_Action : MonoBehaviour {
         }
     }
 
-#region Action.Move時の処理
-
+    /// <summary>
+    /// 現在の行っているアクションに切り替える
+    /// /// </summary>
+    /// <param name="set_action"></param>
     void Set_Action(Action set_action) {
         // 識別変数の変更
         action = set_action;
@@ -60,11 +73,18 @@ public class Player_Action : MonoBehaviour {
         action_count = 0;
     }
 
+    /// <summary>
+    /// 移動に関する処理
+    /// </summary>
+    #region Action.Move時の処理
+
     void Action_Move() {
+        bool moved = false;
         Debug.Log(direction);
         // 現在位置をPositionに代入
         Vector2 Position = transform.position;
 
+        // 斜め移動モードの切り替え
         if (Input.GetKey("a")) {
             mode = Mode.Diagonally_Mode;
         }
@@ -72,6 +92,7 @@ public class Player_Action : MonoBehaviour {
             mode = Mode.Nomal_Mode;
         }
 
+        // 方向転換モードの切り替え
         if (Input.GetKey("z")) {
             mode = Mode.Change_Direction_Mode;
         }
@@ -79,48 +100,59 @@ public class Player_Action : MonoBehaviour {
             mode = Mode.Nomal_Mode;
         }
 
+        // 通常モード時の移動処理
         if (mode == Mode.Nomal_Mode) {
             if (Input.GetKeyDown("right")) {
                 Position.x += player.GetComponent<Player>().SPEED.x;
                 direction = Direction.Right;
+                moved = true;
             }
             else if (Input.GetKeyDown("down")) {
                 Position.y -= player.GetComponent<Player>().SPEED.y;
                 direction = Direction.Down;
+                moved = true;
             }
             else if (Input.GetKeyDown("left")) {
                 Position.x -= player.GetComponent<Player>().SPEED.x;
                 direction = Direction.Left;
+                moved = true;
             }
             else if (Input.GetKeyDown("up")) {
                 Position.y += player.GetComponent<Player>().SPEED.y;
                 direction = Direction.Up;
+                moved = true;
             }
         }
 
+        // 斜め移動モード時の移動処理
         else if (mode == Mode.Diagonally_Mode) {
             if (Input.GetKeyDown("right") && Input.GetKeyDown("up")) {
                 Position.x += player.GetComponent<Player>().SPEED.x;
                 Position.y += player.GetComponent<Player>().SPEED.y;
                 direction = Direction.Upleft;
+                moved = true;
             }
             else if (Input.GetKeyDown("right") && Input.GetKeyDown("down")) {
                 Position.x += player.GetComponent<Player>().SPEED.x;
                 Position.y -= player.GetComponent<Player>().SPEED.y;
                 direction = Direction.Downleft;
+                moved = true;
             }
             else if (Input.GetKeyDown("left") && Input.GetKeyDown("down")) {
                 Position.x -= player.GetComponent<Player>().SPEED.x;
                 Position.y -= player.GetComponent<Player>().SPEED.y;
                 direction = Direction.Downleft;
+                moved = true;
             }
             else if (Input.GetKeyDown("left") && Input.GetKeyDown("up")) {
                 Position.x -= player.GetComponent<Player>().SPEED.x;
                 Position.y += player.GetComponent<Player>().SPEED.y;
                 direction = Direction.Upleft;
+                moved = true;
             }
         }
 
+        // 方向転換モード時の処理
         else if (mode == Mode.Change_Direction_Mode) {
             if (Input.GetKeyDown("right")) {
                 direction = Direction.Right;
@@ -138,6 +170,23 @@ public class Player_Action : MonoBehaviour {
 
         // 現在の位置に加算減算を行ったPositionを代入する
         transform.position = Position;
+
+        // 移動コマンド未入力時はいつでもコマンド操作を受け付ける
+        if (moved == false) {
+               
+        }
+    }
+
+    /// <summary>
+    /// 移動処理がなかった時に常時受け付けるコマンド
+    /// </summary>
+    void Move_Check_Command() {
+        if (Input.GetKeyDown("e")) {
+            Set_Action(Action.Equip);
+            Run_Action();
+        }
+
+        // 移動終了後に自分のいる位置に応じた処理。(例えば、階段に移送したら階層移動。罠に移動したなら罠作動)
     }
 
 #endregion

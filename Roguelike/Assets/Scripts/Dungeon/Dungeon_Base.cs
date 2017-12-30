@@ -29,7 +29,7 @@ public class Dungeon_Base : MonoBehaviour {
         return false;
     }
 
-    bool Check_Move(int ax, int ay, int bx, int by) {
+    public bool Check_Move(int ax, int ay, int bx, int by) {
         // Ａ・Ｂが同一だったりしないか？
         if (ax == bx && ay == by)
             return false;   // 同一は周囲８マスではない

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 /// </summary>
 public class Dungeon_Generator : MonoBehaviour
 {
+    //public static Dungeon_Generator instance = null;
     /// <summary>
     /// マップ全体の幅
     /// </summary>
@@ -113,7 +114,7 @@ public class Dungeon_Generator : MonoBehaviour
         return (sprH * j) + sprH/2;
     }
 
-    void Start()
+    public void Start()
     {
         // ■1. 初期化
         // 2次元配列初期化
@@ -170,8 +171,10 @@ public class Dungeon_Generator : MonoBehaviour
                 {
                     x = Get_Chip_X(i);
                     y = Get_Chip_Y(j);
+                    player = GameObject.Find("Player");
+                    player.GetComponent<Player>();
                     player.transform.position = new Vector3(x, y, 0);
-                    Instantiate(player, player.transform.position, Quaternion.identity);
+                    //Instantiate(player, player.transform.position, Quaternion.identity);
                 }
                 else if (layer.Get(i, j) == CHIP_UP_STAIR)
                 {
@@ -198,6 +201,8 @@ public class Dungeon_Generator : MonoBehaviour
                 {
                     x = Get_Chip_X(i);
                     y = Get_Chip_Y(j);
+                    //enemy = GameObject.Find("Enemy");
+                    //enemy.GetComponent<Enemy>();
                     enemy.transform.position = new Vector3(x, y, 0);
                     Instantiate(enemy, enemy.transform.position, Quaternion.identity);
                 }

@@ -1,33 +1,40 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-
-
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour {
+    public Player_Status player_status;
+    //public PLAYER_STATUS player_status;
+
+    [SerializeField]
     public List<Player_Data> players = new List<Player_Data>();
 
-    public Player_Status player_status;
+    public bool is_dead = false;
 
     public Vector2 SPEED = new Vector2(5f, 5f);
 
-    //public bool is_dead = false;
-    
+    public GameObject stair;
+
     // Use this for initialization
     void Start() {
-        player_status = new Player_Status();
+        player_status = GetComponent<Player_Status>();
         player_status.Set_Parameter();
-
-        Debug.Log(players[1].attack);
 
         SPEED.x = 5;
         SPEED.y = 5;
     }
 
     // Update is called once per frame
+
     void Update() {
-      //  Move(); // デバッグ
+        // 移動処理
+        Move();
+
+        //次のレベルへの移動処理
+        if (transform.position == stair.transform.position) {
+            Application.LoadLevel("Main");
+        }
     }
 
     // 移動関数
