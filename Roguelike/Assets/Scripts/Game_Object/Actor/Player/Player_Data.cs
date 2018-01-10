@@ -9,7 +9,7 @@ public class Player_Data {
     public int saint_graph;        // 再臨状態
     public int level;              // レベル
     public int hit_point;          // 体力
-    public int max_hitpoint;       // 最大体力
+    public int max_hit_point;       // 最大体力
     public int power;              // ちから(攻撃力見加味するボーナス値)
     public int max_power;          // 力の最大値
     public int activity;           // 行動力

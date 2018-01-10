@@ -11,12 +11,12 @@ public class Dungeon_Generator : MonoBehaviour
     /// <summary>
     /// マップ全体の幅
     /// </summary>
-    const int WIDTH = 30; // TODO: 58に
+    const int WIDTH = 30;
 
     /// <summary>
     /// マップ全体の高さ
     /// </summary>
-    const int HEIGHT = 30; // TODO: 38に
+    const int HEIGHT = 30;
 
     /// <summary>
     /// 区画と部屋の余白サイズ
@@ -72,6 +72,11 @@ public class Dungeon_Generator : MonoBehaviour
     /// 食べ物
     /// </summary>
     const int CHIP_ENEMY = 6;
+
+    /// <summary>
+    /// ターンを数える
+    /// </summary>
+    int turn_count;
 
     /// <summary>
     /// オブジェクトのチップの合計
@@ -616,6 +621,15 @@ public class Dungeon_Generator : MonoBehaviour
         if (GUI.Button(new Rect(320, 160, 128, 32), "もう１回"))
         {
             Application.LoadLevel("Main");
+        }
+    }
+
+    public void Turn_Tick() {
+        ++turn_count;
+
+        //20ターンごとに敵をスポーンさせる
+        if((turn_count % 20) == 0) {
+           Random_Object(0, 0, CHIP_ENEMY);
         }
     }
 }

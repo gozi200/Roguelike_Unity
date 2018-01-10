@@ -26,11 +26,7 @@ public enum Action {
     Invalid               // 0を格納
   , Move                  // 移動処理
   , Attack                // 攻撃処理
-  , Get_Item              // 落ちているアイテムを拾う
-  , Equip                 // アイテムの装備
-  , Drop_Item             // アイテムを捨てる
-  , Use_Item              // アイテムを使う
-  , Step                  // 階段移動確認
+  , Battle_Menu           // バトルメニューを開く
   , Game_Over             // ゲームオーバー
   , Action_Max            // Player_Actionで宣言されているActionの最大値
 };
@@ -44,3 +40,13 @@ public enum Mode {
   , Change_Direction_Mode // 方向転換モード。キー入力した方向を向く
   , Diagonally_Mode       // 斜め移動モード。斜めのみの移動になる
 };
+
+/// <summary>
+/// バトルメニューの行動を割り当てる
+/// </summary>
+public enum Battle_Menu {
+    Invalid        // 0を格納
+  , Item           // アイテム欄を表示
+  , Foot_Step      // 足元コマンド
+  , Details_Status // ステータス詳細
+}

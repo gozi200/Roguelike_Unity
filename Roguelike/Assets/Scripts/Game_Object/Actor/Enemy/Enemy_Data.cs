@@ -8,12 +8,12 @@ using System.Linq;
 public class Enemy_Data : MonoBehaviour {
     Enemy enemy = new Enemy();
 
-    const int ENEMY_NUMBER = 0; // TODO: 敵の種類数が切り次第与える
+    const int ENEMY_NUMBER = 1; // TODO: 敵の種類数が決まり次第与える
 
     public void Set_Parameter() {
         var enemy_data = csv_Reader.Load_csv("csv/Actor/Enemy/Enemy_csv", 3);
 
-        ENEMY_STATUS enemy_status;
+        Enemy_Status enemy_status;
 
         for(int i = 0; i < 1; ++i) { // TODO: マジックナンバー ENEMY_NUMBERが決まり次第置き換え
         enemy_status.ID               = int.Parse(enemy_data[0][0]);  // 番号

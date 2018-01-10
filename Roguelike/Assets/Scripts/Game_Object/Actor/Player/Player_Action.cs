@@ -7,9 +7,12 @@ public class Player_Action : MonoBehaviour {
     Direction direction;
     Mode mode;
 
-    Dungeon_Base dungeon_base;
+    Player_Status player_status;
+    Enemy_Turn enemy_turn;
 
     GameObject player;
+
+    public GameObject stair;
 
     int action_count; // 汎用変数
 
@@ -19,7 +22,8 @@ public class Player_Action : MonoBehaviour {
         action = Action.Move;
         direction = Direction.Down;
 
-        dungeon_base = new Dungeon_Base();
+        player_status = new Player_Status();
+        enemy_turn = new Enemy_Turn();
 
         action_count = 0;
 
@@ -35,28 +39,26 @@ public class Player_Action : MonoBehaviour {
     /// 毎ループ呼び出す ここでゲームオーバー判定を行う
     /// </summary>
     public void Run_Action() {
+        Debug.Log(action);
+
         switch (action) {
             case Action.Move:
                 Action_Move();
                 break;
 
-            case Action.Attack: break;
+            case Action.Attack:
+                Action_Attack();
+                break;
 
-            case Action.Get_Item: break;
-
-            case Action.Equip: break;
-
-            case Action.Drop_Item: break;
-
-            case Action.Use_Item: break;
-
-            case Action.Step: break;
+            case Action.Battle_Menu:
+                Action_Battle_Menu();
+                break;
 
             case Action.Game_Over: break;
         }
 
         // 体力が 0 以下ならゲームオーバー処理に切り替える
-        if (action != Action.Game_Over && player.GetComponent<Player>().Is_Dead()) {
+        if (action != Action.Game_Over && player_status.Is_Dead()) {
             Set_Action(Action.Game_Over);
         }
     }
@@ -73,14 +75,16 @@ public class Player_Action : MonoBehaviour {
         action_count = 0;
     }
 
+
+    #region Action.Move時の処理
+
     /// <summary>
     /// 移動に関する処理
     /// </summary>
-    #region Action.Move時の処理
-
     void Action_Move() {
         bool moved = false;
         Debug.Log(direction);
+        Debug.Log(moved);
         // 現在位置をPositionに代入
         Vector2 Position = transform.position;
 
@@ -131,6 +135,7 @@ public class Player_Action : MonoBehaviour {
                 Position.y += player.GetComponent<Player>().SPEED.y;
                 direction = Direction.Upleft;
                 moved = true;
+                Debug.Log(moved);
             }
             else if (Input.GetKeyDown("right") && Input.GetKeyDown("down")) {
                 Position.x += player.GetComponent<Player>().SPEED.x;
@@ -173,7 +178,11 @@ public class Player_Action : MonoBehaviour {
 
         // 移動コマンド未入力時はいつでもコマンド操作を受け付ける
         if (moved == false) {
-               
+            Move_Check_Command();
+        }
+
+        if (transform.position == stair.transform.position) {
+            Application.LoadLevel("Main");
         }
     }
 
@@ -181,16 +190,73 @@ public class Player_Action : MonoBehaviour {
     /// 移動処理がなかった時に常時受け付けるコマンド
     /// </summary>
     void Move_Check_Command() {
-        if (Input.GetKeyDown("e")) {
-            Set_Action(Action.Equip);
+        if (Input.GetKeyDown("return")) {
+            Set_Action(Action.Battle_Menu);
             Run_Action();
         }
-
-        // 移動終了後に自分のいる位置に応じた処理。(例えば、階段に移送したら階層移動。罠に移動したなら罠作動)
+        else if (Input.GetKeyDown("space")) {
+            Set_Action(Action.Attack);
+            Run_Action();
+        }
     }
 
-#endregion
+    #endregion
 
+    #region Action.Battle_Manu時の処理
 
+    /// <summary>
+    /// バトルメニューの処理
+    /// </summary>
+    void Action_Battle_Menu() {
+        int flag_number = 1;
+
+        if (Input.GetKeyDown("up")) {
+            flag_number = 1;
+        }
+        else if (Input.GetKeyDown("right")) {
+            flag_number = 2;
+        }
+        else if (Input.GetKeyDown("down")) {
+            flag_number = 3;
+        }
+        else if (Input.GetKeyDown("left")) {
+            flag_number = 4;
+        }
+
+        if (Input.GetKeyDown("return")) {
+            switch (flag_number) {
+                case 1:
+                    //道具画面を開く
+                    break;
+
+                case 2:
+                    //発明画面を開く(αではいらない)
+                    break;
+
+                case 3:
+                    //足元画面を開く
+                    break;
+
+                case 4:
+                    //ステータスを開く
+                    break;
+            }
+        }
+
+        if (Input.GetKeyDown("escape")) {
+            Set_Action(Action.Move);
+            Run_Action();
+        }
+    }
+
+    #endregion
+
+    #region Action.Attak時の処理
+
+    void Action_Attack() {
+        
+    }
+
+    #endregion
 
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct ENEMY_STATUS {
+public struct Enemy_Status {
     public int ID;               // 番号
     public string name;          // 名前
     public int class_type;       // クラス

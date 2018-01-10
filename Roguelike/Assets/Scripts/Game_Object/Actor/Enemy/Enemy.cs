@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
     public Enemy_Data enemy_data;
-    public ENEMY_STATUS enemy_status;
+    public Enemy_Status enemy_status;
 
     [SerializeField]
-    public List<ENEMY_STATUS> enemys = new List<ENEMY_STATUS>();
-
-    bool is_dead = false;
+    public List<Enemy_Status> enemys = new List<Enemy_Status>();
 
 	// Use this for initialization
 	void Start () {
