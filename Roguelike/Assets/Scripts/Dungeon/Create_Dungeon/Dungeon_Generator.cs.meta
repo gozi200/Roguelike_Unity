@@ -1,8 +1,19 @@
 fileFormatVersion: 2
 guid: ca8896de9bf46c140967effa88021299
+timeCreated: 1515645495
+licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - wall: {fileID: 1010514521385330, guid: 97de69ba3ea1c00428dc4d21e122e06e, type: 2}
+  - player: {fileID: 1797752905213258, guid: a9d93c70a20e9174d945f59db048d819, type: 2}
+  - stair: {fileID: 1863165542355610, guid: 319fec6a702f9614ab610e8579079c5b, type: 2}
+  - item: {fileID: 1214786097377936, guid: f5524fd9edddadc42b654b3d5f9aafb5, type: 2}
+  - food: {fileID: 1595218935406674, guid: df76d3fa430e89143a42470f36af2656, type: 2}
+  - enemy: {fileID: 1765477225750454, guid: 5509b9e6f195c6d4d84a7b6f061bdbc4, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 

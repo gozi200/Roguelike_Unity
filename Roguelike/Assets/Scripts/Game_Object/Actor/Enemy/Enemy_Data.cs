@@ -8,7 +8,7 @@ using System.Linq;
 public class Enemy_Data : MonoBehaviour {
     Enemy enemy = new Enemy();
 
-    const int ENEMY_NUMBER = 1; // TODO: 敵の種類数が決まり次第与える
+    const int ENEMY_NUMBER = 1;
 
     public void Set_Parameter() {
         var enemy_data = csv_Reader.Load_csv("csv/Actor/Enemy/Enemy_csv", 3);
@@ -33,8 +33,8 @@ public class Enemy_Data : MonoBehaviour {
         enemy_status.last_floor       = int.Parse(enemy_data[0][14]); // 出現終了階層
         enemy_status.turn_count       = int.Parse(enemy_data[0][15]); // 経過ターンをカウント
     }
-
 }
+
     // Update is called once per frame
     void Update() {
 

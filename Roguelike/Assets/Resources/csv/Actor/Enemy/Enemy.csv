@@ -1,4 +1,0 @@
-番号,名前,クラス,レベル,体力,最大体力,攻撃力,防御力,行動回数,クリティカル,経験値(与),スキル,行動パターン,出現開始階層,出現終了階層,経過ターン
-ID,name,class,level,hit_point,max_HP,attack,defence,activity,critical,experience_point,skill,AI_paturn,first_floor,last_floor,turn_count
-int,string,int,int,int,int,int,int,int,int,int,int,int,int,int,int
-0,Test,1,1,8,8,5,5,1,5,5,0,1,1,3,0
