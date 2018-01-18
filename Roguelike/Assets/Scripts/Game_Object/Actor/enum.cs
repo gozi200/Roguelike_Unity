@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 /// <summary>
 /// キャラクターの現在の向きを割り当てる
 /// </summary>
@@ -16,7 +15,7 @@ public enum eDirection {
   , Up         // 上
   , Upright    // 右上
   , Right      // 右
-  , Dowunright // 右下
+  , Downright // 右下
 };
 
 /// <summary>
@@ -32,14 +31,25 @@ public enum ePlayer_Action {
 };
 
 /// <summary>
-/// 現在のモードを割り当てる
+/// プレイヤーの現在のモードを割り当てる
 /// </summary>
-public enum eMode {
+public enum ePlayer_Mode {
     Invalid               // 0を格納
   , Nomal_Mode            // 通常モード。上下左右のキー入力で入力方向に移動
   , Change_Direction_Mode // 方向転換モード。キー入力した方向を向く
   , Diagonally_Mode       // 斜め移動モード。斜めのみの移動になる
 };
+
+/// <summary>
+/// 敵の現在のモードを割り当てる
+/// </summary>
+public enum eEnemy_Mode {
+    Invalid        // 0を格納
+  , Move_Mode      // 移動モード
+  , Encounter_Mode // エンカウントモード
+  , Attack_Mode    // 攻撃モード
+   
+}
 
 /// <summary>
 /// バトルメニューの行動を割り当てる
@@ -49,4 +59,24 @@ public enum eBattle_Menu {
   , Item           // アイテム欄を表示
   , Foot_Step      // 足元コマンド
   , Details_Status // ステータス詳細
+}
+
+/// <summary>
+/// 使用するコマンドカードを割り当てる
+/// </summary>
+public enum eCommand_Card {
+    Invalid     // 0を格納
+  , Arts_Card   // アーツカード
+  , Quick_Card  // クイックカード
+  , Buster_Card // バスターカード
+
+}
+
+/// <summary>
+/// エネミーの行動パターンを割り当てる。
+/// </summary>
+public enum eEnemy_AI_Pattern {
+    Invalid  // 0を格納
+, Pattern_01 // パターン01
+, Pattern_02 // パターン02
 }

@@ -77,11 +77,7 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     /// ターンを数える
     /// </summary>
-    int turn_count;
-
-    /// <summary>
-    /// オブジェクトのチップの合計
-    /// </summary>
+    int turn_count = 0;
 
     /// <summary>
     /// 2次元配列情報

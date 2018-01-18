@@ -9,14 +9,18 @@ public class Player_Status : MonoBehaviour {
     [SerializeField]
     Player player;
 
+    Actor_Status actor_status;
+
     Player_Data player_data = new Player_Data();
 
     const int MAX_LV = 999;        // レベルの最大値
     const int MAX_EXP = 999999999; // 経験値の最大値
     const int SERVANT_NUMBER = 10; // 登場サーヴァントの騎数
-    public int[] exp_data_base = new int[999];
+
+    public int[] exp_data_base = new int[999]; // レベルアップに必要な経験値量
 
     void Start() {
+        actor_status = new Actor_Status();
 
         int[] exp_data_base = new int[] {
            5 // 1 から次のレベルに必要な経験値
@@ -87,7 +91,11 @@ public class Player_Status : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Playerのターン経過の処理(自動回復、はらへり)
+    /// </summary>
     public void Turn() {
+        ++player.GetComponent<Player>().players[0].turn_count;
         // 空腹であるか
         if (player.GetComponent<Player>().players[0].hunger_point <= 0) {
             Decrease_Hit_Point(-1);
@@ -105,15 +113,13 @@ public class Player_Status : MonoBehaviour {
     }
 
     void Decrease_Hunger_Point(int value) {
-        //player = GameObject.Find("Player");
-
-        int old = player.GetComponent<Player>().players[0].hunger_point;
+        int old =  player.GetComponent<Player>().players[0].hunger_point;
 
         player.GetComponent<Player>().players[0].hunger_point += value;
 
-        // 満腹値20で"お腹がすいてきた"のログを表示
-        // 満腹度0で"お腹がすいて死にそうだ"のログを表示
-        }
+        // 満腹値20で"お腹がすいてきた"     のログを表示
+        // 満腹度 0で"お腹がすいて死にそうだ"のログを表示
+    }
 
     /// <summary>
     /// 体力の減少
@@ -121,100 +127,18 @@ public class Player_Status : MonoBehaviour {
     /// <param name="value"></param>
     /// <returns></returns>
     int Decrease_Hit_Point(int value) {
-        //player = GameObject.Find("Player");
-
         int old = player.GetComponent<Player>().players[0].hit_point;
-
+    
         player.GetComponent<Player>().players[0].hit_point += value;
-
-        if (Get_Max_HP() < player.GetComponent<Player>().players[0].hit_point) {
-            player.GetComponent<Player>().players[0].hit_point = Get_Max_HP();
+    
+        if (actor_status.Get_Max_HP(player.GetComponent<Player>().players[0].max_hit_point) < player.GetComponent<Player>().players[0].hit_point) {
+            player.GetComponent<Player>().players[0].hit_point = actor_status.Get_Max_HP(player.GetComponent<Player>().players[0].max_hit_point);
         }
         else if (player.GetComponent<Player>().players[0].hit_point < 0) {
             player.GetComponent<Player>().players[0].hit_point = 0;
         }
-
+    
         return player.GetComponent<Player>().players[0].hit_point - old;
-    }
-
-    /// <summary>
-    /// 体力の最大値を取得
-    /// </summary>
-    /// <returns></returns>
-    int Get_Max_HP() {
-        //player = GameObject.Find("Player");
-
-        int hp;
-
-        hp = player.GetComponent<Player>().players[0].max_hit_point;
-
-        // TODO: 体力UPのアイテムを装備していたら、加算する処理を追加
-
-        return hp;
-    }
-
-    /// <summary>
-    /// NPの最大値w取得
-    /// </summary>
-    /// <returns></returns>
-    int Get_Max_NP() {
-       // player = GameObject.Find("Player");
-
-        int np;
-
-        np = player.GetComponent<Player>().players[0].max_noble_phantasm;
-
-        return np;
-    }
-
-    /// <summary>
-    /// 攻撃力を取得
-    /// </summary>//
-    /// <returns></returns>
-    int Get_Attack() {
-        //player = GameObject.Find("Player");
-
-        int atk;
-
-        atk = player.GetComponent<Player>().players[0].attack;
-
-        // TODO: 武器装備時の計算
-
-        // TODO: 礼装装備時の計算
-
-        return atk;
-    }
-
-    /// <summary>
-    /// 防御力の取得
-    /// </summary>
-    /// <returns></returns>
-    int Get_Defence() {
-       // player = GameObject.Find("Player");
-
-        int def;
-
-        def = player.GetComponent<Player>().players[0].defence;
-
-        // TODO: 防具装備時の計算
-
-        // TODO: 礼装装備時の計算
-
-        return def;
-    }
-
-    /// <summary>
-    /// 行動力を取得
-    /// </summary>
-    /// <returns></returns>
-    int Get_Activity() {
-       // player = GameObject.Find("Player");
-
-        int activity;
-
-        activity = player.GetComponent<Player>().players[0].activity;
-
-        return activity;
     }
 
     /// <summary>
@@ -222,8 +146,6 @@ public class Player_Status : MonoBehaviour {
     /// </summary>
     /// <param name="exp"></param>
     void Add_Experience_Point(int exp) {
-       // player = GameObject.Find("Player");
-
         player.GetComponent<Player>().players[0].experience_point += exp;
 
         if (player.GetComponent<Player>().players[0].experience_point > MAX_EXP) {
@@ -255,8 +177,6 @@ public class Player_Status : MonoBehaviour {
     /// </summary>
     /// <returns></returns>
     int Get_Exp_Level() {
-       // player = GameObject.Find("Player");
-
         int lv;
 
         for (lv = 0; lv < MAX_LV; ++lv) {
@@ -265,15 +185,5 @@ public class Player_Status : MonoBehaviour {
             }
         }
         return lv + 1;
-    }
-
-    public bool Is_Dead() {
-        //player = GameObject.Find("Player");
-
-      //  if (/*player.GetComponent<Player>().*/players[0].hit_point <= 0) {
-      //      player.GetComponent<Player>().players[0].hit_point = 0;
-      //      return true;
-      //  }
-        return false;
     }
 }
