@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// プレイヤーの行動を行うクラス
+/// </summary>
 public class Player_Action : MonoBehaviour {
     eDirection direction;
     ePlayer_Mode mode;
@@ -29,6 +32,14 @@ public class Player_Action : MonoBehaviour {
 
     bool moved = false;
 
+    public void Set_Enemy(Enemy set_enemy) {
+        enemy = set_enemy;
+    }
+
+    public void Set_Enemy_Action(Enemy_Action set_enemy_action) {
+        enemy_action = set_enemy_action;
+    }
+
     // Use this for initialization
     void Start() {
         mode = ePlayer_Mode.Nomal_Mode;
@@ -48,10 +59,6 @@ public class Player_Action : MonoBehaviour {
         Debug.Log(action);
         Debug.Log(direction);
         // TODO: 後に追加したものに上書きされている？
-        Debug.Log(enemy.GetComponent<Enemy>().enemys[0].name);
-        Debug.Log(enemy.GetComponent<Enemy>().enemys[1].name);
-        Debug.Log(player.GetComponent<Player>().players[0].name);
-        Debug.Log(player.GetComponent<Player>().players[1].name);
     }
 
     /// <summary>
@@ -180,7 +187,7 @@ public class Player_Action : MonoBehaviour {
             if (Input.GetKeyDown("right") && Input.GetKeyDown("up")) {
                 direction = eDirection.Upright;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
+                if (dungeon_base.Check_Move(gameObject.transform.position.x,     gameObject.transform.position.y,
                                             gameObject.transform.position.x + 5, gameObject.transform.position.y + 5,
                                             direction)) {
                     moved = true;
@@ -189,10 +196,10 @@ public class Player_Action : MonoBehaviour {
                     enemy_action.Move_Enemy(player_status);
                 }
             }
-            else if (Input.GetKeyDown("right") && Input.GetKeyDown("down")) {
+            else if (Input.GetKeyDown("right") && Input.GetKeyDown("down")) { 
                 direction = eDirection.Downright;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
+                if (dungeon_base.Check_Move(gameObject.transform.position.x,     gameObject.transform.position.y,
                                             gameObject.transform.position.x + 5, gameObject.transform.position.y + 5,
                                             direction)) {
                     moved = true;
@@ -201,10 +208,10 @@ public class Player_Action : MonoBehaviour {
                     enemy_action.Move_Enemy(player_status);
                 }
             }
-            else if (Input.GetKeyDown("left") && Input.GetKeyDown("down")) {
+            else if (Input.GetKey("left") && Input.GetKey("down")) {
                 direction = eDirection.Downleft;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
+                if (dungeon_base.Check_Move(gameObject.transform.position.x,     gameObject.transform.position.y,
                                             gameObject.transform.position.x - 5, gameObject.transform.position.y - 5,
                                             direction)) {
                     moved = true;
@@ -216,7 +223,7 @@ public class Player_Action : MonoBehaviour {
             else if (Input.GetKeyDown("left") && Input.GetKeyDown("up")) {
                 direction = eDirection.Upleft;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
+                if (dungeon_base.Check_Move(gameObject.transform.position.x,     gameObject.transform.position.y,
                                             gameObject.transform.position.x - 5, gameObject.transform.position.y - 5,
                                             direction)) {
                     moved = true;
@@ -240,6 +247,18 @@ public class Player_Action : MonoBehaviour {
             }
             else if (Input.GetKeyDown("up")) {
                 direction = eDirection.Up;
+            }
+            else if (Input.GetKey("right") && Input.GetKey("up")) {
+                direction = eDirection.Upright;
+            }
+            else if (Input.GetKey("right") && Input.GetKey("down")) {
+                direction = eDirection.Downright;
+            }
+            else if (Input.GetKey("left") && Input.GetKey("down")) {
+                direction = eDirection.Downleft;
+            }
+            else if (Input.GetKey("left") && Input.GetKey("up")) {
+                direction = eDirection.Upleft;
             }
         }
 
@@ -334,7 +353,7 @@ public class Player_Action : MonoBehaviour {
             case eDirection.Down:
                 for (int i = 0; i < 1; ++i) { //TODO: テスト　forで回すループの回数と攻撃対象の座標を修正する
                     if (gameObject.transform.position.y - 5 == enemy.GetComponent<Enemy>().transform.position.y &&
-                        gameObject.transform.position.x == enemy.GetComponent<Enemy>().transform.position.x) {
+                        gameObject.transform.position.x     == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
                             // TODO: actor_statusがnull
                            (int)damage_calculation.Damage(actor_status.Get_Attack(player.GetComponent<Player>().players[0].attack),
@@ -350,7 +369,7 @@ public class Player_Action : MonoBehaviour {
             case eDirection.Downleft:
                 for (int i = 0; i < 1; ++i) {
                     if (gameObject.transform.position.y - 5 == enemy.GetComponent<Enemy>().transform.position.y &&
-                        gameObject.transform.position.x == enemy.GetComponent<Enemy>().transform.position.x) {
+                        gameObject.transform.position.x     == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
                            (int)damage_calculation.Damage(actor_status.Get_Attack(player.GetComponent<Player>().players[0].attack),
                            Random.Range(87, 112 + 1),
@@ -364,7 +383,7 @@ public class Player_Action : MonoBehaviour {
 
             case eDirection.Left:
                 for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y == enemy.GetComponent<Enemy>().transform.position.y &&
+                    if (gameObject.transform.position.y     == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x - 5 == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
                            (int)damage_calculation.Damage(actor_status.Get_Attack(player.GetComponent<Player>().players[0].attack),
@@ -395,7 +414,7 @@ public class Player_Action : MonoBehaviour {
             case eDirection.Up:
                 for (int i = 0; i < 1; ++i) {
                     if (gameObject.transform.position.y + 5 == enemy.GetComponent<Enemy>().transform.position.y &&
-                        gameObject.transform.position.x == enemy.GetComponent<Enemy>().transform.position.x) {
+                        gameObject.transform.position.x     == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
                            (int)damage_calculation.Damage(actor_status.Get_Attack(player.GetComponent<Player>().players[0].attack),
                            Random.Range(87, 112 + 1),
@@ -424,7 +443,7 @@ public class Player_Action : MonoBehaviour {
 
             case eDirection.Right:
                 for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y == enemy.GetComponent<Enemy>().transform.position.y &&
+                    if (gameObject.transform.position.y     == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x + 5 == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
                            (int)damage_calculation.Damage(actor_status.Get_Attack(player.GetComponent<Player>().players[0].attack),

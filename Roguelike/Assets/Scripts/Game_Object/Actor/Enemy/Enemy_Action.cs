@@ -6,7 +6,9 @@ using UnityEngine;
 /// エネミーの行動を設定する
 /// </summary>
 public class Enemy_Action : MonoBehaviour {
+    [SerializeField]
     eDirection direction;
+    [SerializeField]
     eEnemy_Mode mode;
 
     [SerializeField]
@@ -24,8 +26,21 @@ public class Enemy_Action : MonoBehaviour {
     Enemy_Status enemy_status;
 
     Actor_Status actor_status;
+
     Dungeon_Base dungeon_base;
     Damage_Calculation damage_calculation;
+
+    public void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
+        dungeon_generator = set_dungeon_generator;
+    }
+
+    public void Set_Player_Status(Player_Status set_player_status) {
+        player_status = set_player_status;
+    }
+
+    public void Set_Player(Player set_player) {
+        player = set_player;
+    }
 
     private void Start() {
         direction = eDirection.Down;
@@ -208,6 +223,7 @@ public class Enemy_Action : MonoBehaviour {
             vec.x += rand_x;
             vec.y += rand_y;
             gameObject.transform.position = vec;
+            Debug.Log(gameObject);
         }
     }
 }

@@ -144,13 +144,6 @@ public class Dungeon_Generator : MonoBehaviour {
         Random_Actor(CHIP_PLAYER, CHIP_UP_STAIR);
         Random_Object(CHIP_ITEM, CHIP_FOOD, CHIP_ENEMY);
 
-        // デバッグ出力
-        //foreach (var div in divition_List)
-        //{
-        //    div.Dump();
-        //}
-        //layer.Dump();
-
         // タイルを配置
         for (int i = 0; i < layer.Width; i++) {
             for (int j = 0; j < layer.Height; j++) {
@@ -200,7 +193,8 @@ public class Dungeon_Generator : MonoBehaviour {
                     //enemy = GameObject.Find("Enemy");
                     //enemy.GetComponent<Enemy>();
                     enemy.transform.position = new Vector3(x, y, 0);
-                    Instantiate(enemy, enemy.transform.position, Quaternion.identity);
+                    GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
+                    instance_obj.GetComponent<Enemy_Action>().Set_Dungeon_Generator(this);
                 }
             }
         }

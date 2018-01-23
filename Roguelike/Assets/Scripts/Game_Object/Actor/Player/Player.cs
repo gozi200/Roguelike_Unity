@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.SceneManagement;
 
 /// <summary>
 /// プレイヤー本体のクラス TODO: players持ってるの気持ち悪い？
@@ -25,5 +24,7 @@ public class Player : MonoBehaviour {
 
         speed.x = 5; // 移動量
         speed.y = 5;
+
+
     }
 }

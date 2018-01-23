@@ -98,10 +98,10 @@ public class Dungeon_Base : MonoBehaviour {
 
         for (int i = 0; i < dungeon_generator.GetComponent<Dungeon_Generator>().walls.Count; ++i) {
             if (direction == eDirection.Upleft) {
-                if (x - 5 == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.x &&
+                if (x + 5 == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.x &&
                     y     == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.y ||
                     x     == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.x &&
-                    y + 5 == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.y) {
+                    y - 5 == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.y) {
                     return true;
                 }
             }
@@ -114,10 +114,10 @@ public class Dungeon_Base : MonoBehaviour {
                 }
             }
             else if (direction == eDirection.Downright) {
-                if (x + 5 == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.x &&
+                if (x - 5 == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.x &&
                     y     == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.y ||
                     x     == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.x &&
-                    y - 5 == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.y) {
+                    y + 5 == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.y) {
                     return true;
                 }
             }

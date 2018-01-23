@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     Enemy_Status enemy_status;
 
+    [SerializeField]
     public List<Enemy_Data> enemys = new List<Enemy_Data>();
 
     public Vector2 speed = new Vector2(5f, 5f);
