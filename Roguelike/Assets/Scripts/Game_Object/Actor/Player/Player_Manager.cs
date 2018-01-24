@@ -7,34 +7,28 @@ using UnityEngine;
 /// </summary>
 public class Player_Manager : MonoBehaviour {
     [SerializeField]
-    Player player;
+     static Player player;
 
-    [SerializeField]
-    Player_Action player_action;
+    //[SerializeField]
+    //static Player_Action player_action;
+    //
+    //[SerializeField]
+    //static Player_Status player_status;
 
-    [SerializeField]
-    Player_Status player_status;
-
-    // いる？
-    [SerializeField]
-    Player_Data player_data;
-
-    private void Start() {
-    }
-
-    void Set_Player(Player set_player) {
+    public　static  void Set_Player(Player set_player) {
         player = set_player;
     }
 
-    void Set_Player_Action(Player_Action set_player_action) {
-        player_action = set_player_action;
-    }
+    //public static void Set_Player_Action(Player_Action set_player_action) {
+    //    player_action = set_player_action;
+    //    player = Player_Manager.GetPlayer();
+    //}
+    //
+    //public static void Set_Player_Status(Player_Status set_player_status) {
+    //    player_status = set_player_status;
+    //}
 
-    void Set_Player_Status(Player_Status set_player_status) {
-        player_status = set_player_status;
-    }
-
-    void Set_Player_Data(Player_Data set_player_data) {
-        player_data = set_player_data;
+    public static Player Get_Player() {
+        return player;
     }
 }

@@ -25,5 +25,7 @@ public class Enemy : MonoBehaviour {
 
         speed.x = 5; // 縦軸の移動量
         speed.y = 5; // 横軸の移動量
+
+        Enemy_Manager.Set_Enemy(this);
     }
 }

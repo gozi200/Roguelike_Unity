@@ -4,6 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
+/// ゲームの進行を割り当てる
+/// </summary>
+public enum eGame_State {
+    Invalid    // 0を格納
+  , Dungeon_Create
+  , Player_Turn
+  , Partner_Turn
+  , Enemy_Trun
+  , Dungeon_Turn
+}
+
+/// <summary>
 /// キャラクターの現在の向きを割り当てる
 /// </summary>
 public enum eDirection {

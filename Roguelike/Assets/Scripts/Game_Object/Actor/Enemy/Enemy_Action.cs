@@ -6,13 +6,13 @@ using UnityEngine;
 /// エネミーの行動を設定する
 /// </summary>
 public class Enemy_Action : MonoBehaviour {
-    [SerializeField]
     eDirection direction;
-    [SerializeField]
+
     eEnemy_Mode mode;
 
     [SerializeField]
     Player player;
+
     [SerializeField]
     Enemy enemy;
 
@@ -30,24 +30,18 @@ public class Enemy_Action : MonoBehaviour {
     Dungeon_Base dungeon_base;
     Damage_Calculation damage_calculation;
 
-    public void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
-        dungeon_generator = set_dungeon_generator;
-    }
-
-    public void Set_Player_Status(Player_Status set_player_status) {
-        player_status = set_player_status;
-    }
-
-    public void Set_Player(Player set_player) {
-        player = set_player;
-    }
-
     private void Start() {
+        Player player = Player_Manager.Get_Player();
         direction = eDirection.Down;
 
         dungeon_base = new Dungeon_Base();
         actor_status = new Actor_Status();
         damage_calculation = new Damage_Calculation();
+
+    }
+    public void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
+        dungeon_generator = set_dungeon_generator;
+        player = Player_Manager.Get_Player();
     }
 
     /// <summary>
@@ -65,7 +59,6 @@ public class Enemy_Action : MonoBehaviour {
                         if (Search_Player(player.GetComponent<Player>().transform.position.x, player.GetComponent<Player>().transform.position.y)) {
                             player.GetComponent<Player>().players[0].hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack,Random.Range(87,112 + 1),0);
                             Debug.Log(player.GetComponent<Player>().players[0].hit_point);
-
                             break;
                         }
                     }

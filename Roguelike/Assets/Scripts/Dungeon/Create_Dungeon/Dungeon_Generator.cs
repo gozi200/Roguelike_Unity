@@ -139,7 +139,9 @@ public class Dungeon_Generator : MonoBehaviour {
 
         // ■6. 部屋同士をつなぐ
         Connect_Rooms();
-
+        List<GameObject> enmeyList = new List<GameObject>();
+        Enemy enemy_script   = null;
+        Player player_script = null;
         // ■７．プレイヤー、敵、アイテム、階段、などの位置
         Random_Actor(CHIP_PLAYER, CHIP_UP_STAIR);
         Random_Object(CHIP_ITEM, CHIP_FOOD, CHIP_ENEMY);
@@ -164,10 +166,9 @@ public class Dungeon_Generator : MonoBehaviour {
                 else if (layer.Get(i, j) == CHIP_PLAYER) {
                     x = Get_Chip_X(i);
                     y = Get_Chip_Y(j);
-                    player = GameObject.Find("Player");
-                    player.GetComponent<Player>();
+                    player_script = player.GetComponent<Player>();
+                    Player_Manager.Set_Player(player_script);
                     player.transform.position = new Vector3(x, y, 0);
-                    // Instantiate(player, player.transform.position, Quaternion.identity);
                 }
                 else if (layer.Get(i, j) == CHIP_UP_STAIR) {
                     x = Get_Chip_X(i);
@@ -190,13 +191,17 @@ public class Dungeon_Generator : MonoBehaviour {
                 else if (layer.Get(i, j) == CHIP_ENEMY) {
                     x = Get_Chip_X(i);
                     y = Get_Chip_Y(j);
-                    //enemy = GameObject.Find("Enemy");
-                    //enemy.GetComponent<Enemy>();
+                    enemy_script = enemy.GetComponent<Enemy>();
+                    Enemy_Manager.Set_Enemy(enemy_script);
                     enemy.transform.position = new Vector3(x, y, 0);
                     GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
-                    instance_obj.GetComponent<Enemy_Action>().Set_Dungeon_Generator(this);
+                    enmeyList.Add(instance_obj);
                 }
             }
+        }
+        foreach(GameObject enemy in enmeyList)
+         {
+            enemy.GetComponent<Enemy_Action>().Set_Dungeon_Generator(this);
         }
     }
 

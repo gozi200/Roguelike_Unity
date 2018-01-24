@@ -89,7 +89,6 @@ public class Player_Status : MonoBehaviour {
 
             player.GetComponent<Player>().players.Add(player_data);
         }
-
     }
 
     /// <summary>

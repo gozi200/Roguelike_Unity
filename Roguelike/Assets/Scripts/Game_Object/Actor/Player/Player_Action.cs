@@ -6,8 +6,8 @@ using UnityEngine;
 /// プレイヤーの行動を行うクラス
 /// </summary>
 public class Player_Action : MonoBehaviour {
-    eDirection direction;
     ePlayer_Mode mode;
+    eDirection direction;
     ePlayer_Action action;
 
     [SerializeField]
@@ -51,6 +51,8 @@ public class Player_Action : MonoBehaviour {
         damage_calculation = new Damage_Calculation();
 
         action_count = 0;
+
+        enemy = Enemy_Manager.Get_Enemy();
     }
 
     // Update is called once per frame
@@ -58,7 +60,7 @@ public class Player_Action : MonoBehaviour {
         Run_Action();
         Debug.Log(action);
         Debug.Log(direction);
-        // TODO: 後に追加したものに上書きされている？
+        // TODO: 後に追加したものに上書きされている
     }
 
     /// <summary>
@@ -102,6 +104,8 @@ public class Player_Action : MonoBehaviour {
     }
 
     #region Action.Move時の処理
+
+    
 
     /// <summary>
     /// 移動に関する処理
