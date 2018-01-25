@@ -55,7 +55,6 @@ public class Enemy_Action : MonoBehaviour {
             switch (enemy.GetComponent<Enemy>().enemys[i].AI_pattern) {
                 case 2:
                     if (!dungeon_base.Is_Diagonal_Attack(gameObject.transform.position.x, gameObject.transform.position.y, direction)) {
-                        // TODO: プレイヤーの移動前の座標を取ってしまっている
                         if (Search_Player(player.GetComponent<Player>().transform.position.x, player.GetComponent<Player>().transform.position.y)) {
                             player.GetComponent<Player>().players[0].hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack,Random.Range(87,112 + 1),0);
                             Debug.Log(player.GetComponent<Player>().players[0].hit_point);

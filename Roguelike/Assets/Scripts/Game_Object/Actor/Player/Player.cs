@@ -6,6 +6,7 @@ using UnityEngine;
 /// プレイヤー本体のクラス
 /// </summary>
 public class Player : MonoBehaviour {
+    [SerializeField]
     public List<Player_Data> players = new List<Player_Data>();
 
     [SerializeField]

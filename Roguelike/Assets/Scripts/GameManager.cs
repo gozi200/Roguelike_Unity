@@ -7,25 +7,20 @@ public class GameManager : MonoBehaviour {
     eGame_State game_state;
 
     [SerializeField]
-    Player_Manager player_manager;
+    Enemy_Manager enemy_manager;
 
     [SerializeField]
-    Enemy_Manager enemy_manager;
+    Player_Manager player_manager;
 
     [SerializeField]
     Dungeon_Generator dungeon_generator;
 
     public static GameManager Instance;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         Instance = this;
         game_state = eGame_State.Dungeon_Create;
-	}
-	
-    public void Set_Game_State(eGame_State set_state) {
-        game_state = set_state;
-        Game_Loop(set_state);
     }
 
     void Game_Loop(eGame_State state) {
@@ -50,5 +45,10 @@ public class GameManager : MonoBehaviour {
                 // ダンジョンのターン(敵のスポーンなど)
                 break;
         }
+    }
+
+    public void Set_Game_State(eGame_State set_state) {
+        game_state = set_state;
+        Game_Loop(set_state);
     }
 }

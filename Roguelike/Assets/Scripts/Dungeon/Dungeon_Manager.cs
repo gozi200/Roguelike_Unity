@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// ダメージ計算数rクラス
+/// </summary>
 public class Dungeon_Manager : MonoBehaviour {
+    public static Square_Manager[,] map_layer = new Square_Manager[10, 10];
+    public static void SetMaplayer(int length, int side, int number, Square_Manager square) {
+        map_layer[length, side] = square;
+        map_layer[length, side].LayerNumber = number;
+    }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public static int GetMaplayer(int length, int side) {
+        return map_layer[length, side].LayerNumber;
+    }
+
+    public static Vector3 GetPosition(int length, int side) {
+        return map_layer[length, side].transform.position;
+    }
 }

@@ -32,14 +32,6 @@ public class Player_Action : MonoBehaviour {
 
     bool moved = false;
 
-    public void Set_Enemy(Enemy set_enemy) {
-        enemy = set_enemy;
-    }
-
-    public void Set_Enemy_Action(Enemy_Action set_enemy_action) {
-        enemy_action = set_enemy_action;
-    }
-
     // Use this for initialization
     void Start() {
         mode = ePlayer_Mode.Nomal_Mode;
@@ -55,7 +47,6 @@ public class Player_Action : MonoBehaviour {
         enemy = Enemy_Manager.Get_Enemy();
     }
 
-    // Update is called once per frame
     void Update() {
         Run_Action();
         Debug.Log(action);
@@ -104,8 +95,6 @@ public class Player_Action : MonoBehaviour {
     }
 
     #region Action.Move時の処理
-
-    
 
     /// <summary>
     /// 移動に関する処理
@@ -353,13 +342,12 @@ public class Player_Action : MonoBehaviour {
     /// プレイヤーの攻撃処理
     /// </summary>
     void Action_Attack() {
-        switch (direction) {
+        switch (direction) { // TODO: 攻撃が当たらない。if文に入ってないので座標が問題か
             case eDirection.Down:
                 for (int i = 0; i < 1; ++i) { //TODO: テスト　forで回すループの回数と攻撃対象の座標を修正する
                     if (gameObject.transform.position.y - 5 == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x     == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
-                            // TODO: actor_statusがnull
                            (int)damage_calculation.Damage(actor_status.Get_Attack(player.GetComponent<Player>().players[0].attack),
                            Random.Range(87, 112 + 1),
                            enemy.GetComponent<Enemy>().enemys[i].defence);

@@ -22,7 +22,7 @@ public class Player_Status : MonoBehaviour {
     void Start() {
         actor_status = new Actor_Status();
 
-        int[] exp_data_base = new int[] {
+    int[] exp_data_base = new int[] {
            5 // 1 から次のレベルに必要な経験値
 	,     10 // 2
 	,     20 // 3
@@ -96,49 +96,23 @@ public class Player_Status : MonoBehaviour {
     /// </summary>
     public void Turn() {
         ++player.GetComponent<Player>().players[0].turn_count;
+
         // 空腹であるか
         if (player.GetComponent<Player>().players[0].hunger_point <= 0) {
-            Decrease_Hit_Point(-1);
+            --player.GetComponent<Player>().players[0].hit_point;
 
             //if (Is_Dead()) {
             // ログに"餓死したと流す"
             //}
         }
         else if (0 == player.GetComponent<Player>().players[0].turn_count % 3) {
-            Decrease_Hunger_Point(-1);
+            --player.GetComponent<Player>().players[0].hunger_point;
+            // 満腹値20で"お腹がすいてきた"     のログを表示
+            // 満腹度 0で"お腹がすいて死にそうだ"のログを表示
         }
         else {
             // TODO: 体力の自動回復
         }
-    }
-
-    void Decrease_Hunger_Point(int value) {
-        int old =  player.GetComponent<Player>().players[0].hunger_point;
-
-        player.GetComponent<Player>().players[0].hunger_point += value;
-
-        // 満腹値20で"お腹がすいてきた"     のログを表示
-        // 満腹度 0で"お腹がすいて死にそうだ"のログを表示
-    }
-
-    /// <summary>
-    /// 体力の減少
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    int Decrease_Hit_Point(int value) {
-        int old = player.GetComponent<Player>().players[0].hit_point;
-    
-        player.GetComponent<Player>().players[0].hit_point += value;
-    
-        if (actor_status.Get_Max_HP(player.GetComponent<Player>().players[0].max_hit_point) < player.GetComponent<Player>().players[0].hit_point) {
-            player.GetComponent<Player>().players[0].hit_point = actor_status.Get_Max_HP(player.GetComponent<Player>().players[0].max_hit_point);
-        }
-        else if (player.GetComponent<Player>().players[0].hit_point < 0) {
-            player.GetComponent<Player>().players[0].hit_point = 0;
-        }
-    
-        return player.GetComponent<Player>().players[0].hit_point - old;
     }
 
     /// <summary>
