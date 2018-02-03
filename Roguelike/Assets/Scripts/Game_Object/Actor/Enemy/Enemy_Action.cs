@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//test
+
 /// <summary>
 /// エネミーの行動を設定する
 /// </summary>
@@ -49,7 +51,7 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     /// <param name="player_status"></param>
     public void Move_Enemy(Player_Status player_status) {
-        player_status.Turn();
+       player_status.Turn();
 
         for (int i = 0; i < 1; ++i) {
             switch (enemy.GetComponent<Enemy>().enemys[i].AI_pattern) {
