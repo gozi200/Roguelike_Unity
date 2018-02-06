@@ -43,6 +43,14 @@ public enum ePlayer_Action {
 };
 
 /// <summary>
+/// Move状態に入っているときのプレイヤーの行動を割り当てる
+/// </summary>
+public enum ePlayer_Move {
+    Invalid
+  , 
+}
+
+/// <summary>
 /// プレイヤーの現在のモードを割り当てる
 /// </summary>
 public enum ePlayer_Mode {

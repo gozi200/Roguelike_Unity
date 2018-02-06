@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 全部参照だからいらない気がするクラス
+/// </summary>
 public class Actor_Status : MonoBehaviour {
     Enemy enemy;
     Player player;
 
     void Start() {
-        enemy  = Enemy_Manager.Get_Enemy();
-        player = Player_Manager.Get_Player();
+       // enemy  = Enemy_Manager.Get_Enemy();
+       // player = Player_Manager.Get_Player();
     }
 
     /// <summary>
@@ -81,27 +84,6 @@ public class Actor_Status : MonoBehaviour {
 
         return activity;
     }
-
-    // TODO: いらない？
-    /// <summary>
-    /// 体力の減少
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    //public int Decrease_Hit_Point(int now_HP, int value) {
-    //    int old = player.GetComponent<Player>().players[0].hit_point;
-    //
-    //    player.GetComponent<Player>().players[0].hit_point += value;
-    //
-    //    if (Get_Max_HP(player.GetComponent<Player>().players[0].max_hit_point) < player.GetComponent<Player>().players[0].hit_point) {
-    //        player.GetComponent<Player>().players[0].hit_point = Get_Max_HP(player.GetComponent<Player>().players[0].max_hit_point);
-    //    }
-    //    else if (player.GetComponent<Player>().players[0].hit_point < 0) {
-    //        player.GetComponent<Player>().players[0].hit_point = 0;
-    //    }
-    //
-    //    return player.GetComponent<Player>().players[0].hit_point - old;
-    //}
 
     /// <summary>
     /// 死亡判定

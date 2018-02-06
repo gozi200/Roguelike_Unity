@@ -6,9 +6,8 @@ using UnityEngine;
 /// エネミーの行動を設定する
 /// </summary>
 public class Enemy_Action : MonoBehaviour {
-    eDirection direction;
-
     eEnemy_Mode mode;
+    eDirection direction;
 
     [SerializeField]
     Player player;
@@ -20,28 +19,21 @@ public class Enemy_Action : MonoBehaviour {
     Dungeon_Generator dungeon_generator;
 
     [SerializeField]
-    Player_Status player_status;
-
-    [SerializeField]
-    Enemy_Status enemy_status;
-
-    Actor_Status actor_status;
-
     Dungeon_Base dungeon_base;
+
     Damage_Calculation damage_calculation;
 
     private void Start() {
-        Player player = Player_Manager.Get_Player();
+        //enemy  = Enemy_Manager.Get_Enemy();
+        //player = Player_Manager.Get_Player();
+
+        //player_status = player.GetComponent<Player_Status>();
         direction = eDirection.Down;
-
-        dungeon_base = new Dungeon_Base();
-        actor_status = new Actor_Status();
-        damage_calculation = new Damage_Calculation();
-
     }
+
     public void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
         dungeon_generator = set_dungeon_generator;
-        player = Player_Manager.Get_Player();
+       // player = Player_Manager.Get_Player();
     }
 
     /// <summary>
@@ -49,15 +41,13 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     /// <param name="player_status"></param>
     public void Move_Enemy(Player_Status player_status) {
-        player_status.Turn();
-
         for (int i = 0; i < 1; ++i) {
             switch (enemy.GetComponent<Enemy>().enemys[i].AI_pattern) {
                 case 2:
                     if (!dungeon_base.Is_Diagonal_Attack(gameObject.transform.position.x, gameObject.transform.position.y, direction)) {
                         if (Search_Player(player.GetComponent<Player>().transform.position.x, player.GetComponent<Player>().transform.position.y)) {
-                            player.GetComponent<Player>().players[0].hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack,Random.Range(87,112 + 1),0);
-                            Debug.Log(player.GetComponent<Player>().players[0].hit_point);
+                            player.GetComponent<Player>().hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack,Random.Range(87,112 + 1),0);
+                            Debug.Log(player.GetComponent<Player>().hit_point);
                             break;
                         }
                     }
@@ -110,6 +100,9 @@ public class Enemy_Action : MonoBehaviour {
         return false;
     }
 
+    /// <summary>
+    /// エネミーの移動処理
+    /// </summary>
     private void Move() {
         bool flag = false;
         int rand_x; 
@@ -215,7 +208,8 @@ public class Enemy_Action : MonoBehaviour {
             vec.x += rand_x;
             vec.y += rand_y;
             gameObject.transform.position = vec;
-            Debug.Log(gameObject);
+
+
         }
     }
 }

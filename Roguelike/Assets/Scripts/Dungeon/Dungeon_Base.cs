@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Dungeon_Base : MonoBehaviour {
-    GameObject dungeon_generator;
-
     GameObject wall;
+    GameObject dungeon_generator;
 
     /// <summary>
     /// 移動先が移動可能地形であるか

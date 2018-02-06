@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// エネミーのマネージャークラス
+/// </summary>
 public class Enemy_Manager : MonoBehaviour {
     [SerializeField]
     static Enemy enemy;

@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
     void Start () {
         Instance = this;
         game_state = eGame_State.Dungeon_Create;
+        
     }
 
     void Game_Loop(eGame_State state) {
