@@ -21,6 +21,9 @@ public class Enemy_Action : MonoBehaviour {
     [SerializeField]
     Dungeon_Base dungeon_base;
 
+    [SerializeField]
+    GameManager game_manager;
+
     Damage_Calculation damage_calculation;
 
     private void Start() {
@@ -55,7 +58,7 @@ public class Enemy_Action : MonoBehaviour {
                     break;
             }
         }
-        dungeon_generator.GetComponent<Dungeon_Generator>().Turn_Tick();
+        game_manager.GetComponent<Dungeon_Generator>().Turn_Tick();
     }
 
     /// <summary>

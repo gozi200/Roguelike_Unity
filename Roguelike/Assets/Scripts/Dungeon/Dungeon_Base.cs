@@ -3,8 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Dungeon_Base : MonoBehaviour {
+    GameObject game_manager;
+
+
+
+        [SerializeField]
+        Dungeon_Generator dungeon_generator;
+    //[SerializeField]
+    //GameManager game_manager;
+
     GameObject wall;
-    GameObject dungeon_generator;
 
     /// <summary>
     /// 移動先が移動可能地形であるか
@@ -14,10 +22,11 @@ public class Dungeon_Base : MonoBehaviour {
     /// <returns>移動可能であればfalse</returns>
     bool Is_Move(float x, float y) {
         wall = GameObject.Find("Wall(Clone)");
-        dungeon_generator = GameObject.Find("Dungeon_Generator");
+        //dungeon_generator = GameObject.Find("GameManager")gameObject.GetComponent<Dungeon_Generator>();
 
         // 範囲外は移動不可
-        if (x < 0 || x >= dungeon_generator.GetComponent<Dungeon_Generator>().width * 5 ||
+        Debug.Log(dungeon_generator.GetComponent<Dungeon_Generator>().width);
+        if (x < 0 || x >= dungeon_generator.GetComponent<Dungeon_Generator>().width  * 5 ||
             y < 0 || y >= dungeon_generator.GetComponent<Dungeon_Generator>().height * 5) {
             return true;
         }
@@ -41,7 +50,7 @@ public class Dungeon_Base : MonoBehaviour {
     /// <returns></returns>
     bool Is_Diagonal_Move(float x, float y, eDirection direction) {
         wall = GameObject.Find("Wall(Clone)");
-        dungeon_generator = GameObject.Find("Dungeon_Generator");
+       // dungeon_generator = GameObject.Find("GameManager").GetComponent<Dungeon_Generator>();
 
         if (direction == eDirection.Upleft) {
             for (int i = 0; i < dungeon_generator.GetComponent<Dungeon_Generator>().walls.Count; ++i) {
@@ -93,7 +102,7 @@ public class Dungeon_Base : MonoBehaviour {
     /// <returns>壁越しであったらtrue</returns>
     public bool Is_Diagonal_Attack(float x, float y, eDirection direction) {
         wall = GameObject.Find("Wall(Clone)");
-        dungeon_generator = GameObject.Find("Dungeon_Generator");
+        //dungeon_generator = GameObject.Find("GameManager").GetComponent<Dungeon_Generator>();
 
         for (int i = 0; i < dungeon_generator.GetComponent<Dungeon_Generator>().walls.Count; ++i) {
             if (direction == eDirection.Upleft) {

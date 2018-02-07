@@ -37,6 +37,7 @@ public class Actor_Status : MonoBehaviour {
         max_hp = now_Max_HP;
 
         // TODO: 体力UPのアイテムを装備していたら、加算する処理を追加
+        // 以下のステータスも同様
 
         return max_hp;
     }
@@ -50,10 +51,6 @@ public class Actor_Status : MonoBehaviour {
 
         ATK = now_ATK;
 
-        // TODO: 武器装備時の計算
-
-        // TODO: 礼装装備時の計算
-
         return ATK;
     }
 
@@ -65,10 +62,6 @@ public class Actor_Status : MonoBehaviour {
         int DEF;
 
         DEF = now_DEF;
-
-        // TODO: 防具装備時の計算
-
-        // TODO: 礼装装備時の計算
 
         return DEF;
     }

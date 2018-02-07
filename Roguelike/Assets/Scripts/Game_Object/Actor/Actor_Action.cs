@@ -7,13 +7,13 @@ using UnityEngine;
 /// </summary>
 public class Actor_Action : MonoBehaviour {
     [SerializeField]
-    static Move move;
+    static Player_Move move;
 
-    public static void Set_Move(Move set_move) {
+    public static void Set_Move(Player_Move set_move) {
         move = set_move;
     }
 
-    public static Move Get_Move() {
+    public static Player_Move Get_Move() {
         return move;
     }
 }

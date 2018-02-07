@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
 /// 様々なユーティリティ
+/// </summary>
 public class Util {
     /// Mathf.Cosの角度指定版
     public static float Cos_Ex(float Deg) {

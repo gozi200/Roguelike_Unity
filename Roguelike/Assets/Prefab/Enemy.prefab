@@ -38,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1956411043742542}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 27.5, y: 107.5, z: 0}
+  m_LocalPosition: {x: 80, y: 125, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -70,6 +70,7 @@ MonoBehaviour:
   enemy: {fileID: 114838104974244816}
   dungeon_generator: {fileID: 0}
   dungeon_base: {fileID: 0}
+  game_manager: {fileID: 0}
 --- !u!114 &114838104974244816
 MonoBehaviour:
   m_ObjectHideFlags: 1

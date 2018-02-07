@@ -136,9 +136,7 @@ public class Player_Status : MonoBehaviour {
 
                 player.GetComponent<Player>().max_hit_point += add_hp;
 
-                // TODO: 攻撃力の最大値を仕様書を参考に増やす
-
-                // TODO: 防御力の最大値を仕様書を参考に増やす
+                // TODO: 攻撃力,防御力の最大値を仕様書を参考に増やす
             }
         }
     }
