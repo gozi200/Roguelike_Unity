@@ -1,7 +1,15 @@
-﻿using UnityEngine;
+﻿/*
+制作者 アントニオ
+
+最終編集日 2017/12/28
+ */
+
+using UnityEngine;
 using System.Collections;
 
-/// キャラクター基底クラス
+/// <summary>
+/// オブジェクトの基底クラス
+/// </summary>
 public class Token : MonoBehaviour {
 
 	/// プレハブ取得

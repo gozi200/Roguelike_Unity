@@ -1,14 +1,25 @@
-﻿using System;
+﻿/*
+制作者　石倉 
+
+最終編集日 2018/02/07
+ */
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+/*---------------------------
+enumを定義しておくスクリプト
+---------------------------*/
 
 /// <summary>
 /// ゲームの進行を割り当てる
 /// </summary>
 public enum eGame_State {
     Invalid    // 0を格納
-  , Dungeon_Create
+  , Create_Base
+  , Create_Dungeon
   , Player_Turn
   , Partner_Turn
   , Enemy_Trun

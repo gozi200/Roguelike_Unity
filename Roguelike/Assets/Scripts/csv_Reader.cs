@@ -1,12 +1,20 @@
-﻿using UnityEngine;
+﻿/*
+制作者 石倉
+
+
+ */
+
+using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 
+/// <summary>
+/// csvファイルを読み取り関数があるクラス
+/// </summary>
 public class csv_Reader : MonoBehaviour {
-    void Start() {
-
-    }
-
+    /// <summary>
+    /// csvファイルの読み取り関数
+    /// </summary>
     public static List<string[]> Load_csv(string file_path, int skip_line_number = 0) {
         TextAsset csv = Resources.Load(file_path) as TextAsset;
         StringReader reader = new StringReader(csv.text);

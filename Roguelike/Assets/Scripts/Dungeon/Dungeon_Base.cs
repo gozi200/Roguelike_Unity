@@ -1,16 +1,21 @@
-﻿using System.Collections;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/08
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 移動可能であるかどうかを判断するクラス　TODO: Move_Checkとかに名前を変える
+/// </summary>
 public class Dungeon_Base : MonoBehaviour {
     GameObject game_manager;
 
-
-
-        [SerializeField]
-        Dungeon_Generator dungeon_generator;
-    //[SerializeField]
-    //GameManager game_manager;
+    [SerializeField]
+    Dungeon_Generator dungeon_generator;
 
     GameObject wall;
 
@@ -22,10 +27,8 @@ public class Dungeon_Base : MonoBehaviour {
     /// <returns>移動可能であればfalse</returns>
     bool Is_Move(float x, float y) {
         wall = GameObject.Find("Wall(Clone)");
-        //dungeon_generator = GameObject.Find("GameManager")gameObject.GetComponent<Dungeon_Generator>();
 
         // 範囲外は移動不可
-        Debug.Log(dungeon_generator.GetComponent<Dungeon_Generator>().width);
         if (x < 0 || x >= dungeon_generator.GetComponent<Dungeon_Generator>().width  * 5 ||
             y < 0 || y >= dungeon_generator.GetComponent<Dungeon_Generator>().height * 5) {
             return true;
@@ -34,7 +37,7 @@ public class Dungeon_Base : MonoBehaviour {
         // 壁があるか？敵がいるか？
         for (int i = 0; i < dungeon_generator.GetComponent<Dungeon_Generator>().walls.Count; ++i) {
             if (x == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.x &&
-                y == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.y /*|| player.transform.position　== エネミーのポジション*/) {
+                y == dungeon_generator.GetComponent<Dungeon_Generator>().walls[i].transform.position.y) {
                 return true;
             }
         }
@@ -47,10 +50,9 @@ public class Dungeon_Base : MonoBehaviour {
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <param name="direction"></param>
-    /// <returns></returns>
+    /// <returns>移動可能であればtrue そうでなければfalse</returns>
     bool Is_Diagonal_Move(float x, float y, eDirection direction) {
         wall = GameObject.Find("Wall(Clone)");
-       // dungeon_generator = GameObject.Find("GameManager").GetComponent<Dungeon_Generator>();
 
         if (direction == eDirection.Upleft) {
             for (int i = 0; i < dungeon_generator.GetComponent<Dungeon_Generator>().walls.Count; ++i) {
@@ -102,7 +104,6 @@ public class Dungeon_Base : MonoBehaviour {
     /// <returns>壁越しであったらtrue</returns>
     public bool Is_Diagonal_Attack(float x, float y, eDirection direction) {
         wall = GameObject.Find("Wall(Clone)");
-        //dungeon_generator = GameObject.Find("GameManager").GetComponent<Dungeon_Generator>();
 
         for (int i = 0; i < dungeon_generator.GetComponent<Dungeon_Generator>().walls.Count; ++i) {
             if (direction == eDirection.Upleft) {

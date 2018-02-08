@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/08
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +20,9 @@ public class Enemy : MonoBehaviour {
 
     public Vector2 speed = new Vector2(5f, 5f);
 
+    /// <summary>
+    /// 死亡判定 死んでいたらtrue
+    /// </summary>
     public bool is_dead;
 
     // Use this for initialization
@@ -25,7 +34,5 @@ public class Enemy : MonoBehaviour {
 
         speed.x = 5; // 縦軸の移動量
         speed.y = 5; // 横軸の移動量
-
-       // Enemy_Manager.Set_Enemy(this);
     }
 }

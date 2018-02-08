@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/08
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,25 +22,16 @@ public class Player_Action : MonoBehaviour {
     [SerializeField]
     Enemy enemy;
 
-    [SerializeField]
-    Actor_Action actor_action;
-
     Damage_Calculation damage_calculation;
-
-    int action_count; // 汎用変数
 
     // Use this for initialization
     void Start() {
-
         action = ePlayer_Action.Move;
         direction = eDirection.Down;
-
-        action_count = 0;
     }
 
     void Update() {
         Run_Action();
-        // TODO: 後に追加したものに上書きされている
     }
 
     /// <summary>
@@ -67,13 +64,10 @@ public class Player_Action : MonoBehaviour {
     /// <summary>
     /// 現在の行っているアクションに切り替える
     /// /// </summary>
-    /// <param name="set_action"></param>
+    /// <param name="set_action">新しく切り替える状態</param>
     void Set_Action(ePlayer_Action set_action) {
         // 識別変数の変更
         action = set_action;
-
-        // 汎用変数のゼロリセット
-        action_count = 0;
     }
 
     #region Action.Battle_Manu時の処理

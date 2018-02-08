@@ -1,16 +1,24 @@
-﻿using System.Collections;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/08
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// 移動処理
+/// プレイヤーの移動処理
 /// </summary>
 public class Player_Move : MonoBehaviour {
+    /// <summary>
+    /// 移動が済んだかどうかのフラグ
+    /// </summary>
     bool moved = false;
 
     ePlayer_Mode mode;
-   // eDirection direction;
 
     [SerializeField]
     Enemy enemy;
@@ -25,7 +33,6 @@ public class Player_Move : MonoBehaviour {
 
     void Start() {
         mode = ePlayer_Mode.Nomal_Mode;
-        Actor_Action.Set_Move(this);
     }
 
     /// <summary>
@@ -189,11 +196,6 @@ public class Player_Move : MonoBehaviour {
 
         // 現在の位置に加算減算を行ったPositionを代入する
         transform.position = Position;
-
-        // 階段の移動処理
-        if (transform.position == stair.transform.position) {
-            SceneManager.LoadScene("Main");
-        }
 
         // TODO: アイテムの取得処理
 

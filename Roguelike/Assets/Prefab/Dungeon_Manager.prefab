@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1967612425330538}
+  m_IsPrefabParent: 1
+--- !u!1 &1967612425330538
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4248420907775704}
+  - component: {fileID: 114111079333537564}
+  - component: {fileID: 114801532123368512}
+  m_Layer: 0
+  m_Name: Dungeon_Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4248420907775704
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1967612425330538}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 45.804123, y: 37.55285, z: -2.045554}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114111079333537564
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1967612425330538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca8896de9bf46c140967effa88021299, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 30
+  height: 30
+  turn_count: 0
+  wall: {fileID: 1698301178802122, guid: 0e2664e94507bb843b670e4301694f10, type: 2}
+  stair: {fileID: 1863165542355610, guid: 319fec6a702f9614ab610e8579079c5b, type: 2}
+  item: {fileID: 1214786097377936, guid: f5524fd9edddadc42b654b3d5f9aafb5, type: 2}
+  food: {fileID: 1595218935406674, guid: df76d3fa430e89143a42470f36af2656, type: 2}
+  trap: {fileID: 1883257981705998, guid: 09f2ac10f2b4a974f9b2f3b9c25cbe58, type: 2}
+  player: {fileID: 1160600052257438, guid: e16619bff6a64554f909ceb16086289b, type: 2}
+  enemy: {fileID: 1956411043742542, guid: 0a99fbfce9c6315488ac0667f7e8b726, type: 2}
+--- !u!114 &114801532123368512
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1967612425330538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7596f45ba48b13498043969ab52e34f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dungeon_generator: {fileID: 0}
+  enemy: {fileID: 0}

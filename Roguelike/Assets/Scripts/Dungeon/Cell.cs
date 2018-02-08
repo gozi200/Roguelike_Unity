@@ -1,27 +1,47 @@
-﻿using System.Collections;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/08
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// マスの情報を管理するクラス
+/// </summary>
 public class Cell : MonoBehaviour {
-    int height_number;
-    int width_number;
+    /// <summary>
+    /// x軸の座標
+    /// </summary>
+    int x_coordinates;
+
+    /// <summary>
+    /// y軸の座標
+    /// </summary>
+    int y_coordinates;
+
+    /// <summary>
+    /// レイヤーの番号(種類)
+    /// </summary>
     int layer_number;
 
-    public int Height_Number {
+    public int Y_Coordinates {
         get {
-            return height_number;
+            return y_coordinates;
         }
         set {
-            height_number = value;
+            y_coordinates = value;
         }
     }
 
-    public int Width_Number {
+    public int X_Coordinates {
         get {
-            return width_number;
+            return x_coordinates;
         }
         set {
-            width_number = value;
+            x_coordinates = value;
         }
     }
 
@@ -34,9 +54,15 @@ public class Cell : MonoBehaviour {
         }
     }
 
-    public void Set_Numbers(int set_height, int set_width, int set_layernumber) {
-        height_number = set_height;
-        width_number = set_width;
-        layer_number = set_layernumber;
+    /// <summary>
+    /// どこのマスに何を配置するのかを設定する
+    /// </summary>
+    /// <param name = "set_height"      >縦軸の番号</param>
+    /// <param name = "set_width"       >横軸の番号</param>
+    /// <param name = "set_layer_number">レイヤーの番号(種類)</param>
+    public void Set_Numbers(int set_height, int set_width, int set_layer_number) {
+        y_coordinates = set_height;
+        x_coordinates = set_width;
+        layer_number  = set_layer_number;
     }
 }

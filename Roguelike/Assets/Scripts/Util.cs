@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿/*
+制作者 アントニオ
+
+最終編集日 02/08
+ */
+
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -61,42 +67,5 @@ public class Util {
             Sprite[] sprites = Resources.LoadAll<Sprite>(fileName);
             return System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(spriteName));
         }
-    }
-
-    private static Rect GUI_Rectangle = new Rect();
-    static Rect Get_GUI_Rectangle() {
-        return GUI_Rectangle;
-    }
-    private static GUIStyle GUI_style = null;
-    static GUIStyle Get_GUIStyle() {
-        return GUI_style ?? (GUI_style = new GUIStyle());
-    }
-    /// フォントサイズを設定
-    public static void SetFontSize(int size) {
-        Get_GUIStyle().fontSize = size;
-    }
-    /// フォントカラーを設定
-    public static void SetFontColor(Color color) {
-        Get_GUIStyle().normal.textColor = color;
-    }
-    /// ラベルの描画
-    public static void GUILabel(float x, float y, float w, float h, string text) {
-        Rect rect = Get_GUI_Rectangle();
-        rect.x = x;
-        rect.y = y;
-        rect.width = w;
-        rect.height = h;
-
-        GUI.Label(rect, text, Get_GUIStyle());
-    }
-    // ボタンの描画
-    public static bool GUIButton(float x, float y, float w, float h, string text) {
-        Rect rect = Get_GUI_Rectangle();
-        rect.x = x;
-        rect.y = y;
-        rect.width = w;
-        rect.height = h;
-
-        return GUI.Button(rect, text, Get_GUIStyle());
     }
 }

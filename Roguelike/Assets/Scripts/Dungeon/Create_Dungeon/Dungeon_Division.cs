@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿/*
+    制作者 
+
+    最終更新日
+*/
+
+using UnityEngine;
 using System.Collections;
 
 /// <summary>

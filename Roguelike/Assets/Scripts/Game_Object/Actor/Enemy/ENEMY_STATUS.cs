@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/07
+*/
+
+using UnityEngine;
 using System.Collections;
 using System.Linq;
 
@@ -11,8 +17,14 @@ public class Enemy_Status : MonoBehaviour {
     
     Enemy_Data enemy_data = new Enemy_Data();
 
+    /// <summary>
+    /// 登場エネミーの種類
+    /// </summary>
     const int ENEMY_NUMBER = 2;
 
+    /// <summary>
+    /// ステータスを設定し、リストに格納する
+    /// </summary>
     public void Set_Parameter() {
         var enemy_status = csv_Reader.Load_csv("csv/Actor/Enemy/Enemy_csv", 3);
 

@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/08
+*/
+
+using UnityEngine;
 using System.Collections;
 using System.Linq;
 
@@ -9,21 +15,35 @@ public class Player_Status : MonoBehaviour {
     [SerializeField]
     Player player;
 
+    [SerializeField]
+    Actor_Coordinates player_coodinates;
 
+    Dungeon_Map map;
 
-    Player_Data player_data = new Player_Data();
+    /// <summary>
+    /// レベルの最大値
+    /// </summary>
+    const int MAX_LV = 999;
+    
+    /// <summary>
+    /// 経験値の最大値(仮)
+    /// </summary>
+    const int MAX_EXP = 999999999;
 
-    const int MAX_LV = 999;        // レベルの最大値
-    const int MAX_EXP = 999999999; // 経験値の最大値
-    const int SERVANT_NUMBER = 10; // 登場サーヴァントの騎数
+    /// <summary>
+    /// プレイアブルキャラクターの数
+    /// </summary>
+    const int SERVANT_NUMBER = 10;
 
-    public int[] exp_data_base = new int[999]; // レベルアップに必要な経験値量
+    /// <summary>
+    /// レベルアップに必要な経験値量をは苦悩する配列
+    /// </summary>
+    public int[] exp_data_base = new int[999];
 
     void Start() {
-
     int[] exp_data_base = new int[] {
-           5 // 1 から次のレベルに必要な経験値
-	,     10 // 2
+           5 // 1 から次のレベルに必要な経験値(仮)
+	,     10 // 2 以下略
 	,     20 // 3
 	,     40 // 4
 	,     80 // 5
@@ -45,14 +65,17 @@ public class Player_Status : MonoBehaviour {
 	,2500000 // 21
 	,4600000 // 22
 	,6700000 // 23
-	,8000000 // 24
-	,MAX_EXP // 25(最終レベルはカンストのMAX_EXPにすること)
+	,8000000 // 24 ひとまずはここまで
+	,MAX_EXP // 25
         };
     }
 
+    /// <summary>
+    /// プレイヤーのステータスを設定する。 スポーン時とキャラクターチェンジの時に呼ばれる
+    /// </summary>
+    /// <param name="use_chara">使用するキャラクターの番号</param>
     public void Set_Parameter(int use_chara) {
         var player_status = csv_Reader.Load_csv("csv/Actor/Player/Player_csv", 3);
-
             player.ID                 = int.Parse(player_status[use_chara][0]);  // 番号
             player.name               = player_status          [use_chara][1];             // 名前
             player.class_type         = int.Parse(player_status[use_chara][2]);  // クラス
@@ -84,12 +107,15 @@ public class Player_Status : MonoBehaviour {
             player.defence_rise_NP    = int.Parse(player_status[use_chara][28]); // 被ダメージ時のNPの上昇量
             player.experience_point   = int.Parse(player_status[use_chara][29]); // 経験値
             player.turn_count         = int.Parse(player_status[use_chara][30]); // 経過ターンをカウント
+    }
 
-            //player.GetComponent<Player>().players.Add(player_data);
+    public void Set_Coordinates(Actor_Coordinates set_coodinates, Dungeon_Map set_map) {
+        player_coodinates = set_coodinates;
+        map = set_map;
     }
 
     /// <summary>
-    /// Playerのターン経過の処理(自動回復、はらへり)
+    /// Playerのターン経過の処理(自動回復、はらへり) プレイヤーの行動が終了したときに呼ばれる
     /// </summary>
     public void Turn() {
         ++player.GetComponent<Player>().turn_count;
@@ -102,6 +128,7 @@ public class Player_Status : MonoBehaviour {
             // ログに"餓死したと流す"
             //}
         }
+        // 3ターンに一度空腹ポイントを１減らす
         else if (0 == player.GetComponent<Player>().turn_count % 3) {
             --player.GetComponent<Player>().hunger_point;
             // 満腹値20で"お腹がすいてきた"     のログを表示
@@ -113,19 +140,23 @@ public class Player_Status : MonoBehaviour {
     }
 
     /// <summary>
-    /// 経験値を加算
+    /// 経験値を加算 敵を倒したときに呼ばれる プレイヤー、パートナーどちらが倒しても呼ばれる
     /// </summary>
     /// <param name="exp"></param>
     void Add_Experience_Point(int exp) {
         player.GetComponent<Player>().experience_point += exp;
 
+        // 上限を越しても設定した最大値を超えないようにする
         if (player.GetComponent<Player>().experience_point > MAX_EXP) {
             player.GetComponent<Player>().experience_point = MAX_EXP;
         }
 
+        // レベルアップに必要な経験値量を超えたか確かめる
+        // TODO: - 1はいらない？ 要テスト
         if (exp_data_base[player.GetComponent<Player>().level - 1] <= player.GetComponent<Player>().experience_point) {
             int new_Lv = Get_Exp_Level();
 
+            // 一度に２レベル以上あがる場合にも対応
             for (; player.GetComponent<Player>().level < new_Lv; ++player.GetComponent<Player>().level) {
                 int add_hp;
                 int add_atk;
@@ -144,7 +175,7 @@ public class Player_Status : MonoBehaviour {
     /// <summary>
     /// 経験値量からレベルを算出
     /// </summary>
-    /// <returns></returns>
+    /// <returns>実際に上がった後のレベル</returns>
     int Get_Exp_Level() {
         int lv;
 
@@ -156,7 +187,11 @@ public class Player_Status : MonoBehaviour {
         return lv + 1;
     }
 
-    
+    /// <summary>
+    /// 死亡したかを判定する 毎アクターのターンの終わりに確認する
+    /// </summary>
+    /// <param name="now_HP">現在の体力</param>
+    /// <returns></returns>
     public bool Is_Dead(int now_HP) {
         if (now_HP <= 0) {
             now_HP = 0;

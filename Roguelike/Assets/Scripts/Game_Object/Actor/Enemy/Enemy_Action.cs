@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/07
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,27 +28,22 @@ public class Enemy_Action : MonoBehaviour {
     Dungeon_Base dungeon_base;
 
     [SerializeField]
-    GameManager game_manager;
+    Dungeon_Manager dungeon_manager;
 
     Damage_Calculation damage_calculation;
 
     private void Start() {
-        //enemy  = Enemy_Manager.Get_Enemy();
-        //player = Player_Manager.Get_Player();
-
-        //player_status = player.GetComponent<Player_Status>();
         direction = eDirection.Down;
     }
 
     public void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
         dungeon_generator = set_dungeon_generator;
-       // player = Player_Manager.Get_Player();
     }
 
     /// <summary>
     /// エネミーの行動処理
     /// </summary>
-    /// <param name="player_status"></param>
+    /// <param name="player_status">プレイヤーのステータス。計算時に使用するために知っておく</param>
     public void Move_Enemy(Player_Status player_status) {
         for (int i = 0; i < 1; ++i) {
             switch (enemy.GetComponent<Enemy>().enemys[i].AI_pattern) {
@@ -50,7 +51,6 @@ public class Enemy_Action : MonoBehaviour {
                     if (!dungeon_base.Is_Diagonal_Attack(gameObject.transform.position.x, gameObject.transform.position.y, direction)) {
                         if (Search_Player(player.GetComponent<Player>().transform.position.x, player.GetComponent<Player>().transform.position.y)) {
                             player.GetComponent<Player>().hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack,Random.Range(87,112 + 1),0);
-                            Debug.Log(player.GetComponent<Player>().hit_point);
                             break;
                         }
                     }
@@ -58,7 +58,7 @@ public class Enemy_Action : MonoBehaviour {
                     break;
             }
         }
-        game_manager.GetComponent<Dungeon_Generator>().Turn_Tick();
+        dungeon_manager.GetComponent<Dungeon_Generator>().Turn_Tick();
     }
 
     /// <summary>
@@ -66,36 +66,42 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     /// <returns>プレイヤーがいた場合はtrue</returns>
     bool Search_Player(float player_position_x, float player_position_y) {
-        // 下方向から時計回りに検索
+        // 下
         if (gameObject.transform.position.x == player_position_x && gameObject.transform.position.y - 5 == player_position_y) {
             direction = eDirection.Down;
             return true;
         }
+        // 左下
         else if (gameObject.transform.position.x - 5 == player_position_x && gameObject.transform.position.y - 5 == player_position_y) {
             direction = eDirection.Downleft;
             return true;
         }
+        // 左
         else if (gameObject.transform.position.x - 5 == player_position_x && gameObject.transform.position.y == player_position_y) {
             direction = eDirection.Left;
             return true;
         }
+        // 左上
         else if (gameObject.transform.position.x - 5 == player_position_x && gameObject.transform.position.y + 5 == player_position_y) {
             direction = eDirection.Upleft;
             return true;
         }
+        // 上
         else if (gameObject.transform.position.x == player_position_x && gameObject.transform.position.y + 5 == player_position_y) {
             direction = eDirection.Up;
             return true;
         }
+        // 右上
         else if (gameObject.transform.position.x + 5 == player_position_x && gameObject.transform.position.y + 5 == player_position_y) {
             direction = eDirection.Upright;
             return true;
         }
+        // 右
         else if (gameObject.transform.position.x + 5 == player_position_x && gameObject.transform.position.y == player_position_y) {
             direction = eDirection.Right;
             return true;
-
         }
+        // 右下
         else if (gameObject.transform.position.x + 5 == player_position_x && gameObject.transform.position.y - 5 == player_position_y) {
             direction = eDirection.Downright;
             return true;

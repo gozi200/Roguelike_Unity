@@ -1,7 +1,16 @@
-﻿using System.Collections;
+﻿/*
+    制作者 石倉
+
+    最終更新日 2018/02/07
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// エネミーのパラメータを定義しておくクラス
+/// </summary>
 public class Enemy_Data {
     public int ID;               // 番号
     public string name;          // 名前

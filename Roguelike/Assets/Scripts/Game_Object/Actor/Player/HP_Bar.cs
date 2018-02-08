@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿/*
+制作者 アントニオ
+
+最終編集日 01/16
+ */
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,24 +18,20 @@ public class HP_Bar : MonoBehaviour {
     private Image health;
 
     // Use this for initialization
-    void Start()
-    {
+    void Start() {
 
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         HandleBar();
     }
 
-    private void HandleBar()
-    {
+    private void HandleBar() {
         health.fillAmount = Map(10, 0, 20, 0, 1);
     }
 
-    private float Map(float value, float inMin, float inMax, float outMin, float outMax)
-    {
+    private float Map(float value, float inMin, float inMax, float outMin, float outMax) {
         return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
 }

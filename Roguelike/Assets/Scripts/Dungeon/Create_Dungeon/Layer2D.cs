@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿/*
+制作者 アントニオ
+
+最終編集日 01/18
+ */
+
+using UnityEngine;
 using System.Collections;
 
 /// 2次元レイヤー
