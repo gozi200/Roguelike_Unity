@@ -13,7 +13,70 @@ using System.Collections.Generic;
 /// </summary>
 public class Dungeon_Generator : MonoBehaviour {
     [System.NonSerialized]
-    public List<GameObject> walls = new List<GameObject>();
+    public List<Cell> walls = new List<Cell>();
+
+    [SerializeField]
+    Cell grass_tile;
+
+    [SerializeField]
+    Cell grass_wall;
+
+    [SerializeField]
+    Cell player;
+
+    [SerializeField]
+    Cell stair;
+
+    [SerializeField]
+    Object_Coordinates player_character;
+
+    [SerializeField]
+    Object_Coordinates enemy;
+
+    Dungeon_Map map;
+
+    /// <summary>
+    /// 2次元配列情報
+    /// </summary>
+    Layer2D layer = null;
+
+    /// <summary>
+    /// 区画リスト
+    /// </summary>
+    [SerializeField]
+    public List<Dungeon_Division> divition_List = null;
+
+    /// <summary>
+    /// ゲームオブジェクト
+    /// </summary>
+    public GameObject wall_object;
+    public GameObject stair_object;
+    public GameObject item_object;
+    public GameObject food_object;
+    public GameObject trap_object;
+
+    /// <summary>
+    /// プレイヤーオブジェクト
+    /// </summary>
+    public GameObject player_object;
+    Player player_script;
+
+    /// <summary>
+    /// エネミーオブジェクト
+    /// </summary>
+    public GameObject enemy_object;
+    public List<Object_Coordinates> enemy_list = new List<Object_Coordinates>();
+    Enemy enemy_script = null;
+
+    /// <summary>
+    /// １フロアに存在している敵の数を数える
+    /// </summary>
+    int enemy_count;
+
+    /// <summary>
+    /// ターンを数える
+    /// </summary>
+    public int turn_count = 0;
 
     /// <summary>
     /// マップ全体の幅
@@ -26,16 +89,6 @@ public class Dungeon_Generator : MonoBehaviour {
     public int height = 30;
 
     /// <summary>
-    /// 区画と部屋の余白サイズ
-    /// </summary>
-    const int MERGIN_SIZE = 3;
-
-    /// <summary>
-    /// 部屋配置の余白サイズ
-    /// </summary>
-    const int POSITION_MERGIN = 2;
-
-    /// <summary>
     /// 最小の部屋サイズ
     /// </summary>
     const int MIN_ROOM = 3;
@@ -46,7 +99,19 @@ public class Dungeon_Generator : MonoBehaviour {
     const int MAX_ROOM = 5;
 
     /// <summary>
-    /// 通路
+    /// 区画と部屋の余白サイズ
+    /// </summary>
+    const int MERGIN_SIZE = 3;
+
+    /// <summary>
+    /// 部屋配置の余白サイズ
+    /// </summary>
+    const int POSITION_MERGIN = 2;
+
+#region レイヤーナンバーの定義
+
+    /// <summary>
+    /// 床
     /// </summary>
     const int CHIP_NONE = 0;
 
@@ -76,55 +141,22 @@ public class Dungeon_Generator : MonoBehaviour {
     const int CHIP_FOOD = 5;
 
     /// <summary>
-    /// 食べ物
+    /// 敵
     /// </summary>
     const int CHIP_ENEMY = 6;
-    int enemy_count;
 
     /// <summary>
     /// 罠
     /// </summary>
     const int CHIP_TRAP = 7;
 
-    /// <summary>
-    /// ターンを数える
-    /// </summary>
-    public int turn_count = 0;
+#endregion
 
     /// <summary>
-    /// 2次元配列情報
-    /// </summary>
-    Layer2D layer = null;
-
-    /// <summary>
-    /// 区画リスト
-    /// </summary>
-    [SerializeField]
-    public List<Dungeon_Division> divition_List = null;
-
-    /// <summary>
-    /// ゲームオブジェクト
-    /// </summary>
-    public GameObject wall;
-    public GameObject stair;
-    public GameObject item;
-    public GameObject food;
-    public GameObject trap;
-
-    /// <summary>
-    /// プレイヤーオブジェクト
-    /// </summary>
-    public GameObject player;
-    Player player_script;
-
-    /// <summary>
-    /// エネミーオブジェクト
-    /// </summary>
-    public GameObject enemy;
-    List<GameObject> enmeyList = new List<GameObject>();
-    Enemy enemy_script = null;
-
     /// チップ上のX座標を取得する.
+    /// </summary>
+    /// <param name="i"></param>
+    /// <returns></returns>
     public float Get_Chip_X(int i) {
         var spr = Util.Get_Sprite("Chip1/Grass_Wall_", "");
         var sprW = spr.bounds.size.x;
@@ -132,7 +164,11 @@ public class Dungeon_Generator : MonoBehaviour {
         return (sprW * i);
     }
 
+    /// <summary>
     /// チップ上のy座標を取得する.
+    /// </summary>
+    /// <param name ="j"></param>
+    /// <returns></returns>
     public float Get_Chip_Y(int j) {
         var spr = Util.Get_Sprite("Chip1/Grass_Wall_", "");
         var sprH = spr.bounds.size.y;
@@ -169,84 +205,93 @@ public class Dungeon_Generator : MonoBehaviour {
         Random_Actor(CHIP_PLAYER, CHIP_UP_STAIR);
         Random_Object(CHIP_ITEM, CHIP_FOOD, CHIP_ENEMY, CHIP_TRAP);
 
+        Vector3 instance_pos = Vector3.zero;
         // タイルを配置
-        for (int i = 0; i < layer.Width; i++) {
-            for (int j = 0; j < layer.Height; j++) {
-                // 壁以外であれば壁用の画像を配置
+        for (int i = 0; i < layer.Width; ++i) {
+            for (int j = 0; j < layer.Height; ++j) {
+                // 壁以外であれば床用の画像を配置
                 if (layer.Get(i, j) != CHIP_WALL) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    Util.Create_Token(x, y, "Chip1/Grass_Tile", "", "Tile");
+                    Cell instance_cell = Instantiate(grass_tile, instance_pos,Quaternion.identity);
+                    Dungeon_Map.Set_Map_Layer(i, j, CHIP_NONE, instance_cell) ;
                 }
+
                 // 壁であれば壁用の画像を配置
                 if (layer.Get(i, j) == CHIP_WALL) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    wall.transform.position = new Vector3(x, y, 0);
-                    GameObject obj = Instantiate(wall, wall.transform.position, Quaternion.identity);
-                    walls.Add(obj);
+                    Cell instance_cell = Instantiate(grass_wall, instance_pos, Quaternion.identity);
+                    Dungeon_Map.Set_Map_Layer(i, j, CHIP_WALL, instance_cell);
+                    walls.Add(instance_cell);
                 }
-                // プレイヤーであれば壁用の画像を配置
+                // プレイヤーであればプレイヤー用の画像を配置
                 else if (layer.Get(i, j) == CHIP_PLAYER) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    player.transform.position = new Vector3(x, y, 0);
-                    player = GameObject.Find("Player");
-                    player_script = player.GetComponent<Player>();
-                    player_script.transform.position = new Vector3(x, y, 0);
+                    Object_Coordinates instance_player = Instantiate(player_character, Dungeon_Map.Get_Position(i, j), Quaternion.identity);
+                    Vector3 copy_pos = instance_player.transform.position;
+                    copy_pos.z--;
+                    instance_player.transform.position = copy_pos;
+                    instance_player.Set_Init_Number(i, j);
+                    player.GetComponent<Player_Status>().Set_Coordinates(instance_player,map);
                 }
                 // 階段であれば壁用の画像を配置
                 else if (layer.Get(i, j) == CHIP_UP_STAIR) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    stair.transform.position = new Vector3(x, y, 0);
-                    Instantiate(stair, stair.transform.position, Quaternion.identity);
+                    Cell instance_cell = Instantiate(stair, instance_pos, Quaternion.identity);
+                    Dungeon_Map.Set_Map_Layer(i,j,CHIP_UP_STAIR,instance_cell);
                 }
                 // アイテムであれば壁用の画像を配置
                 else if (layer.Get(i, j) == CHIP_ITEM) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    item.transform.position = new Vector3(x, y, 0);
-                    Instantiate(item, item.transform.position, Quaternion.identity);
+                    item_object.transform.position = new Vector3(x, y, 0);
+                    Instantiate(item_object, item_object.transform.position, Quaternion.identity);
                 }
                 // 食べ物であれば壁用の画像を配置
                 else if (layer.Get(i, j) == CHIP_FOOD) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    food.transform.position = new Vector3(x, y, 0);
-                    Instantiate(food, food.transform.position, Quaternion.identity);
+                    food_object.transform.position = new Vector3(x, y, 0);
+                    Instantiate(food_object, food_object.transform.position, Quaternion.identity);
                 }
                 // 敵であれば壁用の画像を配置
                 else if (layer.Get(i, j) == CHIP_ENEMY) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    enemy.transform.position = new Vector3(x, y, 0);
-                    GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
-                    enemy_script = instance_obj.GetComponent<Enemy>();
-                    //Enemy_Manager.Set_Enemy(enemy_script);
-                    enmeyList.Add(instance_obj);
+                    Object_Coordinates instance_enemy = Instantiate(enemy, Dungeon_Map.Get_Position(i, j), Quaternion.identity);
+                    Vector3 pos = instance_enemy.transform.position;
+                    pos.z--;
+                    instance_enemy.transform.position = pos;
+                    instance_enemy.Set_Init_Number(i, j);
+                    enemy_list.Add(instance_enemy);
                 }
                 // 罠であれば壁用の画像を配置
                 else if (layer.Get(i, j) == CHIP_TRAP) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    trap.transform.position = new Vector3(x, y, 0);
-                    Instantiate(trap, trap.transform.position, Quaternion.identity);
+                    trap_object.transform.position = new Vector3(x, y, 0);
+                    Instantiate(trap_object, trap_object.transform.position, Quaternion.identity);
                 }
+                instance_pos.y += 5;
             }
+            instance_pos.y = 0.0f;
+            instance_pos.x += 5;
         }
-        foreach (GameObject enemy in enmeyList) {
-            enemy.GetComponent<Enemy_Action>().Set_Dungeon_Generator(this);
+        foreach (Object_Coordinates enemy in enemy_list) {
+            Enemy_Action.Set_Dungeon_Generator(this);
         }
     }
 
     /// <summary>
     /// 最初の区画を作る
     /// </summary>
-    /// <param name="left">左</param>
-    /// <param name="top">上</param>
-    /// <param name="right">右</param>
-    /// <param name="bottom">下</param>
+    /// <param name = "left"  >左</param>
+    /// <param name = "top"   >上</param>
+    /// <param name = "right" >右</param>
+    /// <param name = "bottom">下</param>
     void Create_Division(int left, int top, int right, int bottom) {
         Dungeon_Division div = new Dungeon_Division();
         div.Outer.Set_Position(left, top, right, bottom);
@@ -345,27 +390,29 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     /// プレイヤーと階段のランダムの位置
     /// </summary>
-    public void Random_Actor(int val1, int val2) {
-        //プレイヤーのランダム部屋号
+    /// <param name = "set_player">プレイヤー</param>
+    /// <param name = "set_stair"> 階段</param>
+    public void Random_Actor(int set_player, int set_stair) {
+        // プレイヤーのランダム部屋号
         int random_div1 = Random.Range(0, divition_List.Count);
-        //階段のランダム部屋号（プレイヤーと違う）
+        // 階段のランダム部屋号（プレイヤーと違う）
         int random_div2;
         do {
             random_div2 = Random.Range(0, divition_List.Count);
         } while (random_div1 == random_div2);
-        //部屋号を探す
+        // 部屋号を探す
         for (int i = 0; i < divition_List.Count; i++) {
             if (i == random_div1) {
-                //部屋内のプレイヤーのランダムのタイル
+                // 部屋内のプレイヤーのランダムのタイル
                 int x = Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right);
                 int y = Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom);
-                layer.Fill_Tile(x, y, val1);
+                layer.Fill_Tile(x, y, set_player);
             }
             else if (i == random_div2) {
-                //部屋内の階段のランダムのタイル
+                // 部屋内の階段のランダムのタイル
                 int x = Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right);
                 int y = Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom);
-                layer.Fill_Tile(x, y, val2);
+                layer.Fill_Tile(x, y, set_stair);
             }
         }
     }
@@ -610,33 +657,32 @@ public class Dungeon_Generator : MonoBehaviour {
         layer.Fill_Rectangle_LTRB(x, top, x + 1, bottom + 1, CHIP_NONE);
     }
 
-    public void Turn_Tick() {
-        ++turn_count;
-
-        //20ターンごとに敵をスポーンさせる
-        if ((turn_count % 20) == 0) {
-            Debug.Log(turn_count);
-            //ランダム部屋号
-            int random_div = Random.Range(0, divition_List.Count);
-            for (int i = 0; i < divition_List.Count; i++) {
-                //部屋号を探す
-                if (i == random_div) {
-                    int x, y;
-                    float posx, posy;
-                    //他のオブジェクトの位置と同じだったら繰り返し
-                    do {
-                        x = Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right);
-                        y = Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom);
-                        posx = Get_Chip_X(Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right));
-                        posy = Get_Chip_Y(Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom));
-                    } while ((player.transform.position.x == posx && player.transform.position.y == posy) || layer.Get(x, y) == CHIP_UP_STAIR || layer.Get(x, y) == CHIP_FOOD || layer.Get(x, y) == CHIP_ITEM);
-                    enemy.transform.position = new Vector3(posx, posy, 0);
-                    GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
-                    enemy_script = instance_obj.GetComponent<Enemy>();
-                    //Enemy_Manager.Set_Enemy(enemy_script);
-                    enmeyList.Add(instance_obj);
-                }
-            }
-        }
-    }
+    //public void Turn_Tick() {
+    //    ++turn_count;
+    //
+        ////20ターンごとに敵をスポーンさせる
+        //if ((turn_count % 20) == 0) {
+        //    //ランダム部屋号
+        //    int random_div = Random.Range(0, divition_List.Count);
+        //    for (int i = 0; i < divition_List.Count; i++) {
+        //        //部屋号を探す
+        //        if (i == random_div) {
+        //            int x, y;
+        //            float posx, posy;
+        //            //他のオブジェクトの位置と同じだったら繰り返し
+        //            do {
+        //                x = Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right);
+        //                y = Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom);
+        //                posx = Get_Chip_X(Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right));
+        //                posy = Get_Chip_Y(Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom));
+        //            } while ((player.transform.position.x == posx && player.transform.position.y == posy) || layer.Get(x, y) == CHIP_UP_STAIR || layer.Get(x, y) == CHIP_FOOD || layer.Get(x, y) == CHIP_ITEM);
+        //            enemy.transform.position = new Vector3(posx, posy, 0);
+        //            GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
+        //            enemy_script = instance_obj.GetComponent<Enemy>();
+        //            //Enemy_Manager.Set_Enemy(enemy_script);
+        //            enemy_list.Add(instance_obj);
+        //        }
+        //    }
+        //}
+   // }
 }

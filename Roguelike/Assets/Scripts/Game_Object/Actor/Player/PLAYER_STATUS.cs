@@ -15,10 +15,9 @@ public class Player_Status : MonoBehaviour {
     [SerializeField]
     Player player;
 
-    [SerializeField]
-    Actor_Coordinates player_coodinates;
-
     Dungeon_Map map;
+
+    Object_Coordinates player_coodinates;
 
     /// <summary>
     /// レベルの最大値
@@ -109,7 +108,12 @@ public class Player_Status : MonoBehaviour {
             player.turn_count         = int.Parse(player_status[use_chara][30]); // 経過ターンをカウント
     }
 
-    public void Set_Coordinates(Actor_Coordinates set_coodinates, Dungeon_Map set_map) {
+    /// <summary>
+    /// 座標をセットする
+    /// </summary>
+    /// <param name="set_coodinates">現在いる座標の情報</param>
+    /// <param name="set_map">Mapを管理しているものに知らせる</param>
+    public void Set_Coordinates(Object_Coordinates set_coodinates, Dungeon_Map set_map) {
         player_coodinates = set_coodinates;
         map = set_map;
     }
@@ -142,7 +146,7 @@ public class Player_Status : MonoBehaviour {
     /// <summary>
     /// 経験値を加算 敵を倒したときに呼ばれる プレイヤー、パートナーどちらが倒しても呼ばれる
     /// </summary>
-    /// <param name="exp"></param>
+    /// <param name="exp">加算する経験値量</param>
     void Add_Experience_Point(int exp) {
         player.GetComponent<Player>().experience_point += exp;
 
@@ -191,7 +195,7 @@ public class Player_Status : MonoBehaviour {
     /// 死亡したかを判定する 毎アクターのターンの終わりに確認する
     /// </summary>
     /// <param name="now_HP">現在の体力</param>
-    /// <returns></returns>
+    /// <returns>死亡していたらtrue</returns>
     public bool Is_Dead(int now_HP) {
         if (now_HP <= 0) {
             now_HP = 0;

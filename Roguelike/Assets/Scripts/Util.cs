@@ -38,7 +38,7 @@ public class Util {
 
         // Wallスプライトのレイヤー
         SpriteRenderer sprite = obj.GetComponent<SpriteRenderer>();
-        if (objName == "Wall" )
+        if (objName == "Grass_Wall" )
             sprite.sortingOrder = 1;
 
         // スプライト設定

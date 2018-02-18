@@ -40,7 +40,11 @@ public class Layer2D {
         }
     }
 
-    /// 作成
+    /// <summary>
+    /// 大きさを設定する
+    /// </summary>
+    /// <param name = "set_width" >横幅</param>
+    /// <param name = "set_height">縦幅</param>
     public void Create(int set_width, int set_height) {
         width = set_width;
         height = set_height;
@@ -52,12 +56,16 @@ public class Layer2D {
         return x + (y * Width);
     }
 
-    /// 領域外かどうかチェックする
+    /// <summary>
+    /// 領域内であるかを判断する
+    /// </summary>
+    /// <param name="x">x座標</param>
+    /// <param name="y">y座標</param>
+    /// <returns>領域内であればfalse</returns>
     public bool Is_Out_Of_Range(int x, int y) {
         if (x < 0 || x >= Width) { return true; }
         if (y < 0 || y >= Height) { return true; }
 
-        // 領域内
         return false;
     }
 
@@ -66,7 +74,7 @@ public class Layer2D {
     /// </summary>
     /// <param name="x">X座標</param>
     /// <param name="y">Y座標</param>
-    /// <returns>指定の座標の値（領域外を指定したらout_of_rangeを返す）</returns>
+    /// <returns>領域外を指定したらout_of_rangeを返す</returns>
     public int Get(int x, int y) {
         if (Is_Out_Of_Range(x, y)) {
             return out_of_range;
@@ -75,10 +83,12 @@ public class Layer2D {
         return values[y * Width + x];
     }
 
+    /// <summary>
     /// 値の設定
-    // @param x X座標
-    // @param y Y座標
-    // @param v 設定する値
+    /// </summary>
+    /// <param name = "x">x座標</param>
+    /// <param name = "y">y座標</param>
+    /// <param name = "v"></param>
     public void Set(int x, int y, int v) {
         if (Is_Out_Of_Range(x, y)) {
             // 領域外を指定した
@@ -100,22 +110,27 @@ public class Layer2D {
         }
     }
 
-    public void Fill_Tile(int x, int y, int val = 0)
-    {
-         Set(x, y, val);
+    /// <summary>
+    /// 床をセットする
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="val"></param>
+    public void Fill_Tile(int x, int y, int val = 0) {
+        Set(x, y, val);
     }
 
     /// <summary>
     /// 矩形領域を指定の値で埋める
     /// </summary>
-    /// <param name="x">矩形の左上(X座標)</param>
-    /// <param name="y">矩形の左上(Y座標)</param>
-    /// <param name="w">矩形の幅</param>
-    /// <param name="h">矩形の高さ</param>
+    /// <param name="x">  矩形の左上(X座標)</param>
+    /// <param name="y">  矩形の左上(Y座標)</param>
+    /// <param name="w">  矩形の幅</param>
+    /// <param name="h">  矩形の高さ</param>
     /// <param name="val">埋める値</param>
     public void Fill_Rectangle(int x, int y, int w, int h, int val) {
         for (int j = 0; j < h; j++) {
-            for (int i = 0;i < w; i++) {
+            for (int i = 0; i < w; i++) {
                 int px = x + i;
                 int py = y + j;
                 Set(px, py, val);

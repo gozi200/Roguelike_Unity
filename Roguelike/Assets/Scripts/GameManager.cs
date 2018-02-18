@@ -16,11 +16,8 @@ public class GameManager : MonoBehaviour {
     // 現在の状態
     eGame_State game_state;
 
-    [SerializeField]
-    Player_Manager player_manager;
-
-    [SerializeField]
-    Enemy_Manager enemy_manager;
+    static Enemy_Manager enemy_manager;
+    static Player_Manager player_manager;
 
     [SerializeField]
     Dungeon_Manager dungeon_manager;
@@ -34,10 +31,17 @@ public class GameManager : MonoBehaviour {
         dungeon_manager.Create();
     }
 
+    public static void Set_Player(Player_Manager set_player_manager) {
+        player_manager = set_player_manager;
+    }
+    public static void Set_Enemy(Enemy_Manager set_enemy_manager) {
+        enemy_manager = set_enemy_manager;
+    }
+
     /// <summary>
     /// 状態が変わるときに呼ばれる
     /// </summary>
-    /// <param name="set_state">遷移後の状態</param>
+    /// <param name = "set_state">遷移後の状態</param>
     public void Set_Game_State(eGame_State set_state) {
         game_state = set_state;
         Game_Loop(set_state);
@@ -46,11 +50,11 @@ public class GameManager : MonoBehaviour {
     /// <summary>
     /// ゲームの状態を管理
     /// </summary>
-    /// <param name="state"></param>
+    /// <param name = "state">新しい状態</param>
     void Game_Loop(eGame_State state) {
         switch (state) {
             case eGame_State.Create_Base:
-
+                // 拠点を作る
                 break;
 
             case eGame_State.Create_Dungeon:
@@ -75,6 +79,4 @@ public class GameManager : MonoBehaviour {
                 break;
         }
     }
-
-
 }

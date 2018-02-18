@@ -18,6 +18,16 @@ public class Player_Move : MonoBehaviour {
     /// </summary>
     bool moved = false;
 
+    /// <summary>
+    /// プレイヤーのいるx座標
+    /// </summary>
+    int player_width;
+
+    /// <summary>
+    /// プレイヤーのいるy座標
+    /// </summary>
+    int player_height;
+
     ePlayer_Mode mode;
 
     [SerializeField]
@@ -26,13 +36,25 @@ public class Player_Move : MonoBehaviour {
     [SerializeField]
     Player player;
 
-    [SerializeField]
-    Dungeon_Base dungeon_base;
-
     public GameObject stair;
+
+    static Dungeon_Base dungeon_base;
+
 
     void Start() {
         mode = ePlayer_Mode.Nomal_Mode;
+
+        player_width = player.GetComponent<Object_Coordinates>().Width;
+
+        player_height = player.GetComponent<Object_Coordinates>().Height;
+    }
+
+    /// <summary>
+    /// Dungeon_Baseにセットする
+    /// </summary>
+    /// <param name="set_dungeon_base">情報を持ったDungeon_Base</param>
+    public static void Set_Dungeon_Base(Dungeon_Base set_dungeon_base) {
+        dungeon_base = set_dungeon_base;
     }
 
     /// <summary>
@@ -60,20 +82,19 @@ public class Player_Move : MonoBehaviour {
             mode = ePlayer_Mode.Nomal_Mode;
         }
 
-        //　 足踏み
+        // 足踏み
         if (Input.GetKey("q")) {
             moved = true;
             enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
         }
-
+ 
         // 通常モード時の移動処理
         if (mode == ePlayer_Mode.Nomal_Mode) {
+            Debug.Log(gameObject);
             if (Input.GetKeyDown("right")) {
                 player.GetComponent<Player_Action>().direction = eDirection.Right;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x + 5, gameObject.transform.position.y,
-                                            player.GetComponent<Player_Action>().direction)) {
+                if (Dungeon_Base.Is_Check_Move(player_height, player_width + 1, 2)) {
                     moved = true;
                     Position.x += player.speed.x;
                     enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
@@ -82,9 +103,7 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown("down")) {
                 player.GetComponent<Player_Action>().direction = eDirection.Down;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x, gameObject.transform.position.y - 5,
-                                            player.GetComponent<Player_Action>().direction)) {
+                if (Dungeon_Base.Is_Check_Move(player_height - 1, player_width, 2)) {
                     moved = true;
                     Position.y -= player.speed.y;
                     enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
@@ -93,9 +112,7 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown("left")) {
                 player.GetComponent<Player_Action>().direction = eDirection.Left;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x - 5, gameObject.transform.position.y,
-                                            player.GetComponent<Player_Action>().direction)) {
+                if (Dungeon_Base.Is_Check_Move(player_height, player_width - 1, 2)) {
                     moved = true;
                     Position.x -= player.speed.x;
                     enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
@@ -104,9 +121,7 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown("up")) {
                 player.GetComponent<Player_Action>().direction = eDirection.Up;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x, gameObject.transform.position.y + 5,
-                                            player.GetComponent<Player_Action>().direction)) {
+                if (Dungeon_Base.Is_Check_Move(player_height + 1, player_width + 1, 2)) {
                     moved = true;
                     Position.y += player.speed.y;
                     enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
@@ -119,9 +134,7 @@ public class Player_Move : MonoBehaviour {
             if (Input.GetKeyDown("right") && Input.GetKeyDown("up")) {
                 player.GetComponent<Player_Action>().direction = eDirection.Upright;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x + 5, gameObject.transform.position.y + 5,
-                                            player.GetComponent<Player_Action>().direction)) {
+                if (Dungeon_Base.Is_Check_Move(player_height + 1, player_width + 1, 2)) {
                     moved = true;
                     Position.x += player.speed.x;
                     Position.y += player.speed.y;
@@ -131,9 +144,7 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown("right") && Input.GetKeyDown("down")) {
                 player.GetComponent<Player_Action>().direction = eDirection.Downright;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x + 5, gameObject.transform.position.y + 5,
-                                            player.GetComponent<Player_Action>().direction)) {
+                if (Dungeon_Base.Is_Check_Move(player_height - 1, player_width + 1, 2)) {
                     moved = true;
                     Position.x += player.speed.x;
                     Position.y -= player.speed.y;
@@ -143,9 +154,7 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKey("left") && Input.GetKey("down")) {
                 player.GetComponent<Player_Action>().direction = eDirection.Downleft;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x - 5, gameObject.transform.position.y - 5,
-                                            player.GetComponent<Player_Action>().direction)) {
+                if (Dungeon_Base.Is_Check_Move(player_height - 1, player_width - 1, 2)) {
                     moved = true;
                     Position.x -= player.speed.x;
                     Position.y -= player.speed.y;
@@ -155,9 +164,7 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown("left") && Input.GetKeyDown("up")) {
                 player.GetComponent<Player_Action>().direction = eDirection.Upleft;
 
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x - 5, gameObject.transform.position.y - 5,
-                                            player.GetComponent<Player_Action>().direction)) {
+                if (Dungeon_Base.Is_Check_Move(player_height + 1, player_width - 1, 2)) {
                     moved = true;
                     Position.x -= player.speed.x;
                     Position.y += player.speed.y;

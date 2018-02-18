@@ -17,10 +17,8 @@ public class Player : MonoBehaviour {
 
     public Vector2 speed = new Vector2(5f, 5f);
 
+    // 死亡フラグ 死んでいたらtrue
     public bool is_dead;
-
-    const int OKITA = 0;
-    const int MASHU = 1;
 
 #region 変数
 
@@ -121,7 +119,7 @@ public class Player : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        player_status.Set_Parameter(OKITA);
+        player_status.Set_Parameter(ID);
 
         is_dead = false;
 

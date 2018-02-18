@@ -22,21 +22,44 @@ public class Enemy_Action : MonoBehaviour {
     Enemy enemy;
 
     [SerializeField]
-    Dungeon_Generator dungeon_generator;
+    static Dungeon_Generator dungeon_generator;
 
     [SerializeField]
-    Dungeon_Base dungeon_base;
-
-    [SerializeField]
-    Dungeon_Manager dungeon_manager;
+    static Dungeon_Base dungeon_base;
 
     Damage_Calculation damage_calculation;
 
+    /// <summary>
+    /// エネミーの横座標
+    /// </summary>
+    int enemy_width;
+
+    /// <summary>
+    /// エネミーの縦座標
+    /// </summary>
+    int enemy_height;
+
     private void Start() {
         direction = eDirection.Down;
+
+        enemy_width  = enemy.GetComponent<Object_Coordinates>().Width;
+        enemy_height = enemy.GetComponent<Object_Coordinates>().Height;
+
     }
 
-    public void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
+    /// <summary>
+    /// Dungeon_Baseをセットする
+    /// </summary>
+    /// <param name="set_dungeon_base">情報を持ったDungeon_Base</param>
+    public static void Set_Dungeon_Base(Dungeon_Base set_dungeon_base) {
+        dungeon_base = set_dungeon_base;
+    }
+
+    /// <summary>
+    /// Dungeon_Generatorをセットする
+    /// </summary>
+    /// <param name="set_dungeon_generator">情報を持ったDungeon_Base</param>
+    public static void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
         dungeon_generator = set_dungeon_generator;
     }
 
@@ -46,19 +69,21 @@ public class Enemy_Action : MonoBehaviour {
     /// <param name="player_status">プレイヤーのステータス。計算時に使用するために知っておく</param>
     public void Move_Enemy(Player_Status player_status) {
         for (int i = 0; i < 1; ++i) {
-            switch (enemy.GetComponent<Enemy>().enemys[i].AI_pattern) {
-                case 2:
-                    if (!dungeon_base.Is_Diagonal_Attack(gameObject.transform.position.x, gameObject.transform.position.y, direction)) {
-                        if (Search_Player(player.GetComponent<Player>().transform.position.x, player.GetComponent<Player>().transform.position.y)) {
-                            player.GetComponent<Player>().hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack,Random.Range(87,112 + 1),0);
-                            break;
-                        }
-                    }
-                    Move();
+            //switch (/*enemy.GetComponent<Enemy>().enemys[i].AI_pattern*/) {
+            //    case 0:
+            if (Dungeon_Base.Is_Check_Move(enemy_height, enemy_width + 1, 2)) {
+                if (Search_Player(player.GetComponent<Player>().transform.position.x, player.GetComponent<Player>().transform.position.y)) {
+                    player.GetComponent<Player>().hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack, Random.Range(87, 112 + 1), 0);
                     break;
+                }
+                //      }
+                Move();
+                break;
             }
         }
-        dungeon_manager.GetComponent<Dungeon_Generator>().Turn_Tick();
+
+        // TODO: この処理どこでやる？
+        //dungeon_manager.GetComponent<Dungeon_Generator>().Turn_Tick();
     }
 
     /// <summary>
@@ -114,8 +139,8 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     private void Move() {
         bool flag = false;
-        int rand_x; 
-        int rand_y; 
+        int rand_x;
+        int rand_y;
 
         while (true) {
             rand_x = Random.Range(0, 2 + 1);
@@ -140,72 +165,56 @@ public class Enemy_Action : MonoBehaviour {
             // 下方向から時計回りに処理
             if (rand_x == 0 && rand_y == -5) {
                 direction = eDirection.Down;
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x, gameObject.transform.position.y - 5,
-                                            direction)) {
+                if (Dungeon_Base.Is_Check_Move(enemy_height - 1, enemy_width,     2)) {
                     flag = true; break;
                 }
                 continue;
             }
             else if (rand_x == -5 && rand_y == -5) {
                 direction = eDirection.Downleft;
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x - 5, gameObject.transform.position.y - 5,
-                                            direction)) {
+                if (Dungeon_Base.Is_Check_Move(enemy_height - 1, enemy_width - 1, 2)) {
                     flag = true; break;
                 }
                 continue;
             }
             else if (rand_x == -5 && rand_y == 0) {
                 direction = eDirection.Left;
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x - 5, gameObject.transform.position.y,
-                                            direction)) {
+                if (Dungeon_Base.Is_Check_Move(enemy_height,     enemy_width - 1, 2)) {
                     flag = true; break;
                 }
                 continue;
             }
             else if (rand_x == -5 && rand_y == 5) {
                 direction = eDirection.Upleft;
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x - 5, gameObject.transform.position.y + 5,
-                                            direction)) {
+                if (Dungeon_Base.Is_Check_Move(enemy_height + 1, enemy_width - 1, 2)) {
                     flag = true; break;
                 }
                 continue;
             }
             else if (rand_x == 0 && rand_y == 5) {
                 direction = eDirection.Up;
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x, gameObject.transform.position.y + 5,
-                                            direction)) {
+                if (Dungeon_Base.Is_Check_Move(enemy_height + 1, enemy_width,     2)) {
                     flag = true; break;
                 }
                 continue;
             }
             else if (rand_x == 5 && rand_y == 5) {
                 direction = eDirection.Upright;
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x + 5, gameObject.transform.position.y + 5,
-                                            direction)) {
+                if (Dungeon_Base.Is_Check_Move(enemy_height + 1, enemy_width + 1, 2)) {
                     flag = true; break;
                 }
                 continue;
             }
             else if (rand_x == 5 && rand_y == 0) {
                 direction = eDirection.Right;
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x + 5, gameObject.transform.position.y,
-                                            direction)) {
+                if (Dungeon_Base.Is_Check_Move(enemy_height    , enemy_width + 1, 2)) {
                     flag = true; break;
                 }
                 continue;
             }
             else if (rand_x == 5 && rand_y == -5) {
                 direction = eDirection.Downright;
-                if (dungeon_base.Check_Move(gameObject.transform.position.x, gameObject.transform.position.y,
-                                            gameObject.transform.position.x + 5, gameObject.transform.position.y - 5,
-                                            direction)) {
+                if (Dungeon_Base.Is_Check_Move(enemy_height - 1, enemy_width + 1, 2)) {
                     flag = true; break;
                 }
                 continue;
@@ -217,8 +226,6 @@ public class Enemy_Action : MonoBehaviour {
             vec.x += rand_x;
             vec.y += rand_y;
             gameObject.transform.position = vec;
-
-
         }
     }
 }

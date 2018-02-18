@@ -4,7 +4,6 @@
     最終更新日 2018/02/08
 */
 
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,5 +22,9 @@ public class Player_Manager : MonoBehaviour {
         private set {
             player = value;
         }
+    }
+
+    void Start() {
+        GameManager.Set_Player(this);
     }
 }

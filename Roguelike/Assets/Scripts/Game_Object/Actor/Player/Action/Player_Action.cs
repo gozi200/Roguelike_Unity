@@ -38,6 +38,8 @@ public class Player_Action : MonoBehaviour {
     /// 毎ループ呼び出す ここでゲームオーバー判定を行う
     /// </summary>
     public void Run_Action() {
+            Debug.Log(action);
+            Debug.Log(direction);
         switch (action) {
             case ePlayer_Action.Move:
                 player.GetComponent<Player_Move>().Action_Move();
@@ -66,11 +68,8 @@ public class Player_Action : MonoBehaviour {
     /// /// </summary>
     /// <param name="set_action">新しく切り替える状態</param>
     void Set_Action(ePlayer_Action set_action) {
-        // 識別変数の変更
         action = set_action;
     }
-
-    #region Action.Battle_Manu時の処理
 
     /// <summary>
     /// バトルメニューの処理
@@ -117,9 +116,6 @@ public class Player_Action : MonoBehaviour {
         }
     }
 
-    #endregion
-
-    #region Action.Attak時の処理
 
     /// <summary>
     /// プレイヤーの攻撃処理
@@ -248,5 +244,3 @@ public class Player_Action : MonoBehaviour {
         }
     }
 }
-
-#endregion

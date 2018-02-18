@@ -23,4 +23,8 @@ public class Enemy_Manager : MonoBehaviour {
             enemy = value;
         }
     }
+
+    void Start() {
+        GameManager.Set_Enemy(this);
+    }
 }
