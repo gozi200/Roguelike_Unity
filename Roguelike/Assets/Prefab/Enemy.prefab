@@ -69,7 +69,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy_status: {fileID: 114143089566671994}
-  speed: {x: 5, y: 5}
   is_dead: 0
 --- !u!114 &114425171235971858
 MonoBehaviour:
@@ -84,6 +83,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 114708496703098004, guid: e16619bff6a64554f909ceb16086289b, type: 2}
   enemy: {fileID: 114207079070057304}
+  dungeon_manager: {fileID: 114801532123368512, guid: 9a41267b116d43146bd7982687156c46,
+    type: 2}
 --- !u!114 &114675618149087442
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -95,8 +96,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 749223d07f89b0c43af3b1d1b6f2fa66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  height: 0
-  width: 0
+  height: 21
+  width: 6
 --- !u!114 &114728269175742094
 MonoBehaviour:
   m_ObjectHideFlags: 1

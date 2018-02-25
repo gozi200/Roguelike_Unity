@@ -44,10 +44,19 @@ public class Dungeon_Manager : MonoBehaviour {
     /// ゲームオブジェクト
     /// </summary>
     Player player_script = null;
-    GameObject player;
+
+    GameObject player_object;
+
     GameObject stair;
+
+    Vector2 player_speed;
+
     [SerializeField]
-    Enemy enemy;
+    Player player;
+
+    void Start() {
+        player_speed = player.GetComponent<Player>().speed;
+    }
 
     /// <summary>
     /// 作成したダンジョンを表示
@@ -57,8 +66,10 @@ public class Dungeon_Manager : MonoBehaviour {
         game_state = eGame_State.Create_Dungeon;
 
         dungeon_generator = GetComponent<Dungeon_Generator>();
+
+        player_object = dungeon_generator.player_object;
+
         Initialize();
-        player = dungeon_generator.player_object;
     }
 
     /// <summary>
@@ -81,7 +92,7 @@ public class Dungeon_Manager : MonoBehaviour {
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
         GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
         List<Cell> walls = dungeon_generator.walls;
-        List<Object_Coordinates> enemy_list = dungeon_generator.enemy_list;
+        List<GameObject> enemy_list = dungeon_generator.enemy_list;
 
 
         // ダンジョンを生成しなおすのに、一度オブジェクトを消す
@@ -97,7 +108,7 @@ public class Dungeon_Manager : MonoBehaviour {
         foreach (GameObject tile in tiles) {
             Destroy(tile);
         }
-        foreach (Object_Coordinates enemy in enemy_list) {
+        foreach (GameObject enemy in enemy_list) {
             Destroy(enemy);
         }
         foreach (GameObject item in items) {
@@ -132,18 +143,18 @@ public class Dungeon_Manager : MonoBehaviour {
         if (!button_pressed) {
             if (player.transform.position == stair.transform.position) {
                 //選ぶまで動けなくなる
-                player.GetComponent<Player>().speed = new Vector2(0, 0);
+                player_speed = new Vector2(0, 0);
 
                 //次のレベルへ行く
                 if (GUI.Button(new Rect(225, 120, 128, 32), "次のレベル進む？")) {
                     NextLevel();
-                    player.GetComponent<Player>().speed = new Vector2(5f, 5f);
+                    player_speed = new Vector2(5f, 5f);
                 }
 
                 //探索を続く
                 else if (GUI.Button(new Rect(385, 120, 128, 32), "探索を続く？")) {
                     button_pressed = true;
-                    player.GetComponent<Player>().speed = new Vector2(5f, 5f);
+                    player_speed = new Vector2(5f, 5f);
                 }
             }
         }

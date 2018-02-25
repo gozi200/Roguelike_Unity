@@ -1,7 +1,7 @@
 ﻿/*
     制作者 石倉
 
-    最終更新日 2018/02/08
+    最終更新日 2018/02/22
 */
 
 using System.Collections;
@@ -18,7 +18,19 @@ public class Enemy : MonoBehaviour {
     [SerializeField]
     public List<Enemy_Data> enemys = new List<Enemy_Data>();
 
-    public Vector2 speed = new Vector2(5f, 5f);
+    Vector2 speed = new Vector2(5f, 5f);
+    int x;
+    public int X { get; set; }
+    int y;
+    public int Y { get; set; }
+
+    //public float X { get; set; }
+    //public float Y { get; set; }
+    //
+    //public Enemy(float x, float y) {
+    //    this.x = x;
+    //    this.y = y;
+    //}
 
     /// <summary>
     /// 死亡判定 死んでいたらtrue

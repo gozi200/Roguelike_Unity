@@ -1,7 +1,7 @@
 ﻿/*
-制作者 アントニオ
+制作者 アントニオ 石倉
 
-最終編集日 02/08
+最終編集日 02/22
  */
 
 using UnityEngine;
@@ -29,9 +29,6 @@ public class Dungeon_Generator : MonoBehaviour {
 
     [SerializeField]
     Object_Coordinates player_character;
-
-    [SerializeField]
-    Object_Coordinates enemy;
 
     Dungeon_Map map;
 
@@ -65,8 +62,10 @@ public class Dungeon_Generator : MonoBehaviour {
     /// エネミーオブジェクト
     /// </summary>
     public GameObject enemy_object;
-    public List<Object_Coordinates> enemy_list = new List<Object_Coordinates>();
+    public List<GameObject> enemy_list = new List<GameObject>();
     Enemy enemy_script = null;
+
+#region 変数
 
     /// <summary>
     /// １フロアに存在している敵の数を数える
@@ -107,6 +106,8 @@ public class Dungeon_Generator : MonoBehaviour {
     /// 部屋配置の余白サイズ
     /// </summary>
     const int POSITION_MERGIN = 2;
+
+#endregion
 
 #region レイヤーナンバーの定義
 
@@ -235,6 +236,8 @@ public class Dungeon_Generator : MonoBehaviour {
                     instance_player.transform.position = copy_pos;
                     instance_player.Set_Init_Number(i, j);
                     player.GetComponent<Player_Status>().Set_Coordinates(instance_player,map);
+
+                    Player_Move.Set_Dungeon_Generator(this);
                 }
                 // 階段であれば壁用の画像を配置
                 else if (layer.Get(i, j) == CHIP_UP_STAIR) {
@@ -261,12 +264,18 @@ public class Dungeon_Generator : MonoBehaviour {
                 else if (layer.Get(i, j) == CHIP_ENEMY) {
                     float x = Get_Chip_X(i);
                     float y = Get_Chip_Y(j);
-                    Object_Coordinates instance_enemy = Instantiate(enemy, Dungeon_Map.Get_Position(i, j), Quaternion.identity);
-                    Vector3 pos = instance_enemy.transform.position;
-                    pos.z--;
-                    instance_enemy.transform.position = pos;
-                    instance_enemy.Set_Init_Number(i, j);
+
+                    //Enemy enemy = new Enemy(Get_Chip_X(i), Get_Chip_Y(j));
+
+                    GameObject instance_enemy = Instantiate(enemy_object, Dungeon_Map.Get_Position(i, j), Quaternion.identity);
+                    /*pos.z--;
+                    instance_enemy.transform.position = pos;*/
+                    //Vector2 pos = instance_enemy.transform.position;
+                    enemy_object.GetComponent<Object_Coordinates>().Set_Init_Number(i, j);
+                    enemy_object.GetComponent<Enemy>().X += enemy_object.GetComponent<Object_Coordinates>().Width;
+                    enemy_object.GetComponent<Enemy>().X += enemy_object.GetComponent<Object_Coordinates>().Width;
                     enemy_list.Add(instance_enemy);
+                    //Enemy_Action.Set_Enemy_List(instance_enemy);
                 }
                 // 罠であれば壁用の画像を配置
                 else if (layer.Get(i, j) == CHIP_TRAP) {
@@ -280,7 +289,7 @@ public class Dungeon_Generator : MonoBehaviour {
             instance_pos.y = 0.0f;
             instance_pos.x += 5;
         }
-        foreach (Object_Coordinates enemy in enemy_list) {
+        foreach (GameObject enemy in enemy_list) {
             Enemy_Action.Set_Dungeon_Generator(this);
         }
     }
@@ -543,8 +552,8 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     /// 指定した部屋の間を通路でつなぐ
     /// </summary>
-    /// <param name="divA">部屋1</param>
-    /// <param name="divB">部屋2</param>
+    /// <param name="divA"       >部屋1</param>
+    /// <param name="divB"       >部屋2</param>
 	/// <param name="bGrandChild">孫チェックするかどうか</param>
     /// <returns>つなぐことができたらtrue</returns>
 	bool Create_Road(Dungeon_Division divA, Dungeon_Division divB, bool bGrandChild = false) {
@@ -678,7 +687,7 @@ public class Dungeon_Generator : MonoBehaviour {
         //            } while ((player.transform.position.x == posx && player.transform.position.y == posy) || layer.Get(x, y) == CHIP_UP_STAIR || layer.Get(x, y) == CHIP_FOOD || layer.Get(x, y) == CHIP_ITEM);
         //            enemy.transform.position = new Vector3(posx, posy, 0);
         //            GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
-        //            enemy_script = instance_obj.GetComponent<Enemy>();
+        //            enemy_script = instance_obj.GetComponent<Enemy>(); // TODO: ここのGetComponentどうする
         //            //Enemy_Manager.Set_Enemy(enemy_script);
         //            enemy_list.Add(instance_obj);
         //        }

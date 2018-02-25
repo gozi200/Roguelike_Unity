@@ -38,7 +38,7 @@ public class Camera_Controller : MonoBehaviour
     }
 
     void Start() {
-       target = transform.parent.gameObject;// GameObject.FindGameObjectWithTag("Field_Player");
+       target = transform.parent.gameObject;
 
         /// <summary>
         /// ステージコントローラーを取得

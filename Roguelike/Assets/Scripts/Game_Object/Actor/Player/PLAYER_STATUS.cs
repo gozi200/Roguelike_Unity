@@ -122,19 +122,19 @@ public class Player_Status : MonoBehaviour {
     /// Playerのターン経過の処理(自動回復、はらへり) プレイヤーの行動が終了したときに呼ばれる
     /// </summary>
     public void Turn() {
-        ++player.GetComponent<Player>().turn_count;
+        ++player.turn_count;
 
         // 空腹であるか
-        if (player.GetComponent<Player>().hunger_point <= 0) {
-            --player.GetComponent<Player>().hit_point;
+        if (player.hunger_point <= 0) {
+            --player.hit_point;
 
             //if (Is_Dead()) {
             // ログに"餓死したと流す"
             //}
         }
         // 3ターンに一度空腹ポイントを１減らす
-        else if (0 == player.GetComponent<Player>().turn_count % 3) {
-            --player.GetComponent<Player>().hunger_point;
+        else if (0 == player.turn_count % 3) {
+            --player.hunger_point;
             // 満腹値20で"お腹がすいてきた"     のログを表示
             // 満腹度 0で"お腹がすいて死にそうだ"のログを表示
         }
@@ -148,20 +148,20 @@ public class Player_Status : MonoBehaviour {
     /// </summary>
     /// <param name="exp">加算する経験値量</param>
     void Add_Experience_Point(int exp) {
-        player.GetComponent<Player>().experience_point += exp;
+        player.experience_point += exp;
 
         // 上限を越しても設定した最大値を超えないようにする
-        if (player.GetComponent<Player>().experience_point > MAX_EXP) {
-            player.GetComponent<Player>().experience_point = MAX_EXP;
+        if (player.experience_point > MAX_EXP) {
+            player.experience_point = MAX_EXP;
         }
 
         // レベルアップに必要な経験値量を超えたか確かめる
         // TODO: - 1はいらない？ 要テスト
-        if (exp_data_base[player.GetComponent<Player>().level - 1] <= player.GetComponent<Player>().experience_point) {
+        if (exp_data_base[player.level - 1] <= player.experience_point) {
             int new_Lv = Get_Exp_Level();
 
             // 一度に２レベル以上あがる場合にも対応
-            for (; player.GetComponent<Player>().level < new_Lv; ++player.GetComponent<Player>().level) {
+            for (; player.level < new_Lv; ++player.level) {
                 int add_hp;
                 int add_atk;
                 int add_def;
@@ -169,7 +169,7 @@ public class Player_Status : MonoBehaviour {
                 // 体力の最大値をランダム(3~5)で増やす
                 add_hp = Random.Range(0, 2) + 3;
 
-                player.GetComponent<Player>().max_hit_point += add_hp;
+                player.max_hit_point += add_hp;
 
                 // TODO: 攻撃力,防御力の最大値を仕様書を参考に増やす
             }
@@ -184,7 +184,7 @@ public class Player_Status : MonoBehaviour {
         int lv;
 
         for (lv = 0; lv < MAX_LV; ++lv) {
-            if (exp_data_base[lv] > player.GetComponent<Player>().experience_point) {
+            if (exp_data_base[lv] > player.experience_point) {
                 break;
             }
         }

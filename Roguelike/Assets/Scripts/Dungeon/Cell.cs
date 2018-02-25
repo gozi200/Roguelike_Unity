@@ -16,7 +16,7 @@ public class Cell : MonoBehaviour {
     /// x軸の座標
     /// </summary>
     int width;
-    public int X_Coordinates {
+    public int Width {
         get {
             return width;
         }
@@ -29,7 +29,7 @@ public class Cell : MonoBehaviour {
     /// y軸の座標
     /// </summary>
     int height;
-    public int Y_Coordinates {
+    public int Height {
         get {
             return height;
         }
@@ -59,7 +59,7 @@ public class Cell : MonoBehaviour {
     /// <param name = "set_layer_number">レイヤーの番号(種類)</param>
     public void Set_Numbers(int set_height, int set_width, int set_layer_number) {
         height = set_height;
-        width = set_width;
+        width  = set_width;
         layer_number  = set_layer_number;
     }
 }

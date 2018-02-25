@@ -540,7 +540,7 @@ PlayerSettings:
   webGLUseWasm: 0
   webGLCompressionFormat: 1
   scriptingDefineSymbols:
-    1: SERVANT_NUMBER;WIDTH;HEIGHT
+    1: HEIGHT
     4: SERVANT_NUMBER;WIDTH;HEIGHT
     7: SERVANT_NUMBER;WIDTH;HEIGHT
     13: SERVANT_NUMBER;WIDTH;HEIGHT

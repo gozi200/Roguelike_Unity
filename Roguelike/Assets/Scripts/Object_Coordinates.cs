@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 座標をセットして現在いる座標を表示する TODO: 役割分ける？ 名前をObject_Coordinatesに変える
+/// 座標をセットして現在いる座標を表示する TODO: 役割分ける？ Actor_Coordinatesに変える?
 /// </summary>
 public class Object_Coordinates : MonoBehaviour {
     /// <summary>
@@ -17,28 +17,14 @@ public class Object_Coordinates : MonoBehaviour {
     /// </summary>
     [SerializeField]
     int height;
-    public int Height {
-        get {
-            return height;
-        }
-        set {
-            height = value;
-        }
-    }
+    public int Height { get; private set; }
 
     /// <summary>
     /// 現在いるx座標
     /// </summary>
     [SerializeField]
     int width;
-    public int Width {
-        get {
-            return width;
-        }
-        private set {
-            width = value;
-        }
-    }
+    public int Width { get; private set; }
 
     /// <summary>
     /// 最初にセットする座標

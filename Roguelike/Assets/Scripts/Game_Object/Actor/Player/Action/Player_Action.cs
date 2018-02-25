@@ -1,7 +1,7 @@
 ﻿/*
     制作者 石倉
 
-    最終更新日 2018/02/08
+    最終更新日 2018/02/22
 */
 
 using System.Collections;
@@ -12,6 +12,11 @@ using UnityEngine;
 /// プレイヤーの行動を行うクラス
 /// </summary>
 public class Player_Action : MonoBehaviour {
+    /// <summary>
+    /// プレイヤーの体力
+    /// </summary>
+    int player_hit_point;
+
     public eDirection direction;
 
     public ePlayer_Action action;
@@ -22,12 +27,21 @@ public class Player_Action : MonoBehaviour {
     [SerializeField]
     Enemy enemy;
 
+    Player_Move player_move;
+
+    Player_Status player_status;
+
     Damage_Calculation damage_calculation;
 
     // Use this for initialization
     void Start() {
-        action = ePlayer_Action.Move;
+        action    = ePlayer_Action.Move;
         direction = eDirection.Down;
+
+        player_hit_point = player.GetComponent<Player>().hit_point;
+
+        player_move   = player.GetComponent<Player_Move>();
+        player_status = player.GetComponent<Player_Status>();
     }
 
     void Update() {
@@ -35,14 +49,14 @@ public class Player_Action : MonoBehaviour {
     }
 
     /// <summary>
-    /// 毎ループ呼び出す ここでゲームオーバー判定を行う
+    /// 現在の状態に合った行動をする 毎ループ呼び出す ここでゲームオーバー判定を行う
     /// </summary>
     public void Run_Action() {
             Debug.Log(action);
             Debug.Log(direction);
         switch (action) {
             case ePlayer_Action.Move:
-                player.GetComponent<Player_Move>().Action_Move();
+                player_move.Action_Move();
                 break;
 
             case ePlayer_Action.Attack:
@@ -58,13 +72,13 @@ public class Player_Action : MonoBehaviour {
         }
 
         // 体力が 0 以下ならゲームオーバー処理に切り替える
-        if (action != ePlayer_Action.Game_Over && player.GetComponent<Player_Status>().Is_Dead(player.GetComponent<Player>().hit_point) ) {
+        if (action != ePlayer_Action.Game_Over && player_status.Is_Dead(player_hit_point) ) {
             Set_Action(ePlayer_Action.Game_Over);
         }
     }
 
     /// <summary>
-    /// 現在の行っているアクションに切り替える
+    /// 新しく入力されたアクションに切り替える
     /// /// </summary>
     /// <param name="set_action">新しく切り替える状態</param>
     void Set_Action(ePlayer_Action set_action) {
@@ -123,17 +137,17 @@ public class Player_Action : MonoBehaviour {
     void Action_Attack() {
         switch (direction) {
             case eDirection.Down:
-                for (int i = 0; i < 1; ++i) { //TODO: テスト　forで回すループの回数と攻撃対象の座標を修正する
+                for (int i = 0; i < 1; ++i) { //TODO: テスト　forで回すループの回数と攻撃対象の座標を修正する マジックナンバー
                     if (gameObject.transform.position.y - 5 == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x     == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.GetComponent<Player>().attack,
+                           (int)damage_calculation.Damage(player.attack,
                            Random.Range(87, 112 + 1),
                            enemy.GetComponent<Enemy>().enemys[i].defence);
                         Debug.Log(enemy.GetComponent<Enemy>().enemys[i].hit_point);
                     }
                 }
-                enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                enemy.GetComponent<Enemy_Action>().Move_Enemy();
                 Set_Action(ePlayer_Action.Move);
                 break;
 
@@ -142,13 +156,13 @@ public class Player_Action : MonoBehaviour {
                     if (gameObject.transform.position.y - 5 == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x     == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.GetComponent<Player>().attack,
+                           (int)damage_calculation.Damage(player.attack,
                            Random.Range(87, 112 + 1),
                            enemy.GetComponent<Enemy>().enemys[i].defence);
                         Debug.Log(enemy.GetComponent<Enemy>().enemys[i].hit_point);
                     }
                 }
-                enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                enemy.GetComponent<Enemy_Action>().Move_Enemy();
                 Set_Action(ePlayer_Action.Move);
                 break;
 
@@ -157,13 +171,13 @@ public class Player_Action : MonoBehaviour {
                     if (gameObject.transform.position.y     == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x - 5 == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.GetComponent<Player>().attack,
+                           (int)damage_calculation.Damage(player.attack,
                            Random.Range(87, 112 + 1),
                            enemy.GetComponent<Enemy>().enemys[i].defence);
                         Debug.Log(enemy.GetComponent<Enemy>().enemys[i].hit_point);
                     }
                 }
-                enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                enemy.GetComponent<Enemy_Action>().Move_Enemy();
                 Set_Action(ePlayer_Action.Move);
                 break;
 
@@ -172,13 +186,13 @@ public class Player_Action : MonoBehaviour {
                     if (gameObject.transform.position.y + 5 == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x - 5 == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.GetComponent<Player>().attack,
+                           (int)damage_calculation.Damage(player.attack,
                            Random.Range(87, 112 + 1),
                            enemy.GetComponent<Enemy>().enemys[i].defence);
                         Debug.Log(enemy.GetComponent<Enemy>().enemys[i].hit_point);
                     }
                 }
-                enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                enemy.GetComponent<Enemy_Action>().Move_Enemy();
                 Set_Action(ePlayer_Action.Move);
                 break;
 
@@ -187,13 +201,13 @@ public class Player_Action : MonoBehaviour {
                     if (gameObject.transform.position.y + 5 == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x     == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.GetComponent<Player>().attack,
+                           (int)damage_calculation.Damage(player.attack,
                            Random.Range(87, 112 + 1),
                            enemy.GetComponent<Enemy>().enemys[i].defence);
                         Debug.Log(enemy.GetComponent<Enemy>().enemys[i].hit_point);
                     }
                 }
-                enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                enemy.GetComponent<Enemy_Action>().Move_Enemy();
                 Set_Action(ePlayer_Action.Move);
                 break;
 
@@ -202,13 +216,12 @@ public class Player_Action : MonoBehaviour {
                     if (gameObject.transform.position.y + 5 == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x + 5 == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.GetComponent<Player>().attack,
+                           (int)damage_calculation.Damage(player.attack,
                            Random.Range(87, 112 + 1),
                            enemy.GetComponent<Enemy>().enemys[i].defence);
-                        Debug.Log(enemy.GetComponent<Enemy>().enemys[i].hit_point);
                     }
                 }
-                enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                enemy.GetComponent<Enemy_Action>().Move_Enemy();
                 Set_Action(ePlayer_Action.Move);
                 break;
 
@@ -217,13 +230,13 @@ public class Player_Action : MonoBehaviour {
                     if (gameObject.transform.position.y     == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x + 5 == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.GetComponent<Player>().attack,
+                           (int)damage_calculation.Damage(player.attack,
                            Random.Range(87, 112 + 1),
                            enemy.GetComponent<Enemy>().enemys[i].defence);
                         Debug.Log(enemy.GetComponent<Enemy>().enemys[i].hit_point);
                     }
                 }
-                enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                enemy.GetComponent<Enemy_Action>().Move_Enemy();
                 Set_Action(ePlayer_Action.Move);
                 break;
 
@@ -232,13 +245,13 @@ public class Player_Action : MonoBehaviour {
                     if (gameObject.transform.position.y - 5 == enemy.GetComponent<Enemy>().transform.position.y &&
                         gameObject.transform.position.x + 5 == enemy.GetComponent<Enemy>().transform.position.x) {
                         enemy.GetComponent<Enemy>().enemys[i].hit_point -= 
-                            (int)damage_calculation.Damage(player.GetComponent<Player>().attack,
+                            (int)damage_calculation.Damage(player.attack,
                             Random.Range(87, 112 + 1),
                             enemy.GetComponent<Enemy>().enemys[i].defence);
                         Debug.Log(enemy.GetComponent<Enemy>().enemys[i].hit_point);
                     }
                 }
-                enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                enemy.GetComponent<Enemy_Action>().Move_Enemy();
                 Set_Action(ePlayer_Action.Move);
                 break;
         }

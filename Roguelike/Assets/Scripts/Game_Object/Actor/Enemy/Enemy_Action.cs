@@ -1,10 +1,4 @@
-﻿/*
-    制作者 石倉
-
-    最終更新日 2018/02/07
-*/
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +6,21 @@ using UnityEngine;
 /// エネミーの行動を設定する
 /// </summary>
 public class Enemy_Action : MonoBehaviour {
+    /// <summary>
+    /// エネミーのいる横座標の位置
+    /// </summary>
+    int enemy_width;
+
+    /// <summary>
+    /// エネミーのいる縦座標の位置
+    /// </summary>
+    int enemy_height;
+
+    /// <summary>
+    /// プレイヤーの体力
+    /// </summary>
+    int player_hit_point;
+
     eEnemy_Mode mode;
     eDirection direction;
 
@@ -22,68 +31,62 @@ public class Enemy_Action : MonoBehaviour {
     Enemy enemy;
 
     [SerializeField]
+    Dungeon_Manager dungeon_manager;
+
     static Dungeon_Generator dungeon_generator;
 
-    [SerializeField]
     static Dungeon_Base dungeon_base;
 
     Damage_Calculation damage_calculation;
 
-    /// <summary>
-    /// エネミーの横座標
-    /// </summary>
-    int enemy_width;
-
-    /// <summary>
-    /// エネミーの縦座標
-    /// </summary>
-    int enemy_height;
+    static List<GameObject> enemy_list;
 
     private void Start() {
+        Debug.Log(enemy);
+
         direction = eDirection.Down;
+
+        player = player.GetComponent<Player>();
+
+        player_hit_point = player.GetComponent<Player>().hit_point;
 
         enemy_width  = enemy.GetComponent<Object_Coordinates>().Width;
         enemy_height = enemy.GetComponent<Object_Coordinates>().Height;
-
     }
 
-    /// <summary>
-    /// Dungeon_Baseをセットする
-    /// </summary>
-    /// <param name="set_dungeon_base">情報を持ったDungeon_Base</param>
     public static void Set_Dungeon_Base(Dungeon_Base set_dungeon_base) {
         dungeon_base = set_dungeon_base;
     }
 
-    /// <summary>
-    /// Dungeon_Generatorをセットする
-    /// </summary>
-    /// <param name="set_dungeon_generator">情報を持ったDungeon_Base</param>
     public static void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
         dungeon_generator = set_dungeon_generator;
     }
 
+    //public static void Set_Enemy_List(List<GameObject> set_coordinates) {
+    //    enemy_list = set_coordinates;
+    //}
+
     /// <summary>
     /// エネミーの行動処理
     /// </summary>
-    /// <param name="player_status">プレイヤーのステータス。計算時に使用するために知っておく</param>
-    public void Move_Enemy(Player_Status player_status) {
+    public void Move_Enemy() {
         for (int i = 0; i < 1; ++i) {
-            //switch (/*enemy.GetComponent<Enemy>().enemys[i].AI_pattern*/) {
-            //    case 0:
-            if (Dungeon_Base.Is_Check_Move(enemy_height, enemy_width + 1, 2)) {
-                if (Search_Player(player.GetComponent<Player>().transform.position.x, player.GetComponent<Player>().transform.position.y)) {
-                    player.GetComponent<Player>().hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack, Random.Range(87, 112 + 1), 0);
+        Debug.Log(enemy);
+            // TODO: Startで書いておきたいけど配列はどうやって？
+            switch (enemy.GetComponent<Enemy>().enemys[i].AI_pattern) {
+                case 2:
+                    if (Dungeon_Base.Is_Check_Move(enemy_height, enemy_width + 1, 2)) {
+                        if (Search_Player(player.transform.position.x, player.transform.position.y)) {
+                            player_hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack, Random.Range(87, 112 + 1), 0);
+                            Debug.Log(player_hit_point);
+                            break;
+                        }
+                    }
+                    Move();
                     break;
-                }
-                //      }
-                Move();
-                break;
             }
         }
-
-        // TODO: この処理どこでやる？
-        //dungeon_manager.GetComponent<Dungeon_Generator>().Turn_Tick();
+        // dungeon_manager.GetComponent<Dungeon_Generator>().Turn_Tick();
     }
 
     /// <summary>
@@ -91,42 +94,36 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     /// <returns>プレイヤーがいた場合はtrue</returns>
     bool Search_Player(float player_position_x, float player_position_y) {
-        // 下
+        // 下方向から時計回りに検索
         if (gameObject.transform.position.x == player_position_x && gameObject.transform.position.y - 5 == player_position_y) {
             direction = eDirection.Down;
             return true;
         }
-        // 左下
         else if (gameObject.transform.position.x - 5 == player_position_x && gameObject.transform.position.y - 5 == player_position_y) {
             direction = eDirection.Downleft;
             return true;
         }
-        // 左
         else if (gameObject.transform.position.x - 5 == player_position_x && gameObject.transform.position.y == player_position_y) {
             direction = eDirection.Left;
             return true;
         }
-        // 左上
         else if (gameObject.transform.position.x - 5 == player_position_x && gameObject.transform.position.y + 5 == player_position_y) {
             direction = eDirection.Upleft;
             return true;
         }
-        // 上
         else if (gameObject.transform.position.x == player_position_x && gameObject.transform.position.y + 5 == player_position_y) {
             direction = eDirection.Up;
             return true;
         }
-        // 右上
         else if (gameObject.transform.position.x + 5 == player_position_x && gameObject.transform.position.y + 5 == player_position_y) {
             direction = eDirection.Upright;
             return true;
         }
-        // 右
         else if (gameObject.transform.position.x + 5 == player_position_x && gameObject.transform.position.y == player_position_y) {
             direction = eDirection.Right;
             return true;
+
         }
-        // 右下
         else if (gameObject.transform.position.x + 5 == player_position_x && gameObject.transform.position.y - 5 == player_position_y) {
             direction = eDirection.Downright;
             return true;
@@ -138,94 +135,112 @@ public class Enemy_Action : MonoBehaviour {
     /// エネミーの移動処理
     /// </summary>
     private void Move() {
-        bool flag = false;
-        int rand_x;
-        int rand_y;
+        for (int index = 0; index < enemy_list.Count; ++index) {
+            /// <summary>
+            /// 移動後の横座標
+            /// </summary>
+            int width = 0;
 
-        while (true) {
-            rand_x = Random.Range(0, 2 + 1);
-            rand_y = Random.Range(0, 2 + 1);
+            /// <summary>
+            /// 移動後の縦座標
+            /// </summary>
+            int height = 0;
 
-            if (rand_x == 0 && rand_y == 0) {
-                continue;
-            }
-            if (rand_x == 1) {
-                rand_x = 5;
-            }
-            else if (rand_x == 2) {
-                rand_x = -5;
-            }
-            if (rand_y == 1) {
-                rand_y = 5;
-            }
-            else if (rand_y == 2) {
-                rand_y = -5;
+            /// <summary>
+            /// 移動方向を乱数で決める
+            /// </summary>
+            int random_direction = Random.Range(0, (int)eDirection.Finish);
+
+            /// <summary>
+            /// 上述のint型乱数をenum型にキャスト
+            /// </summary>
+            eDirection cast_random_direction = (eDirection)random_direction;
+
+            /// <summary>
+            /// 移動が完了したかどうかのフラグ 完了であればtrue
+            /// </summary>
+            bool move_flag = false;
+
+            /// <summary>
+            /// 移動が可能かどうかのフラグ 可能であればtrue
+            /// </summary>
+            bool movement = false;
+
+            int layer_number = 2; // テスト中
+
+            switch (cast_random_direction) {
+                case eDirection.Up:
+                    // TODO: 問題点有り 詳しくは Dungeon_Base の IS_Check_Move にて
+                    width    = (int)enemy_list[index].transform.position.x;
+                    height   = (int)enemy_list[index].transform.position.y + 1;
+                    movement = Dungeon_Base.Is_Check_Move(enemy_list[index].transform.position.y + 1, enemy_list[index].transform.position.x, layer_number);
+                    break;
+
+                /*case eDirection.Upright:
+                    width  = enemy_list[index].Width  + 1;
+                    height = enemy_list[index].Height + 1;
+                    if (!Dungeon_Base.Is_Check_Slant_Move(enemy_list[index].Height + 1, enemy_list[index].Width, enemy_list[index].Height, enemy_list[index].Width + 1, layer_number)) {
+                        movement = Dungeon_Base.Is_Check_Move(enemy_list[index].Height + 1, enemy_list[index].Width + 1, layer_number);
+                    }
+                    break;
+
+                case eDirection.Right:
+                    width  = enemy_list[index].Width + 1;
+                    height = enemy_list[index].Height;
+                    movement = Dungeon_Base.Is_Check_Move(enemy_list[index].Height - 1, enemy_list[index].Width, layer_number);
+                    break;
+
+                case eDirection.Downright:
+                    width  = enemy_list[index].Width  + 1;
+                    height = enemy_list[index].Height - 1;
+                    if (!Dungeon_Base.Is_Check_Slant_Move(enemy_list[index].Height - 1, enemy_list[index].Width, enemy_list[index].Height, enemy_list[index].Width + 1, layer_number)) {
+                        movement = Dungeon_Base.Is_Check_Move(enemy_list[index].Height + 1, enemy_list[index].Width + 1, layer_number);
+                    }
+                    break;
+
+                case eDirection.Down:
+                    width = enemy_list[index].Width;
+                    height = enemy_list[index].Height - 1;
+                    movement = Dungeon_Base.Is_Check_Move(enemy_list[index].Height - 1, enemy_list[index].Width, layer_number);
+                    break;
+
+                case eDirection.Downleft:
+                    width  = enemy_list[index].Width  - 1;
+                    height = enemy_list[index].Height - 1;
+                    if (!Dungeon_Base.Is_Check_Slant_Move(enemy_list[index].Height - 1, enemy_list[index].Width, enemy_list[index].Height, enemy_list[index].Width - 1, layer_number)) {
+                        movement = Dungeon_Base.Is_Check_Move(enemy_list[index].Height + 1, enemy_list[index].Width + 1, layer_number);
+                    }
+                    break;
+
+                case eDirection.Left:
+                    width  = enemy_list[index].Width - 1;
+                    height = enemy_list[index].Height;
+                    movement = Dungeon_Base.Is_Check_Move(enemy_list[index].Height - 1, enemy_list[index].Width, layer_number);
+                    break;
+
+                case eDirection.Upleft:
+                    width  = enemy_list[index].Width  - 1;
+                    height = enemy_list[index].Height + 1;
+                    if (!Dungeon_Base.Is_Check_Slant_Move(enemy_list[index].Height + 1, enemy_list[index].Width, enemy_list[index].Height, enemy_list[index].Width - 1, layer_number)) {
+                        movement = Dungeon_Base.Is_Check_Move(enemy_list[index].Height + 1, enemy_list[index].Width + 1, layer_number);
+                    }
+                    break;
+                    */
             }
 
-            // 下方向から時計回りに処理
-            if (rand_x == 0 && rand_y == -5) {
-                direction = eDirection.Down;
-                if (Dungeon_Base.Is_Check_Move(enemy_height - 1, enemy_width,     2)) {
-                    flag = true; break;
+            if (movement) {
+                Enemy_Move(index, height, width);
+                if(index >= enemy_list.Count) {
+                    move_flag = true;
                 }
-                continue;
-            }
-            else if (rand_x == -5 && rand_y == -5) {
-                direction = eDirection.Downleft;
-                if (Dungeon_Base.Is_Check_Move(enemy_height - 1, enemy_width - 1, 2)) {
-                    flag = true; break;
-                }
-                continue;
-            }
-            else if (rand_x == -5 && rand_y == 0) {
-                direction = eDirection.Left;
-                if (Dungeon_Base.Is_Check_Move(enemy_height,     enemy_width - 1, 2)) {
-                    flag = true; break;
-                }
-                continue;
-            }
-            else if (rand_x == -5 && rand_y == 5) {
-                direction = eDirection.Upleft;
-                if (Dungeon_Base.Is_Check_Move(enemy_height + 1, enemy_width - 1, 2)) {
-                    flag = true; break;
-                }
-                continue;
-            }
-            else if (rand_x == 0 && rand_y == 5) {
-                direction = eDirection.Up;
-                if (Dungeon_Base.Is_Check_Move(enemy_height + 1, enemy_width,     2)) {
-                    flag = true; break;
-                }
-                continue;
-            }
-            else if (rand_x == 5 && rand_y == 5) {
-                direction = eDirection.Upright;
-                if (Dungeon_Base.Is_Check_Move(enemy_height + 1, enemy_width + 1, 2)) {
-                    flag = true; break;
-                }
-                continue;
-            }
-            else if (rand_x == 5 && rand_y == 0) {
-                direction = eDirection.Right;
-                if (Dungeon_Base.Is_Check_Move(enemy_height    , enemy_width + 1, 2)) {
-                    flag = true; break;
-                }
-                continue;
-            }
-            else if (rand_x == 5 && rand_y == -5) {
-                direction = eDirection.Downright;
-                if (Dungeon_Base.Is_Check_Move(enemy_height - 1, enemy_width + 1, 2)) {
-                    flag = true; break;
-                }
-                continue;
             }
         }
+    }
 
-        if (flag) {
-            Vector3 vec = gameObject.transform.position;
-            vec.x += rand_x;
-            vec.y += rand_y;
-            gameObject.transform.position = vec;
-        }
+    void Enemy_Move(int index, int height, int width) {
+        Vector3 position = Dungeon_Map.Get_Position(height, width);
+        --position.z;
+        enemy_list[index].transform.position = position;
+        enemy_list[index].GetComponent<Object_Coordinates>().Set_Init_Number(height, width);
     }
 }

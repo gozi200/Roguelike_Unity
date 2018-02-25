@@ -264,6 +264,18 @@ Prefab:
       value: 
       objectReference: {fileID: 114395254438922580, guid: 319fec6a702f9614ab610e8579079c5b,
         type: 2}
+    - target: {fileID: 114801532123368512, guid: 9a41267b116d43146bd7982687156c46,
+        type: 2}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 114708496703098004, guid: e16619bff6a64554f909ceb16086289b,
+        type: 2}
+    - target: {fileID: 114111079333537564, guid: 9a41267b116d43146bd7982687156c46,
+        type: 2}
+      propertyPath: coordinates
+      value: 
+      objectReference: {fileID: 114675618149087442, guid: 0a99fbfce9c6315488ac0667f7e8b726,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9a41267b116d43146bd7982687156c46, type: 2}
   m_IsPrefabParent: 0

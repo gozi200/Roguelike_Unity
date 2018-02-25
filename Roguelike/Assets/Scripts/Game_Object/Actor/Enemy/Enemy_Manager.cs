@@ -14,15 +14,8 @@ using UnityEngine;
 public class Enemy_Manager : MonoBehaviour {
     [SerializeField]
     static Enemy enemy;
-    public static Enemy Enemy_Data {
-        get {
-            return enemy;
-        }
+    public static Enemy Enemy_Data { get; set; }
 
-        private set {
-            enemy = value;
-        }
-    }
 
     void Start() {
         GameManager.Set_Enemy(this);

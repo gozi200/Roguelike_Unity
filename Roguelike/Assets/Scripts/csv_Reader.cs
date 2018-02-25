@@ -12,6 +12,8 @@ using System.Collections.Generic;
 /// csvファイルを読み取り関数があるクラス
 /// </summary>
 public class csv_Reader : MonoBehaviour {
+    public string Line { get; private set; }
+    
     /// <summary>
     /// csvファイルの読み取り関数
     /// </summary>
@@ -23,16 +25,17 @@ public class csv_Reader : MonoBehaviour {
 
         int line_count = 1;
         while (reader.Peek() > -1) {
-            string line = reader.ReadLine();
+            string line;
+            line = reader.ReadLine();
 
             if (skip_line_number < line_count) {
                 string[] values = line.Split(',');
                 tmp.Add(values);
             }
-
             ++line_count;
         }
-
         return tmp;
     }
+
+
 }

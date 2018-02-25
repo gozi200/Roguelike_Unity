@@ -1,23 +1,12 @@
-﻿/*
-    制作者 石倉
-
-    最終更新日 2018/02/08
-*/
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// プレイヤーの移動処理
+/// 移動処理
 /// </summary>
 public class Player_Move : MonoBehaviour {
-    /// <summary>
-    /// 移動が済んだかどうかのフラグ
-    /// </summary>
-    bool moved = false;
-
     /// <summary>
     /// プレイヤーのいるx座標
     /// </summary>
@@ -28,6 +17,11 @@ public class Player_Move : MonoBehaviour {
     /// </summary>
     int player_height;
 
+    /// <summary>
+    /// 死亡フラグ 死んでいたらtrue
+    /// </summary>
+    bool moved = false;
+
     ePlayer_Mode mode;
 
     [SerializeField]
@@ -36,10 +30,17 @@ public class Player_Move : MonoBehaviour {
     [SerializeField]
     Player player;
 
+    Player_Action player_action;
+
+    Player_Status player_status;
+
+    Enemy_Action enemy_action;
+
     public GameObject stair;
 
     static Dungeon_Base dungeon_base;
 
+    static Dungeon_Generator dungeon_generator;
 
     void Start() {
         mode = ePlayer_Mode.Nomal_Mode;
@@ -47,20 +48,28 @@ public class Player_Move : MonoBehaviour {
         player_width = player.GetComponent<Object_Coordinates>().Width;
 
         player_height = player.GetComponent<Object_Coordinates>().Height;
+
+        player_status = player.GetComponent<Player_Status>();
+
+        player_action = player.GetComponent<Player_Action>();
+
+        enemy_action = enemy.GetComponent<Enemy_Action>();
     }
 
-    /// <summary>
-    /// Dungeon_Baseにセットする
-    /// </summary>
-    /// <param name="set_dungeon_base">情報を持ったDungeon_Base</param>
     public static void Set_Dungeon_Base(Dungeon_Base set_dungeon_base) {
         dungeon_base = set_dungeon_base;
+
+    }
+
+    public static void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
+        dungeon_generator = set_dungeon_generator;
     }
 
     /// <summary>
     /// 移動処理
     /// </summary>
     public void Action_Move() {
+        List<GameObject> enemy_list = dungeon_generator.enemy_list;
         moved = false;
 
         // 現在位置をPositionに代入
@@ -85,46 +94,49 @@ public class Player_Move : MonoBehaviour {
         // 足踏み
         if (Input.GetKey("q")) {
             moved = true;
-            enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+            foreach (GameObject enemy_prefab in enemy_list) {
+                enemy = enemy_prefab.GetComponent<Enemy>();
+                enemy_action.Move_Enemy();
+            }
         }
- 
+
         // 通常モード時の移動処理
         if (mode == ePlayer_Mode.Nomal_Mode) {
             Debug.Log(gameObject);
             if (Input.GetKeyDown("right")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Right;
+                player_action.direction = eDirection.Right;
 
                 if (Dungeon_Base.Is_Check_Move(player_height, player_width + 1, 2)) {
                     moved = true;
                     Position.x += player.speed.x;
-                    enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                    enemy_action.Move_Enemy();
                 }
             }
             else if (Input.GetKeyDown("down")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Down;
+                player_action.direction = eDirection.Down;
 
                 if (Dungeon_Base.Is_Check_Move(player_height - 1, player_width, 2)) {
                     moved = true;
                     Position.y -= player.speed.y;
-                    enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                    enemy_action.Move_Enemy();
                 }
             }
             else if (Input.GetKeyDown("left")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Left;
+                player_action.direction = eDirection.Left;
 
                 if (Dungeon_Base.Is_Check_Move(player_height, player_width - 1, 2)) {
                     moved = true;
                     Position.x -= player.speed.x;
-                    enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                    enemy_action.Move_Enemy();
                 }
             }
             else if (Input.GetKeyDown("up")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Up;
+                player_action.direction = eDirection.Up;
 
-                if (Dungeon_Base.Is_Check_Move(player_height + 1, player_width + 1, 2)) {
+                if (Dungeon_Base.Is_Check_Move(player_height + 1, player_width, 2)) {
                     moved = true;
                     Position.y += player.speed.y;
-                    enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                    enemy_action.Move_Enemy();
                 }
             }
         }
@@ -132,43 +144,43 @@ public class Player_Move : MonoBehaviour {
         // 斜め移動モード時の移動処理
         else if (mode == ePlayer_Mode.Diagonally_Mode) {
             if (Input.GetKeyDown("right") && Input.GetKeyDown("up")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Upright;
+                player_action.direction = eDirection.Upright;
 
                 if (Dungeon_Base.Is_Check_Move(player_height + 1, player_width + 1, 2)) {
                     moved = true;
                     Position.x += player.speed.x;
                     Position.y += player.speed.y;
-                    enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                    enemy_action.Move_Enemy();
                 }
             }
             else if (Input.GetKeyDown("right") && Input.GetKeyDown("down")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Downright;
+                player_action.direction = eDirection.Downright;
 
                 if (Dungeon_Base.Is_Check_Move(player_height - 1, player_width + 1, 2)) {
                     moved = true;
                     Position.x += player.speed.x;
                     Position.y -= player.speed.y;
-                    enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                    enemy_action.Move_Enemy();
                 }
             }
             else if (Input.GetKey("left") && Input.GetKey("down")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Downleft;
+                player_action.direction = eDirection.Downleft;
 
                 if (Dungeon_Base.Is_Check_Move(player_height - 1, player_width - 1, 2)) {
                     moved = true;
                     Position.x -= player.speed.x;
                     Position.y -= player.speed.y;
-                    enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                    enemy_action.Move_Enemy();
                 }
             }
             else if (Input.GetKeyDown("left") && Input.GetKeyDown("up")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Upleft;
+                player_action.direction = eDirection.Upleft;
 
                 if (Dungeon_Base.Is_Check_Move(player_height + 1, player_width - 1, 2)) {
                     moved = true;
                     Position.x -= player.speed.x;
                     Position.y += player.speed.y;
-                    enemy.GetComponent<Enemy_Action>().Move_Enemy(player.GetComponent<Player_Status>());
+                    enemy_action.Move_Enemy();
                 }
             }
         }
@@ -176,28 +188,28 @@ public class Player_Move : MonoBehaviour {
         // 方向転換モード時の処理
         else if (mode == ePlayer_Mode.Change_Direction_Mode) {
             if (Input.GetKeyDown("right")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Right;
+                player_action.direction = eDirection.Right;
             }
             else if (Input.GetKeyDown("down")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Down;
+                player_action.direction = eDirection.Down;
             }
             else if (Input.GetKeyDown("left")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Left;
+                player_action.direction = eDirection.Left;
             }
             else if (Input.GetKeyDown("up")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Up;
+                player_action.direction = eDirection.Up;
             }
             else if (Input.GetKey("right") && Input.GetKey("up")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Upright;
+                player_action.direction = eDirection.Upright;
             }
             else if (Input.GetKey("right") && Input.GetKey("down")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Downright;
+                player_action.direction = eDirection.Downright;
             }
             else if (Input.GetKey("left") && Input.GetKey("down")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Downleft;
+                player_action.direction = eDirection.Downleft;
             }
             else if (Input.GetKey("left") && Input.GetKey("up")) {
-                player.GetComponent<Player_Action>().direction = eDirection.Upleft;
+                player_action.direction = eDirection.Upleft;
             }
         }
 
@@ -217,17 +229,16 @@ public class Player_Move : MonoBehaviour {
     }
 
     void Add_Player_Turn() {
-            player.GetComponent<Player_Status>().Turn();
+            player_status.Turn();
     }
-
 
     void Move_Check_Command() {
         if (Input.GetKey("return")) {
-            player.GetComponent<Player_Action>().action = ePlayer_Action.Battle_Menu;
+            player_action.action = ePlayer_Action.Battle_Menu;
         }
 
         else if (Input.GetKey("space")) {
-            player.GetComponent<Player_Action>().action = ePlayer_Action.Attack;
+            player_action.action = ePlayer_Action.Attack;
         }
     }
 }
