@@ -25,9 +25,6 @@ public class Enemy_Action : MonoBehaviour {
     eDirection direction;
 
     [SerializeField]
-    Player player;
-
-    [SerializeField]
     Enemy enemy;
 
     [SerializeField]
@@ -41,14 +38,16 @@ public class Enemy_Action : MonoBehaviour {
 
     static List<GameObject> enemy_list;
 
-    private void Start() {
-        Debug.Log(enemy);
+    GM.Player player;
+
+    void Awake() {
+        player = GM.Instance.player;
+    }
+
+    void Start() {
+        
 
         direction = eDirection.Down;
-
-        player = player.GetComponent<Player>();
-
-        player_hit_point = player.GetComponent<Player>().hit_point;
 
         enemy_width  = enemy.GetComponent<Object_Coordinates>().Width;
         enemy_height = enemy.GetComponent<Object_Coordinates>().Height;
@@ -76,11 +75,11 @@ public class Enemy_Action : MonoBehaviour {
             switch (enemy.GetComponent<Enemy>().enemys[i].AI_pattern) {
                 case 2:
                     if (Dungeon_Base.Is_Check_Move(enemy_height, enemy_width + 1, 2)) {
-                        if (Search_Player(player.transform.position.x, player.transform.position.y)) {
-                            player_hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack, Random.Range(87, 112 + 1), 0);
-                            Debug.Log(player_hit_point);
-                            break;
-                        }
+                       // if (Search_Player(player.transform.position.x, player.transform.position.y)) {
+                       //     player_hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack, Random.Range(87, 112 + 1), 0);
+                       //     Debug.Log(player_hit_point);
+                       //     break;
+                       // }
                     }
                     Move();
                     break;

@@ -43,19 +43,20 @@ public class Dungeon_Manager : MonoBehaviour {
     /// <summary>
     /// ゲームオブジェクト
     /// </summary>
-    Player player_script = null;
-
     GameObject player_object;
 
     GameObject stair;
 
     Vector2 player_speed;
 
-    [SerializeField]
-    Player player;
+    GM.Player player;
+
+    void Awake() {
+        player = GM.Instance.player;
+    }
 
     void Start() {
-        player_speed = player.GetComponent<Player>().speed;
+        player_speed = player.speed;
     }
 
     /// <summary>
@@ -93,7 +94,6 @@ public class Dungeon_Manager : MonoBehaviour {
         GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
         List<Cell> walls = dungeon_generator.walls;
         List<GameObject> enemy_list = dungeon_generator.enemy_list;
-
 
         // ダンジョンを生成しなおすのに、一度オブジェクトを消す
         foreach (GameObject trap in traps) {
@@ -140,10 +140,10 @@ public class Dungeon_Manager : MonoBehaviour {
             NextLevel();
         }
 
-        if (!button_pressed) {
-            if (player.transform.position == stair.transform.position) {
-                //選ぶまで動けなくなる
-                player_speed = new Vector2(0, 0);
+        if (!button_pressed) { //TODO: ２次元配列でやる
+           // if (player.transform.position == stair.transform.position) {
+           //     //選ぶまで動けなくなる
+           //     player_speed = new Vector2(0, 0);
 
                 //次のレベルへ行く
                 if (GUI.Button(new Rect(225, 120, 128, 32), "次のレベル進む？")) {
@@ -157,8 +157,8 @@ public class Dungeon_Manager : MonoBehaviour {
                     player_speed = new Vector2(5f, 5f);
                 }
             }
-        }
-        if (player.transform.position != stair.transform.position)
-            button_pressed = false;
+        //}
+       // if (player.transform.position != stair.transform.position)
+       //     button_pressed = false;
     }
 }

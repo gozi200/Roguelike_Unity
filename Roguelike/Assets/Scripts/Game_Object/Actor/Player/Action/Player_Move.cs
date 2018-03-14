@@ -27,8 +27,7 @@ public class Player_Move : MonoBehaviour {
     [SerializeField]
     Enemy enemy;
 
-    [SerializeField]
-    Player player;
+    GM.Player player;
 
     Player_Action player_action;
 
@@ -42,16 +41,20 @@ public class Player_Move : MonoBehaviour {
 
     static Dungeon_Generator dungeon_generator;
 
+    void Awake() {
+        player = GM.Instance.player;
+    }
+
     void Start() {
         mode = ePlayer_Mode.Nomal_Mode;
 
-        player_width = player.GetComponent<Object_Coordinates>().Width;
-
-        player_height = player.GetComponent<Object_Coordinates>().Height;
-
-        player_status = player.GetComponent<Player_Status>();
-
-        player_action = player.GetComponent<Player_Action>();
+      //  player_width = player.GetComponent<Object_Coordinates>().Width;
+      //
+      //  player_height = player.GetComponent<Object_Coordinates>().Height;
+      //
+      //  player_status = player.GetComponent<Player_Status>();
+      //
+      //  player_action = player.GetComponent<Player_Action>();
 
         enemy_action = enemy.GetComponent<Enemy_Action>();
     }

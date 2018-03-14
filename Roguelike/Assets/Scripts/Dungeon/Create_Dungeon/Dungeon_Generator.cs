@@ -56,7 +56,6 @@ public class Dungeon_Generator : MonoBehaviour {
     /// プレイヤーオブジェクト
     /// </summary>
     public GameObject player_object;
-    Player player_script;
 
     /// <summary>
     /// エネミーオブジェクト
@@ -151,7 +150,11 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     const int CHIP_TRAP = 7;
 
-#endregion
+    #endregion
+
+    void Awake() {
+        var player_script = GM.Instance.player;
+    }
 
     /// <summary>
     /// チップ上のX座標を取得する.

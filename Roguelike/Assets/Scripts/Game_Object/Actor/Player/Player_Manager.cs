@@ -11,20 +11,21 @@ using UnityEngine;
 /// <summary>
 /// プレイヤーのマネージャークラス
 /// </summary>
-public class Player_Manager : MonoBehaviour {
-    [SerializeField]
-    static Player player;
-    public static Player Player_Data {
-        get {
-            return player;
-        }
-
-        private set {
-            player = value;
-        }
-    }
-
-    void Start() {
-        GameManager.Set_Player(this);
-    }
-}
+//public class Player_Manager : MonoBehaviour {
+//    [SerializeField]
+//    static Player player;
+//    public static Player Player_Data {
+//        get {
+//            return player;
+//        }
+//
+//        private set {
+//            player = value;
+//        }
+//    }
+//
+//    void Start() {
+//        GameManager.Set_Player(this);
+//    }
+//}
+//

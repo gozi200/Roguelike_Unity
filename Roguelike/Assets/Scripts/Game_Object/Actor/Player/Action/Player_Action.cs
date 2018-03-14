@@ -16,13 +16,12 @@ public class Player_Action : MonoBehaviour {
     /// プレイヤーの体力
     /// </summary>
     int player_hit_point;
-
+    
     public eDirection direction;
 
     public ePlayer_Action action;
 
-    [SerializeField]
-    Player player;
+    GM.Player player;
 
     [SerializeField]
     Enemy enemy;
@@ -33,15 +32,19 @@ public class Player_Action : MonoBehaviour {
 
     Damage_Calculation damage_calculation;
 
-    // Use this for initialization
+    void Awake() {
+        player = GM.Instance.player;
+    }
+
     void Start() {
+        Debug.Log(player);
         action    = ePlayer_Action.Move;
         direction = eDirection.Down;
 
-        player_hit_point = player.GetComponent<Player>().hit_point;
 
-        player_move   = player.GetComponent<Player_Move>();
-        player_status = player.GetComponent<Player_Status>();
+
+    //    player_move   = player.GetComponent<Player_Move>();
+    //    player_status = player.GetComponent<Player_Status>();
     }
 
     void Update() {
@@ -56,7 +59,7 @@ public class Player_Action : MonoBehaviour {
             Debug.Log(direction);
         switch (action) {
             case ePlayer_Action.Move:
-                player_move.Action_Move();
+                //player_move.Action_Move();
                 break;
 
             case ePlayer_Action.Attack:
@@ -71,10 +74,10 @@ public class Player_Action : MonoBehaviour {
                 break;
         }
 
-        // 体力が 0 以下ならゲームオーバー処理に切り替える
-        if (action != ePlayer_Action.Game_Over && player_status.Is_Dead(player_hit_point) ) {
-            Set_Action(ePlayer_Action.Game_Over);
-        }
+  //      // 体力が 0 以下ならゲームオーバー処理に切り替える
+  //      if (action != ePlayer_Action.Game_Over && player_status.Is_Dead(player.hit_point) ) {
+  //          Set_Action(ePlayer_Action.Game_Over);
+  //      }
     }
 
     /// <summary>

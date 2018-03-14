@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 /// <summary>
 /// エネミー本体のクラス
 /// </summary>
@@ -46,5 +47,7 @@ public class Enemy : MonoBehaviour {
 
         speed.x = 5; // 縦軸の移動量
         speed.y = 5; // 横軸の移動量
+
+        //player_test = 0;
     }
 }

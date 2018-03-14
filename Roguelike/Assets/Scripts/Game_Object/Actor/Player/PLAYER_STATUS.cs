@@ -12,8 +12,7 @@ using System.Linq;
 /// プレイヤーのステータスを設定する
 /// </summary>
 public class Player_Status : MonoBehaviour {
-    [SerializeField]
-    Player player;
+    GM.Player player;
 
     Dungeon_Map map;
 
@@ -38,6 +37,10 @@ public class Player_Status : MonoBehaviour {
     /// レベルアップに必要な経験値量をは苦悩する配列
     /// </summary>
     public int[] exp_data_base = new int[999];
+
+    void Awake() {
+        player = GM.Instance.player;
+    }
 
     void Start() {
     int[] exp_data_base = new int[] {

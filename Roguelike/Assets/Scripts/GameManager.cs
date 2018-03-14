@@ -16,24 +16,21 @@ public class GameManager : MonoBehaviour {
     // 現在の状態
     eGame_State game_state;
 
-    static Enemy_Manager enemy_manager;
-    static Player_Manager player_manager;
+    GM.Player player;
 
+    static Enemy_Manager enemy_manager;
     [SerializeField]
     Dungeon_Manager dungeon_manager;
 
-    public static GameManager Instance;
+    void Awake() {
+        player = GM.Instance.player;
+    }
 
-    // Use this for initialization
     void Start() {
-        Instance = this;
         game_state = eGame_State.Create_Dungeon;
         dungeon_manager.Create();
     }
 
-    public static void Set_Player(Player_Manager set_player_manager) {
-        player_manager = set_player_manager;
-    }
     public static void Set_Enemy(Enemy_Manager set_enemy_manager) {
         enemy_manager = set_enemy_manager;
     }
