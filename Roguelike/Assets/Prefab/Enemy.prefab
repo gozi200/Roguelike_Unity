@@ -20,11 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4719653218510994}
   - component: {fileID: 212597621848275188}
-  - component: {fileID: 114207079070057304}
   - component: {fileID: 114143089566671994}
   - component: {fileID: 114425171235971858}
-  - component: {fileID: 114728269175742094}
-  - component: {fileID: 114675618149087442}
+  - component: {fileID: 114017171321495064}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -45,6 +43,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &114017171321495064
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1856322998275466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5c4a0a8aac7fe647b601c353834142c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  x: 0
+  y: 0
+  is_dead: 0
+  enemy: {fileID: 114017171321495064}
 --- !u!114 &114143089566671994
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -56,20 +69,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ae819e6e11ee2448a2ffd8c6f6f5001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 114207079070057304}
---- !u!114 &114207079070057304
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1856322998275466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de5cf53a341dff24e8c2301f812818eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemy_status: {fileID: 114143089566671994}
-  is_dead: 0
 --- !u!114 &114425171235971858
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -81,34 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 412359cdc3e02534192b64acfac6439d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 114708496703098004, guid: e16619bff6a64554f909ceb16086289b, type: 2}
-  enemy: {fileID: 114207079070057304}
-  dungeon_manager: {fileID: 114801532123368512, guid: 9a41267b116d43146bd7982687156c46,
-    type: 2}
---- !u!114 &114675618149087442
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1856322998275466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 749223d07f89b0c43af3b1d1b6f2fa66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  height: 21
-  width: 6
---- !u!114 &114728269175742094
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1856322998275466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e70193df358b6a34c8c6878143a4fc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  dungeon_manager: {fileID: 0}
 --- !u!212 &212597621848275188
 SpriteRenderer:
   m_ObjectHideFlags: 1

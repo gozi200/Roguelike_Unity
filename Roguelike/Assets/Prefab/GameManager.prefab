@@ -51,9 +51,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23043588b2cb4484d9ec7392ced43c6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player_manager: {fileID: 114293090023315464, guid: 0a99fbfce9c6315488ac0667f7e8b726,
-    type: 2}
-  enemy_manager: {fileID: 114455168729388842, guid: e16619bff6a64554f909ceb16086289b,
-    type: 2}
-  dungeon_manager: {fileID: 114260944800972256, guid: 33d89e984c28e7c498fc8486c99f26f7,
-    type: 2}
+  dungeon_manager: {fileID: 0}
