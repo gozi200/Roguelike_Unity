@@ -66,4 +66,5 @@ public class Util {
             return System.Array.Find<Sprite>(sprites, (sprite) => sprite.name.Equals(spriteName));
         }
     }
+    
 }

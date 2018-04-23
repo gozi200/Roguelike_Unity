@@ -9,41 +9,58 @@ using System;
 /// </summary>
 public class Player_Action : MonoBehaviour {
     /// <summary>
+    /// 自身のインスタンス
+    /// </summary>
+    public Player_Action player_action;
+    /// <summary>
     /// エネミークラス
     /// </summary>
     Enemy enemy;
     /// <summary>
-    /// プレイヤークラス
+    /// プレイヤーのマネージャークラス
     /// </summary>
-    Player player;
+    Player_Manager player_manager;
     /// <summary>
+    /// プレイヤースクリプト
+    /// </summary>
+    Player player_script;
     /// プレイヤーの移動処理のクラス
     /// </summary>
     Player_Move player_move;
     /// <summary>
-    /// プレイヤーのステータス関係のクラス
+    /// プレイヤーの攻撃処理を管理するクラス
     /// </summary>
-    Player_Status player_status;
+    Player_Attack player_attack;
     /// <summary>
-    /// ダメージ計算を行うクラス
+    /// 階段に着いたときの処理を行うクラス
     /// </summary>
-    Damage_Calculation damage_calculation;
+    Action_On_Stair action_stair;
     /// <summary>
     /// キーの入力を流すクラス
     /// </summary>
     Key_Observer key_observer;
+    /// <summary>
+    /// マップを2次元配列で管理するクラス
+    /// </summary>
+    Map_Layer_2D layer;
 
     void Start() {
-        enemy  = Enemy.Instance.enemy;
-        player = Player.Instance.player;
+        player_action = gameObject.GetComponent<Player_Action>();
+        enemy  = Enemy_Manager.Instance.enemy_script;
+        player_manager = Player_Manager.Instance.manager;
+        player_script = Player_Manager.Instance.player_script;
+        player_move = Player_Manager.Instance.move;
+        player_attack = Player_Manager.Instance.attack;
+        action_stair = Player_Manager.Instance.action_stair;
+        layer = Dungeon_Manager.Instance.map_layer_2D;
         key_observer = Game.Instance.key_observer;
 
-        ///Return(Enterキー)が押されたときにバトルメニュー画面を表示する
-        key_observer.On_Key_Down_AsObservable()
-            .Where(key_code => key_code == KeyCode.Return)
-            .Subscribe(_ =>
-                player.state = ePlayer_State.Battle_Menu
-           ).AddTo(this);
+        /////Return(Enterキー)が押されたときにバトルメニュー画面を表示する
+        //key_observer.On_Key_Down_AsObservable()
+        //    .Where(key_code => key_code == KeyCode.Tab)
+        //    .Subscribe(_ =>
+        //        player_script.state = ePlayer_State.Battle_Menu
+        //   ).AddTo(this);
     }
 
     /// <summary>
@@ -57,61 +74,62 @@ public class Player_Action : MonoBehaviour {
     /// 現在の状態に合った行動をする 毎ループ呼び出す ここでゲームオーバー判定を行う
     /// </summary>
     public void Run_Action() {
-        Debug.Log(player.state);
-        Debug.Log(player.mode);
-        Debug.Log(player.direction);
+        Debug.Log(player_script.state);
+        Debug.Log(player_script.mode);
+        Debug.Log(player_script.direction);
 
-        switch (player.state) {
+        switch (player_script.state) {
             case ePlayer_State.Move:
-                player.move.Action_Move();
+                player_move.Action_Move();
                 break;
-
             case ePlayer_State.Attack:
-                Action_Attack();
+                player_attack.Action_Attack();
                 break;
-
+            case ePlayer_State.On_Stair:
+                action_stair.Action_Stair();
+                break;
             case ePlayer_State.Battle_Menu:
                 Action_Battle_Menu();
                 break;
-
             case ePlayer_State.Game_Over:
                 break;
         }
 
-  //      // 体力が 0 以下ならゲームオーバー処理に切り替える
-  //      if (action != ePlayer_State.Game_Over && player_status.Is_Dead(player.hit_point) ) {
-  //          Set_Action(ePlayer_State.Game_Over);
-  //      }
+        // 体力が 0 以下ならゲームオーバー処理に切り替える
+        if (player_script.state != ePlayer_State.Game_Over && player_manager.status.Is_Dead(player_script.hit_point) ) {
+            Set_Action(ePlayer_State.Game_Over);
+        }
     }
 
     /// <summary>
     /// 新しく入力されたアクションに切り替える
-    /// /// </summary>
+    /// </summary>
+    // TODO:現在は使ってないがカプセル化するときに使う
     /// <param name="set_action">新しく切り替える状態</param>
-    void Set_Action(ePlayer_State set_action) {
-        player.state = set_action;
+    public void Set_Action(ePlayer_State set_action) {
+        player_script.state = set_action;
     }
 
     /// <summary>
-    /// バトルメニューの処理
+    /// バトルメニューの処理 //TODO: TEST中
     /// </summary>
     void Action_Battle_Menu() {
         int flag_number = 1;
 
-        if (Input.GetKeyDown("up")) {
+        if (Input.GetKeyDown(KeyCode.UpArrow)) {
             flag_number = 1;
         }
-        else if (Input.GetKeyDown("right")) {
+        else if (Input.GetKeyDown(KeyCode.RightArrow)) {
             flag_number = 2;
         }
-        else if (Input.GetKeyDown("down")) {
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) {
             flag_number = 3;
         }
-        else if (Input.GetKeyDown("left")) {
+        else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
             flag_number = 4;
         }
 
-        if (Input.GetKeyDown("return")) {
+        if (Input.GetKeyDown(KeyCode.Return)) {
             switch (flag_number) {
                 case 1:
                     //道具画面を開く
@@ -133,118 +151,6 @@ public class Player_Action : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
             Set_Action(ePlayer_State.Move);
-            Run_Action();
-        }
-    }
-
-    /// <summary>
-    /// プレイヤーの攻撃処理
-    /// </summary>
-    void Action_Attack() {
-        switch (player.direction) {
-            case eDirection.Down:
-                for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y == enemy.Y &&
-                        gameObject.transform.position.x == enemy.X) {
-                        enemy.enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.attack,
-                           UnityEngine.Random.Range(87, 112 + 1),
-                           enemy.enemys[i].defence);
-                    }
-                }
-                Set_Action(ePlayer_State.Move);
-                break;
-
-            case eDirection.Downleft:
-                for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y - 5 == enemy.Y &&
-                        gameObject.transform.position.x     == enemy.X) {
-                        enemy.enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.attack,
-                           UnityEngine.Random.Range(87, 112 + 1),
-                           enemy.enemys[i].defence);
-                    }
-                }
-                Set_Action(ePlayer_State.Move);
-                break;
-
-            case eDirection.Left:
-                for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y     == enemy.Y &&
-                        gameObject.transform.position.x - 5 == enemy.X) {
-                        enemy.enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.attack,
-                           UnityEngine.Random.Range(87, 112 + 1),
-                           enemy.enemys[i].defence);
-                    }
-                }
-                Set_Action(ePlayer_State.Move);
-                break;
-
-            case eDirection.Upleft:
-                for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y + 5 == enemy.Y &&
-                        gameObject.transform.position.x - 5 == enemy.X) {
-                        enemy.enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.attack,
-                           UnityEngine.Random.Range(87, 112 + 1),
-                           enemy.enemys[i].defence);
-                    }
-                }
-                Set_Action(ePlayer_State.Move);
-                break;
-
-            case eDirection.Up:
-                for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y + 5 == enemy.Y &&
-                        gameObject.transform.position.x     == enemy.X) {
-                        enemy.enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.attack,
-                           UnityEngine.Random.Range(87, 112 + 1),
-                           enemy.enemys[i].defence);
-                    }
-                }
-                Set_Action(ePlayer_State.Move);
-                break;
-
-            case eDirection.Upright:
-                for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y + 5 == enemy.Y &&
-                        gameObject.transform.position.x + 5 == enemy.X) {
-                        enemy.enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.attack,
-                           UnityEngine.Random.Range(87, 112 + 1),
-                           enemy.enemys[i].defence);
-                    }
-                }
-                Set_Action(ePlayer_State.Move);
-                break;
-
-            case eDirection.Right:
-                for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y     == enemy.Y &&
-                        gameObject.transform.position.x + 5 == enemy.X) {
-                        enemy.enemys[i].hit_point -=
-                           (int)damage_calculation.Damage(player.attack,
-                           UnityEngine.Random.Range(87, 112 + 1),
-                           enemy.enemys[i].defence);
-                    }
-                }
-                Set_Action(ePlayer_State.Move);
-                break;
-
-            case eDirection.Downright:
-                for (int i = 0; i < 1; ++i) {
-                    if (gameObject.transform.position.y - 5 == enemy.Y &&
-                        gameObject.transform.position.x + 5 == enemy.X) {
-                        enemy.enemys[i].hit_point -= 
-                            (int)damage_calculation.Damage(player.attack,
-                            UnityEngine.Random.Range(87, 112 + 1),
-                            enemy.enemys[i].defence);
-                    }
-                }
-                Set_Action(ePlayer_State.Move);
-                break;
         }
     }
 }

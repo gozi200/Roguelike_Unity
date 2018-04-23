@@ -7,10 +7,34 @@ using System.Collections.Generic;
 /// </summary>
 public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
-    /// 区画リスト
+    /// エネミー本体のクラス
     /// </summary>
-    [SerializeField]
-    public List<Dungeon_Division> divition_List = null;
+    Enemy enemy;
+    /// <summary>
+    /// エネミーのマネージャークラス
+    /// </summary>
+    Enemy_Manager enemy_manager;
+    /// <summary>
+    /// プレイヤー
+    /// /// </summary>
+    Player player;
+    /// <summary>
+    /// プレイヤーのマネージャークラス
+    /// </summary>
+    Player_Manager player_manager;
+    /// <summary>
+    /// プレイヤーのステータスを管理するクラス
+    /// </summary>
+    Player_Status player_status;
+    /// <summary>
+    /// マップを２次元配列で管理するクラス
+    /// </summary>
+    Map_Layer_2D map_layer;
+    /// <summary>
+    /// ダンジョン全体の管理クラス
+    /// </summary>
+    Dungeon_Manager dungeon_manager;
+
     /// <summary>
     /// 床オブジェクト
     /// </summary>
@@ -32,22 +56,9 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     public GameObject trap_object;
     /// <summary>
-    /// プレイヤーオブジェクト
-    /// </summary>
-    public GameObject player_object;
-    /// <summary>
     /// エネミーオブジェクト
     /// </summary>
     public GameObject enemy_object;
-
-    public List<GameObject> enemy_list = new List<GameObject>();
-
-    Enemy enemy;
-    Player player;
-    Player_Status player_status;
-    Map_Layer_2D map_layer;
-
-    #region 変数
 
     /// <summary>
     /// １フロアに存在している敵の数を数える
@@ -58,37 +69,36 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     public int turn_count = 0;
     /// <summary>
-    /// マップ全体の幅
+    /// ダンジョンの横幅
     /// </summary>
-    public int dungeon_width = 30;
+    public int dungeon_width;
     /// <summary>
-    /// マップ全体の高さ
+    /// ダンジョンの縦幅
     /// </summary>
-    public int dungeon_height = 30;
-    /// <summary>
-    /// 最小の部屋サイズ
-    /// </summary>
-    const int MIN_ROOM = 3;
-    /// <summary>
-    /// 最大の部屋サイズ
-    /// </summary>
-    const int MAX_ROOM = 5;
-    /// <summary>
-    /// 区画と部屋の余白サイズ
-    /// </summary>
-    const int MERGIN_SIZE = 3;
-    /// <summary>
-    /// 部屋配置の余白サイズ
-    /// </summary>
-    const int POSITION_MERGIN = 2;
+    public int dungeon_height;
 
-#endregion
+    /// <summary>
+    /// 区画リスト
+    /// </summary>
+    [SerializeField]
+    public List<Dungeon_Division> divition_List = null;
+    /// <summary>
+    /// フロア内に存在しているエネミーを格納する
+    /// </summary>
+    public List<GameObject> enemys = new List<GameObject>();
+
+    void Awake() {
+        player_manager = Player_Manager.Instance.manager;
+        enemy_manager = Enemy_Manager.Instance.manager;
+        enemy = Enemy_Manager.Instance.enemy_script;
+        map_layer = Dungeon_Manager.Instance.map_layer_2D;
+    }
 
     void Start() {
-        enemy = Enemy.Instance.enemy;
-        player = Player.Instance.player;
-        player_status = Player.Instance.status;
-        map_layer = Game.Instance.map_layer_2D;
+        player = Player_Manager.Instance.player_script;
+        dungeon_manager = Dungeon_Manager.Instance.dungeon_manager;
+        player_status = Player_Manager.Instance.status;
+        enemy_object.AddComponent<Enemy>();
     }
 
     /// <summary>
@@ -97,10 +107,11 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <param name="x">チップの座標(x座標)</param>
     /// <returns></returns>
     public float Get_Chip_X(int x) {
-        var spr = Util.Get_Sprite("Chip1/Grass_Wall_", "");
-        var sprW = spr.bounds.size.x;
+        // TODO:Utilは使わない
+        var sprite = Util.Get_Sprite("Chip1/Grass_Wall_", "");
+        var sprite_width = sprite.bounds.size.x;
 
-        return (sprW * x);
+        return (sprite_width * x);
     }
 
     /// <summary>
@@ -109,18 +120,38 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <param name ="y"></param>
     /// <returns></returns>
     public float Get_Chip_Y(int y) {
-        var spr = Util.Get_Sprite("Chip1/Grass_Wall_", "");
-        var sprH = spr.bounds.size.y;
+        // TODO:Utilは使わない
+        var sprite = Util.Get_Sprite("Chip1/Grass_Wall_", "");
+        var sprite_height = sprite.bounds.size.y;
 
-        return (sprH * y);
+        return (sprite_height * y);
     }
 
+    /// <summary>
+    /// 新しくダンジョンを作る。フロア移動のたびに呼ばれる。
+    /// </summary>
+    /// <param name="level">どの難易度のダンジョンが呼ばれたか</param>
     public void Load_Dungeon(int level) {
+        // レベルに合った大きさのダンジョンの生成する
+        switch(level) {
+            case Define_Value.EASY:
+                dungeon_width = Define_Value.EASY_DUNGEON_WIDTH;
+                dungeon_height = Define_Value.EASY_DUNGEON_HEIGHT;
+                break;
+            case Define_Value.NOMAL:
+                dungeon_width = Define_Value.NOMAL_DUNGEON_WIDTH;
+                dungeon_height = Define_Value.NOMAL_DUNGEON_HEIGHT;
+                break;
+            case Define_Value.HARD:
+                dungeon_width = Define_Value.HARD_DUNGEON_WIDTH;
+                dungeon_height = Define_Value.HARD_DUNGEON_HEIGHT;
+                break;
+        }
+
+        // TODO:ダンジョンの難易度で大きさを変えれるようにする
         // 1. 初期化
         // 2次元配列初期化
-        map_layer.Initialise(dungeon_width, dungeon_height);
-
-        // 区画リスト作成
+        map_layer.Initialise(dungeon_width, dungeon_height);// 区画リスト作成
         divition_List = new List<Dungeon_Division>();
 
         // 2. すべてを壁にする
@@ -140,17 +171,20 @@ public class Dungeon_Generator : MonoBehaviour {
         // 6. 部屋同士をつなぐ
         Connect_Rooms();
 
-        // ７．プレイヤー、敵、アイテム、階段、などの位置
+        // ７．プレイヤー、敵、アイテム、階段の位置を決定
         Random_Actor(Define_Value.PLAYER_LAYER_NUMBER, Define_Value.STAIR_LAYER_NUMBER);
-        Random_Object(Define_Value.ITEM_LAYER_NUMBER, Define_Value.ENEMY_LAYER_NUMBER, Define_Value.TRAP_LAYER_NUMBER);
+        //TODO:中身を作り終えたらスポーンさせる
+        //Random_Object(Define_Value.ENEMY_LAYER_NUMBER);
+        //Random_Object(Define_Value.ITEM_LAYER_NUMBER);
+        //Random_Object(Define_Value.TRAP_LAYER_NUMBER);
 
         Vector3 instance_pos = Vector3.zero;
         // タイルを配置
-        for (int x = 0; x < map_layer.Width; ++x) {
-            for (int y = 0; y < map_layer.Height; ++y) {
+        for (int x = 0; x < map_layer.Get_Width(); ++x) {
+            for (int y = 0; y < map_layer.Get_Height(); ++y) {
                 // 壁以外であれば床用の画像を配置
                 if (map_layer.Get(x, y) != Define_Value.WALL_LAYER_NUMBER) {
-                    GameObject instance_cell = Instantiate(tile_object, instance_pos,Quaternion.identity);
+                    GameObject instance_cell = Instantiate(tile_object, instance_pos, Quaternion.identity);
                 }
 
                 // 壁であれば壁用の画像を配置
@@ -160,11 +194,11 @@ public class Dungeon_Generator : MonoBehaviour {
                 }
                 // プレイヤーであればプレイヤー用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.PLAYER_LAYER_NUMBER) {
-                    //TODO: 画像サイズを合わせる
-                    player.Set_Initialize_Position(x * Define_Value.SPRITE_SIZE, y * Define_Value.SPRITE_SIZE);
+                    player.Set_Initialize_Position(x, y);
                     player_status.Set_Parameter(Define_Value.OKITA);
                     map_layer.Set(x, y, Define_Value.PLAYER_LAYER_NUMBER);
-                    player.Set_Feet(map_layer.Get(x, y));
+                    //TODO:これだと階段の上にスポーンしたときに対応できない。
+                    player.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
                 }
                 // 階段であれば階段用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.STAIR_LAYER_NUMBER) {
@@ -172,7 +206,7 @@ public class Dungeon_Generator : MonoBehaviour {
                     map_layer.Set(x, y, Define_Value.STAIR_LAYER_NUMBER);
                 }
                 // アイテムであればアイテム用の画像を配置
-                //TODO: アイテムはレイヤーではなくboolか何かにするか？
+                //TODO: アイテムはレイヤーではなく、落ちてる落ちてないでのboolか何かにするか？
                 else if (map_layer.Get(x, y) == Define_Value.ITEM_LAYER_NUMBER) {
                     GameObject instance_item = Instantiate(item_object, instance_pos, Quaternion.identity);
                     map_layer.Set(x, y, Define_Value.ITEM_LAYER_NUMBER);
@@ -182,21 +216,17 @@ public class Dungeon_Generator : MonoBehaviour {
                     Instantiate(enemy_object, instance_pos, Quaternion.identity);
                     enemy.Set_Initialize_Position(x, y);
                     map_layer.Set(x, y, Define_Value.ENEMY_LAYER_NUMBER);
-                    enemy_list.Add(enemy_object);
+                    enemys.Add(enemy_object);
                 }
                 // 罠であれば罠用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.TRAP_LAYER_NUMBER) {
                     GameObject instance_cell = Instantiate(trap_object, instance_pos, Quaternion.identity);
                 }
-                // TODO:マジックナンバー
-                instance_pos.y += Define_Value.SPRITE_SIZE;
+                instance_pos.y += tile_object.GetComponent<SpriteRenderer>().bounds.size.y;
             }
             instance_pos.y = 0.0f;
-            instance_pos.x += Define_Value.SPRITE_SIZE;
-        }
-        // TODO: 合ってる？
-        foreach (GameObject enemy in enemy_list) {
-            Enemy_Action.Set_Dungeon_Generator(this);
+            instance_pos.x += tile_object.GetComponent<SpriteRenderer>().bounds.size.x;
+            instance_pos.z -= Define_Value.CAMERA_DISTANCE;
         }
     }
 
@@ -211,7 +241,6 @@ public class Dungeon_Generator : MonoBehaviour {
         Dungeon_Division div = new Dungeon_Division();
         div.Outer.Set_Position(left, top, right, bottom);
         divition_List.Add(div);
-
     }
 
     /// <summary>
@@ -237,14 +266,14 @@ public class Dungeon_Generator : MonoBehaviour {
             }
 
             // 分割ポイントを求める
-            int a = parent.Outer.Top + (MIN_ROOM + MERGIN_SIZE);
-            int b = parent.Outer.Bottom - (MIN_ROOM + MERGIN_SIZE);
+            int a = parent.Outer.Top + (Define_Value.MIN_ROOM + Define_Value.MERGIN_SIZE);
+            int b = parent.Outer.Bottom - (Define_Value.MIN_ROOM + Define_Value.MERGIN_SIZE);
 
             // AB間の距離を求める
             int ab = b - a;
 
             // 最大の部屋サイズを超えないようにする
-            ab = Mathf.Min(ab, MAX_ROOM);
+            ab = Mathf.Min(ab, Define_Value.MAX_ROOM);
 
             // 分割点を決める
             int p = a + Random.Range(0, ab + 1);
@@ -266,14 +295,14 @@ public class Dungeon_Generator : MonoBehaviour {
             }
 
             // 分割ポイントを求める
-            int a = parent.Outer.Left + (MIN_ROOM + MERGIN_SIZE);
-            int b = parent.Outer.Right - (MIN_ROOM + MERGIN_SIZE);
+            int a = parent.Outer.Left + (Define_Value.MIN_ROOM + Define_Value.MERGIN_SIZE);
+            int b = parent.Outer.Right - (Define_Value.MIN_ROOM + Define_Value.MERGIN_SIZE);
 
             // AB間の距離を求める
             int ab = b - a;
 
             // 最大の部屋サイズを超えないようにする
-            ab = Mathf.Min(ab, MAX_ROOM);
+            ab = Mathf.Min(ab, Define_Value.MAX_ROOM);
 
             // 分割点を求める
             int p = a + Random.Range(0, ab + 1);
@@ -312,7 +341,7 @@ public class Dungeon_Generator : MonoBehaviour {
         int random_div1 = Random.Range(0, divition_List.Count);
         // 階段のランダム部屋号（プレイヤーと違う）
         int random_div2;
-            random_div2 = Random.Range(0, divition_List.Count);
+        random_div2 = Random.Range(0, divition_List.Count);
         // 部屋号を探す
         for (int i = 0; i < divition_List.Count; i++) {
             if (i == random_div1) {
@@ -333,41 +362,41 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     ///他のオブジェクトのランダムの位置
     /// </summary>
-    // TODO: マジックナンバー
-    public void Random_Object(int val1, int val2, int val3) {
+    public void Random_Object(int set_object) {
         //各オブジェクト
-        for (int k = val1; k <= val3; k++) {
-            int total;
-            //オブジェクト数
-            if (k == 6)
-                if (dungeon_width < 45 && dungeon_height < 45) {
-                    total = Random.Range(3, 6);
-                    enemy_count = total;
-                }
-                else {
-                    total = Random.Range(5, 8);
-                    enemy_count = total;
-                }
-            else {
-                total = Random.Range(0, divition_List.Count - 1);
-            }
-               if (total != 0) {
-                    for (int j = 1; j <= total; j++) {
-                    //ランダム部屋号
-                    int random_div = Random.Range(0, divition_List.Count);
-                    for (int i = 0; i < divition_List.Count; i++) {
-                        //部屋号を探す
-                        if (i == random_div) {
-                            int x, y;
-                                x = Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right);
-                                y = Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom);
-                            map_layer.Fill_Tile(x, y, k);
-                        }
+        int total;
+        //オブジェクト数
+        if (Define_Value.EASY_DUNGEON_WIDTH < Define_Value.NOMAL_DUNGEON_WIDTH &&
+            Define_Value.EASY_DUNGEON_HEIGHT < Define_Value.NOMAL_DUNGEON_HEIGHT) {
+            total = Random.Range(3, 6);
+            enemy_count = total;
+        }
+        else if (Define_Value.NOMAL_DUNGEON_WIDTH <= Define_Value.HARD_DUNGEON_WIDTH &&
+                 Define_Value.NOMAL_DUNGEON_HEIGHT <= Define_Value.HARD_DUNGEON_HEIGHT) {
+            total = Random.Range(5, 8);
+            enemy_count = total;
+        }
+        else {
+            total = Random.Range(0, divition_List.Count - 1);
+        }
+        
+        if (total != 0) {
+            for (int j = 1; j <= total; j++) {
+                //ランダム部屋号
+                int random_div = Random.Range(0, divition_List.Count);
+                for (int i = 0; i < divition_List.Count; i++) {
+                    //部屋号を探す
+                    if (i == random_div) {
+                        int x, y;
+                        x = Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right);
+                        y = Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom);
+                        map_layer.Fill_Tile(x, y, set_object);
                     }
-               }
+                }
             }
         }
     }
+
 
     /// <summary>
     /// 指定のサイズを持つ区画を分割できるかどうか
@@ -378,7 +407,7 @@ public class Dungeon_Generator : MonoBehaviour {
         // (最小の部屋サイズ + 余白)
         // 2分割なので x2 する
         // +1 して連絡通路用のサイズも残す
-        int min = (MIN_ROOM + MERGIN_SIZE) * 2 + 1;
+        int min = (Define_Value.MIN_ROOM + Define_Value.MERGIN_SIZE) * 2 + 1;
 
         return size >= min;
     }
@@ -389,24 +418,24 @@ public class Dungeon_Generator : MonoBehaviour {
     void Create_Room() {
         foreach (Dungeon_Division div in divition_List) {
             // 基準サイズを決める
-            int dw = div.Outer.Width - MERGIN_SIZE;
-            int dh = div.Outer.Height - MERGIN_SIZE;
+            int dw = div.Outer.Width - Define_Value.MERGIN_SIZE;
+            int dh = div.Outer.Height - Define_Value.MERGIN_SIZE;
 
             // 大きさをランダムに決める
-            int sw = Random.Range(MIN_ROOM, dw);
-            int sh = Random.Range(MIN_ROOM, dh);
+            int sw = Random.Range(Define_Value.MIN_ROOM, dw);
+            int sh = Random.Range(Define_Value.MIN_ROOM, dh);
 
             // 最大サイズを超えないようにする
-            sw = Mathf.Min(sw, MAX_ROOM);
-            sh = Mathf.Min(sh, MAX_ROOM);
+            sw = Mathf.Min(sw, Define_Value.MAX_ROOM);
+            sh = Mathf.Min(sh, Define_Value.MAX_ROOM);
 
             // 空きサイズを計算 (区画 - 部屋)
             int rw = (dw - sw);
             int rh = (dh - sh);
 
             // 部屋の左上位置を決める
-            int rx = Random.Range(0, rw) + POSITION_MERGIN;
-            int ry = Random.Range(0, rh) + POSITION_MERGIN;
+            int rx = Random.Range(0, rw) + Define_Value.POSITION_MERGIN;
+            int ry = Random.Range(0, rh) + Define_Value.POSITION_MERGIN;
 
             int left = div.Outer.Left + rx;
             int right = left + sw;
@@ -457,9 +486,9 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     /// <param name="divA"       >部屋1</param>
     /// <param name="divB"       >部屋2</param>
-	/// <param name="bGrandChild">孫チェックするかどうか</param>
+	/// <param name="grand_child">孫チェックするかどうか</param>
     /// <returns>つなぐことができたらtrue</returns>
-	bool Create_Road(Dungeon_Division divA, Dungeon_Division divB, bool bGrandChild = false) {
+	bool Create_Road(Dungeon_Division divA, Dungeon_Division divB, bool grand_child = false) {
         if (divA.Outer.Bottom == divB.Outer.Top || divA.Outer.Top == divB.Outer.Bottom) {
             // 上下でつながっている
             // 部屋から伸ばす通路の開始位置を決める
@@ -467,7 +496,7 @@ public class Dungeon_Generator : MonoBehaviour {
             int x2 = Random.Range(divB.Room.Left, divB.Room.Right);
             int y = 0;
 
-            if (bGrandChild) {
+            if (grand_child) {
                 // すでに通路が存在していたらその情報を使用する
                 if (divA.HasRoad()) { x1 = divA.Road.Left; }
                 if (divB.HasRoad()) { x2 = divB.Road.Left; }
@@ -504,7 +533,7 @@ public class Dungeon_Generator : MonoBehaviour {
             int y2 = Random.Range(divB.Room.Top, divB.Room.Bottom);
             int x = 0;
 
-            if (bGrandChild) {
+            if (grand_child) {
                 // すでに通路が存在していたらその情報を使う
                 if (divA.HasRoad()) { y1 = divA.Road.Top; }
                 if (divB.HasRoad()) { y2 = divB.Road.Top; }
@@ -532,7 +561,6 @@ public class Dungeon_Generator : MonoBehaviour {
             // 通路を作れた
             return true;
         }
-
         // つなげなかった
         return false;
     }
@@ -568,33 +596,33 @@ public class Dungeon_Generator : MonoBehaviour {
         }
         map_layer.Fill_Rectangle_LTRB(x, top, x + 1, bottom + 1, Define_Value.TILE_LAYER_NUMBER);
     }
-
+}
     //public void Turn_Tick() {
     //    ++turn_count;
     //
-        ////20ターンごとに敵をスポーンさせる
-        //if ((turn_count % 20) == 0) {
-        //    //ランダム部屋号
-        //    int random_div = Random.Range(0, divition_List.Count);
-        //    for (int i = 0; i < divition_List.Count; i++) {
-        //        //部屋号を探す
-        //        if (i == random_div) {
-        //            int x, y;
-        //            float posx, posy;
-        //            //他のオブジェクトの位置と同じだったら繰り返し
-        //            do {
-        //                x = Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right);
-        //                y = Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom);
-        //                posx = Get_Chip_X(Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right));
-        //                posy = Get_Chip_Y(Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom));
-        //            } while ((player.transform.position.x == posx && player.transform.position.y == posy) || map_layer.Get(x, y) == CHIP_UP_STAIR || map_layer.Get(x, y) == CHIP_FOOD || map_layer.Get(x, y) == CHIP_ITEM);
-        //            enemy.transform.position = new Vector3(posx, posy, 0);
-        //            GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
-        //            enemy_script = instance_obj.GetComponent<Enemy>(); // TODO: ここのGetComponentどうする
-        //            //Enemy_Manager.Set_Enemy(enemy_script);
-        //            enemy_list.Add(instance_obj);
-        //        }
-        //    }
-        //}
-   // }
-}
+    ////20ターンごとに敵をスポーンさせる
+    //if ((turn_count % 20) == 0) {
+    //    //ランダム部屋号
+    //    int random_div = Random.Range(0, divition_List.Count);
+    //    for (int i = 0; i < divition_List.Count; i++) {
+    //        //部屋号を探す
+    //        if (i == random_div) {
+    //            int x, y;
+    //            float posx, posy;
+    //            //他のオブジェクトの位置と同じだったら繰り返し
+    //            do {
+    //                x = Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right);
+    //                y = Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom);
+    //                posx = Get_Chip_X(Random.Range(divition_List[i].Room.Left, divition_List[i].Room.Right));
+    //                posy = Get_Chip_Y(Random.Range(divition_List[i].Room.Top, divition_List[i].Room.Bottom));
+    //            } while ((player.transform.position.x == posx && player.transform.position.y == posy) || map_layer.Get(x, y) == CHIP_UP_STAIR || map_layer.Get(x, y) == CHIP_FOOD || map_layer.Get(x, y) == CHIP_ITEM);
+    //            enemy.transform.position = new Vector3(posx, posy, 0);
+    //            GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
+    //            enemy_script = instance_obj.GetComponent<Enemy>(); // TODO: ここのGetComponentどうする
+    //            //Enemy_Manager.Set_Enemy(enemy_script);
+    //            enemy_list.Add(instance_obj);
+    //        }
+    //    }
+    //}
+    // }
+

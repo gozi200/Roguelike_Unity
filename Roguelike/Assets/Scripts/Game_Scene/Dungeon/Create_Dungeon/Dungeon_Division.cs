@@ -1,10 +1,4 @@
-﻿/*
-    制作者 
-
-    最終更新日
-*/
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -15,10 +9,22 @@ public class Dungeon_Division {
     /// 矩形管理
     /// </summary>
     public class Dungeon_Rectangle {
-        public int Left   = 0; // 左
-        public int Top    = 0; // 上
-        public int Right  = 0; // 右
-        public int Bottom = 0; // 下
+        /// <summary>
+        /// 区画の左辺
+        /// </summary>
+        public int Left   = 0;
+        /// <summary>
+        /// 区画の上辺
+        /// </summary>
+        public int Top    = 0;
+        /// <summary>
+        /// 区画の右辺
+        /// </summary>
+        public int Right  = 0;
+        /// <summary>
+        /// 区画の底辺
+        /// </summary>
+        public int Bottom = 0;
 
         /// <summary>
         /// コンストラクタ
@@ -26,6 +32,7 @@ public class Dungeon_Division {
 		public Dungeon_Rectangle(int left = 0, int top = 0, int right = 0, int bottom = 0) {
             Set_Position(left, top, right, bottom);
         }
+
         /// <summary>
         /// 値をまとめて設定する
         /// </summary>
@@ -39,6 +46,7 @@ public class Dungeon_Division {
             Right  = right;
             Bottom = bottom;
         }
+
         /// <summary>
         /// 幅を返す
         /// </summary>

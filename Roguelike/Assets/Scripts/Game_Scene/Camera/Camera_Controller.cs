@@ -5,79 +5,83 @@ using System.Collections;
 /// カメラの倍率、移動限界域を設定するクラス
 /// </summary>
 public class Camera_Controller : MonoBehaviour {
+    /// <summary>
+    /// カメラの表示する範囲を決定するクラス
+    /// </summary>
     Decide_Rectangle decide_rectangle;
 
     /// <summary>
-    /// プレイヤーキャラまでの距離。固定で設定
+    /// カメラの表示領域の左下頂点
     /// </summary>
-    [SerializeField]
-    float distance = 5f;
-
+    Vector2 bottom_left;
     /// <summary>
-    /// カメラの表示領域表示用
+    /// カメラの表示領域の左上頂点
     /// </summary>
-    Vector2 cameraBottomLeft;
-    Vector2 cameraTopLeft;
-    Vector2 cameraBottomRight;
-    Vector2 cameraTopRight;
-    public float cameraRangeWidth;
-    public float cameraRangeHeight;
-
-    Transform parent;
+    Vector2 top_left;
+    /// <summary>
+    /// カメラの表示領域の右下頂点
+    /// </summary>
+    Vector2 bottom_right;
+    /// <summary>
+    /// カメラの表示領域の右上頂点
+    /// </summary>
+    Vector2 top_right;
+    /// <summary>
+    /// カメラの目標座標
+    /// </summary>
+    Vector2 new_position;
+    /// <summary>
+    /// 制限されたカメラの目標座標
+    /// </summary>
+    Vector3 limit_position;
+    /// <summary>
+    /// 親のゲームオブジェクト(プレイヤー)
+    /// </summary>
     GameObject target;
-
     /// <summary>
-    /// カメラの表示領域を緑ラインで表示
+    /// カメラの表示範囲の高さ
     /// </summary>
-    void OnDrawGizmos() {
-        // 目に優しい緑
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(cameraBottomLeft, cameraTopLeft);
-        Gizmos.DrawLine(cameraTopLeft, cameraTopRight);
-        Gizmos.DrawLine(cameraTopRight, cameraBottomRight);
-        Gizmos.DrawLine(cameraBottomRight, cameraBottomLeft);
-    }
+    public float camera_range_width;
+    /// <summary>
+    /// カメラの表示範囲の幅
+    /// </summary>
+    public float camera_range_height;
 
     void Start() {
-        parent = Player.Instance.player.transform;
-        target = parent.gameObject;
-
-        /// <summary>
-        /// ステージコントローラーを取得
-        /// </summary>
+        target = GameObject.Find("Player");
+        // ステージの範囲
         decide_rectangle = GameObject.Find("Map").GetComponent<Decide_Rectangle>();
     }
 
-    void Update()
-    {
-        /// <summary>
-        /// カメラの目標座標
-        /// </summary>
-        Vector2 newPosition;
-
-        /// <summary>
-        /// 制限されたカメラの目標座標
-        /// </summary>
-        Vector3 limitPosition;
-
+    void Update() {
         float newX = 0f;
         float newY = 0f;
 
-        // プレイヤーキャラの位置にカメラの座標を設定する。(キャラのちょっと上にする?)
-        newPosition = target.transform.position;// + offsetPosition;
+        // プレイヤーキャラの位置にカメラの座標を設定する。
+        new_position = target.transform.position;
+        gameObject.transform.position = target.transform.position;
 
         // ビューポート座標をワールド座標に変換
-        cameraBottomLeft = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
-        cameraTopRight = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
-        cameraTopLeft = new Vector2(cameraBottomLeft.x, cameraTopRight.y);
-        cameraBottomRight = new Vector2(cameraTopRight.x, cameraBottomLeft.y);
-        cameraRangeWidth = Vector2.Distance(cameraBottomLeft, cameraBottomRight);
-        cameraRangeHeight = Vector2.Distance(cameraBottomLeft, cameraTopLeft);
+        bottom_left = Camera.main.ViewportToWorldPoint(new Vector2(0, 0f));
+        top_right = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
+        top_left = new Vector2(bottom_left.x, top_right.y);
+        bottom_right = new Vector2(top_right.x, bottom_left.y);
+        camera_range_width = Vector2.Distance(bottom_left, bottom_right);
+        camera_range_height = Vector2.Distance(bottom_left, top_left);
+        newX = Mathf.Clamp(new_position.x, decide_rectangle.stage_rect.xMin + camera_range_width / 2, decide_rectangle.stage_rect.xMax - camera_range_width / 2);
+        newY = Mathf.Clamp(new_position.y, 0, decide_rectangle.stage_rect.yMax - camera_range_height / 2);
+        limit_position = new Vector3(newX, newY, Define_Value.CAMERA_DISTANCE);
+        transform.position = limit_position;
+    }
 
-        newX = Mathf.Clamp(newPosition.x, decide_rectangle.StageRect.xMin + cameraRangeWidth / 2, decide_rectangle.StageRect.xMax - cameraRangeWidth / 2);
-        newY = Mathf.Clamp(newPosition.y, 0, decide_rectangle.StageRect.yMax - cameraRangeHeight / 2);
-
-        limitPosition = new Vector3(newX, newY, -distance);
-        transform.position = limitPosition;
+    /// <summary>
+    /// カメラの描画範囲を緑の線で表示
+    /// </summary>
+    void OnDrawGizmos() {
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(bottom_left, top_left);
+        Gizmos.DrawLine(top_left, top_right);
+        Gizmos.DrawLine(top_right, bottom_right);
+        Gizmos.DrawLine(bottom_right, bottom_left);
     }
 }

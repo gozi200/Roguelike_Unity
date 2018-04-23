@@ -1,51 +1,83 @@
 ﻿/// <summary>
 /// 定数を宣言するクラス
 /// </summary>
-public static class Define_Value{
-
+public static class Define_Value {
     #region マップに関する定数
 
     /// <summary>
-    /// ダンジョンの横幅
+    /// 難易度優しい
     /// </summary>
-    public const int WIDTH = 30;
+    public const int EASY = 1;
     /// <summary>
-    /// ダンジョンの縦幅
+    /// 難易度普通
     /// </summary>
-    public const int HEIGHT = 30;
+    public const int NOMAL = 2;
     /// <summary>
-    /// 床のレイヤー番号
+    /// 難易度難しい
     /// </summary>
-    public const int TILE_LAYER_NUMBER = 1;
-    public const int STAIR_LAYER_NUMBER = 2;
+    public const int HARD = 3;
     /// <summary>
-    /// 壁のレイヤー番号
+    /// イージーダンジョンの横幅
     /// </summary>
-    public const int WALL_LAYER_NUMBER = 1001;
-
+    public const int EASY_DUNGEON_WIDTH = 30;
     /// <summary>
-    /// 1マス分のサイズ //TODO: 画像サイズを調整してあわせる
+    /// イージーダンジョンの縦幅
     /// </summary>
-    public const int SPRITE_SIZE = 5;
+    public const int EASY_DUNGEON_HEIGHT = 30;
+    /// <summary>
+    /// ノーマルダンジョンの横幅
+    /// </summary>
+    public const int NOMAL_DUNGEON_WIDTH = 45;
+    /// <summary>
+    /// ノーマルダンジョンの縦幅
+    /// </summary>
+    public const int NOMAL_DUNGEON_HEIGHT = 45;
+    /// <summary>
+    /// ハードダンジョンの横幅
+    /// </summary>
+    public const int HARD_DUNGEON_WIDTH = 60;
+    /// <summary>
+    /// ハードダンジョンの縦幅
+    /// </summary>
+    public const int HARD_DUNGEON_HEIGHT = 60;
+    /// <summary>
+    /// 最小の部屋サイズ
+    /// </summary>
+    public const int MIN_ROOM = 3;
+    /// <summary>
+    /// 最大の部屋サイズ
+    /// </summary>
+    public const int MAX_ROOM = 5;
+    /// <summary>
+    /// 区画と部屋の余白サイズ
+    /// </summary>
+    public const int MERGIN_SIZE = 3;
+    /// <summary>
+    /// 部屋配置の余白サイズ
+    /// </summary>
+    public const int POSITION_MERGIN = 2;
+    /// <summary>
+    /// プレイヤーからカメラまでの距離
+    /// </summary>
+    public const int CAMERA_DISTANCE = -5;
+    /// <summary>
+    /// 1マスの大きさ
+    /// </summary>
+    public const int TILE_SCALE = 1;
 
     #endregion
 
     #region アクターの関する定数
 
     /// <summary>
-    /// ワールド座標上での移動距離
-    /// TODO:ややこしいので画像サイズを調整して１にする
+    /// 1階で動ける移動距離
     /// </summary>
-    public const int MOVE_VAULE = 5;
+    public const int MOVE_VAULE = 1;
 
     #endregion
 
     #region プレイヤーに関する定数
 
-    /// <summary>
-    /// プレイヤーのレイヤーナンバー
-    /// </summary>
-    public const int PLAYER_LAYER_NUMBER = 101;
     /// <summary>
     /// プレイアブルキャラクターの人数
     /// </summary>
@@ -60,28 +92,50 @@ public static class Define_Value{
     #region エネミーに関する定数
 
     /// <summary>
-    /// 敵のレイヤーナンバー
-    /// </summary>
-    public const int ENEMY_LAYER_NUMBER = 102;
-
-    /// <summary>
     /// 登場エネミーの種類(ひとまずの値)
     /// </summary>
-    const int ENEMY_NUMBER = 2;
-
-
-    #endregion
-
-    #region 罠に関する定数
-    //TODO: 少ないようならマップと統一する？
-
-    public const int TRAP_LAYER_NUMBER = 3;
+    public const int ENEMY_NUMBER = 2;
 
     #endregion
 
     #region アイテムに関する定数
 
+
+    #endregion
+
+    #region レイヤー番号
+
+    /// <summary>
+    /// 床のレイヤー番号
+    /// </summary>
+    public const int TILE_LAYER_NUMBER = 1;
+    /// <summary>
+    /// 階段のレイヤーナンバー
+    /// </summary>
+    public const int STAIR_LAYER_NUMBER = 2;
+    /// <summary>
+    /// 罠のレイヤーナンバー
+    /// </summary>
+    public const int TRAP_LAYER_NUMBER = 3;
+    /// <summary>
+    /// アイテムのレイヤーナンバー
+    /// </summary>
     public const int ITEM_LAYER_NUMBER = 4;
+
+    /// <summary>
+    /// プレイヤーのレイヤーナンバー
+    /// </summary>
+    public const int PLAYER_LAYER_NUMBER = 101;
+    /// <summary>
+    /// エネミーのレイヤーナンバー
+    /// </summary>
+    public const int ENEMY_LAYER_NUMBER = 102;
+
+// これ以降は進入不可地帯(特定の条件下では進入可能)
+    /// <summary>
+    /// 壁のレイヤー番号
+    /// </summary>
+    public const int WALL_LAYER_NUMBER = 1001;
 
     #endregion
 }

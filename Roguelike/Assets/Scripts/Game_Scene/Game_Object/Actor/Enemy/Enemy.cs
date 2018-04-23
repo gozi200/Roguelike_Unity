@@ -1,54 +1,115 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// エネミー本体のクラス
 /// </summary>
-public class Enemy : Unique_Component<Enemy> {
-    //[SerializeField]
-    //Enemy_Status enemy_status;
+public class Enemy : MonoBehaviour {
 
-    [SerializeField]
-    public List<Enemy_Data> enemys = new List<Enemy_Data>();
-
-    Vector2 speed = new Vector2(5f, 5f);
-
-    /// <summary>
-    /// 自分のいる２次元配列上のx座標
-    /// </summary>
-   [SerializeField]
-   int x;
-   public int X { get; set; }
-    /// <summary>
-    /// 自分のいる２次元配列上のy座標
-    /// </summary>
-    [SerializeField]
-    int y;
-    public int Y { get; set; }
     /// <summary>
     /// 死亡判定 死んでいたらtrue
     /// </summary>
-    public bool is_dead;
+    bool is_dead { get; set; }
 
-    public Enemy enemy;
+    /// <summary>
+    /// 自分のいる座標
+    /// </summary>
+    Vector2 position;
 
-    Vector2 enemy_position;
+    /// <summary>
+    /// 表示する画像を編集する
+    /// </summary>
+    SpriteRenderer sprite_renderer;
+    /// <summary>
+    /// 表示する画像を格納
+    /// </summary>
+    Sprite sprite;
+    
+    #region csvから読み込む変数
+    /// <summary>
+    /// 番号
+    /// </summary>
+    public int ID;
+    /// <summary>
+    /// 名前
+    /// </summary>
+    public new string name;
+    /// <summary>
+    /// クラス
+    /// </summary>
+    public int class_type;
+    /// <summary>
+    /// レベル
+    /// </summary>
+    public int level;
+    /// <summary>
+    /// 体力
+    /// </summary>
+    public int hit_point;
+    /// <summary>
+    /// 最大体力
+    /// </summary>
+    public int max_hitpoint;
+    /// <summary>
+    /// 攻撃力
+    /// </summary>
+    public int attack;
+    /// <summary>
+    /// 防御力
+    /// </summary>
+    public int defence;
+    /// <summary>
+    /// 行動力(1ターンに動ける回数)
+    /// </summary>
+    public int activity;
+    /// <summary>
+    /// クリティカルの出やすさ
+    /// </summary>
+    public int critical;
+    /// <summary>
+    /// 倒されたときにプレイヤーに与える経験値量
+    /// </summary>
+    public int experience_point;
+    /// <summary>
+    /// スキル構成(タイプ)
+    /// </summary>
+    public int skill;
+    /// <summary>
+    /// 行動パターン
+    /// </summary>
+    public int AI_pattern;
+    /// <summary>
+    /// 出現開始階層
+    /// </summary>
+    public int first_floor;
+    /// <summary>
+    /// 出現終了階層
+    /// </summary>
+    public int last_floor;
+    /// <summary>
+    /// 出現後からの経過ターン
+    /// </summary>
+    public int turn_count;
 
-    void Awake() {
-        enemy = gameObject.GetComponent<Enemy>();
-    }
+#endregion
+
+    /// <summary>
+    /// 種類ごとにエネミーを格納する
+    /// </summary>
+    [SerializeField]
+    public List<Enemy> enemy_type = new List<Enemy>();
 
     void Start() {
         is_dead = false;
 
-        this.x = X;
-        this.y = Y;
+        gameObject.AddComponent<SpriteRenderer>();
+        sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
+        sprite_renderer.sortingOrder = Define_Value.ENEMY_LAYER_NUMBER;
+        sprite = Resources.Load<Sprite>("Chip2/Wyvern");
 
-        speed.x = 5;
-        speed.y = 5;
-
-        enemy_position = transform.position;
+        position = transform.position;
     }
 
     /// <summary>
@@ -57,11 +118,16 @@ public class Enemy : Unique_Component<Enemy> {
     /// <param name="width">スポーン座標(x座標)</param>
     /// <param name="height">スポーン座標(y座標)</param>
     public void Set_Initialize_Position(int width, int height) {
-        //this.cell.Width = width;
-        //this.cell.Height = height;
+        position.x = width;
+        position.y = height;
+        gameObject.transform.position = position;
+    }
 
-        enemy_position.x = width;
-        enemy_position.y = height;
-        gameObject.transform.position = enemy_position;
+    /// <summary>
+    /// 現在のポジションを取得する
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 Get_Position() {
+        return position;
     }
 }

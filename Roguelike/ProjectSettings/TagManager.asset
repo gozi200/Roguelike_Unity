@@ -11,6 +11,8 @@ TagManager:
   - Enemy
   - Item
   - Food
+  - UI_Text
+  - UI_Sprite
   layers:
   - Default
   - TransparentFX

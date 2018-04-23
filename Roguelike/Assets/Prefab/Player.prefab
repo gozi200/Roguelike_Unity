@@ -59,7 +59,7 @@ Transform:
   m_GameObject: {fileID: 1636499284750884}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 20, y: 10, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_Children:
   - {fileID: 4306270975218114}
   m_Father: {fileID: 0}
@@ -138,7 +138,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a88bfde21b5418479b8efac0db773de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stair: {fileID: 1863165542355610, guid: 319fec6a702f9614ab610e8579079c5b, type: 2}
 --- !u!114 &114261524094295912
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -174,14 +173,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 354495227f7aeb04889c80e7141f0ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cell: {fileID: 114338611433278340}
-  move_value: {x: 5, y: 5}
-  move_value_on_array: 0
-  is_dead: 0
+  player: {fileID: 114544881938850130}
+  move: {fileID: 0}
   mode: 0
   state: 0
   direction: 0
-  player: {fileID: 114544881938850130}
+  move_value: {x: 5, y: 5}
+  move_value_on_array: 0
+  is_dead: 0
   position: {x: 0, y: 0, z: 0}
 --- !u!114 &114878869256781798
 MonoBehaviour:
@@ -194,9 +193,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e02130af58c26e45b67d6b80d4caa12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distance: 1
-  cameraRangeWidth: 0
-  cameraRangeHeight: 0
+  camera_range_width: 0
+  camera_range_height: 0
 --- !u!124 &124853386565679352
 Behaviour:
   m_ObjectHideFlags: 1
@@ -243,8 +241,8 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 4.3185186, y: 3.7555556}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0

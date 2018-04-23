@@ -7,23 +7,24 @@ using UnityEngine.UI;
 /// ゲームシーンのループを回す
 /// </summary>
 public class GameManager : MonoBehaviour {
-    // 現在の状態
-    eGame_State game_state;
-
-    Player player;
-
-   // static Enemy_Manager enemy_manager;
-    [SerializeField]
+    /// <summary>
+    /// ダンジョン全体を管理するクラス
+    /// </summary>
     Dungeon_Manager dungeon_manager;
 
+    /// <summary>
+    /// ゲームの状態を取得
+    /// </summary>
+    eGame_State game_state;
+
     void Start() {
-        player = Player.Instance.player;
         game_state = eGame_State.Create_Dungeon;
+        dungeon_manager = Dungeon_Manager.Instance.dungeon_manager;
         dungeon_manager.Create();
     }
 
     /// <summary>
-    /// 状態が変わるときに呼ばれる
+    /// ゲームループの状態を変える。シーン変更時に呼ばれる
     /// </summary>
     /// <param name = "set_state">遷移後の状態</param>
     public void Set_Game_State(eGame_State set_state) {
@@ -34,9 +35,9 @@ public class GameManager : MonoBehaviour {
     /// <summary>
     /// ゲームの状態を管理
     /// </summary>
-    /// <param name = "state">新しい状態</param>
-    void Game_Loop(eGame_State state) {
-        switch (state) {
+    /// <param name = "game_state">新しい状態</param>
+    void Game_Loop(eGame_State game_state) {
+        switch (game_state) {
             case eGame_State.Create_Base:
                 // 拠点を作る
                 break;

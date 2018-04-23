@@ -7,27 +7,31 @@ using UnityEngine;
 /// </summary>
 /// <typeparam name="T">新しく作るシングルトンクラス</typeparam>
 public class Unique_Component<T> : MonoBehaviour where T : MonoBehaviour {
-    static bool applicationIsQuitting = false;
-
+    /// <summary>
+    /// 指定したクラスのインスタンス
+    /// </summary>
     static T _instance;
+    /// <summary>
+    /// trueであれば破棄する処理に入る
+    /// </summary>
+    static bool application_is_quitting = false;
 
     /// <summary>
     /// インスタンス生成を行う
     /// </summary>
     public static T Instance {
         get {
-            if (applicationIsQuitting) {
+            if (application_is_quitting) {
                 return null;
             }
 
             /*if (_instance == null) {
                 _instance = (T)FindObjectOfType(typeof(T));
-              */  
+              */
                 if (_instance == null) {
                     GameObject game_object = new GameObject(typeof(T).ToString());
                     _instance = game_object.AddComponent<T>();
                     // シーンが変わってもDestroyされないようにする
-                    //TODO: 全部入ってる
                     DontDestroyOnLoad(game_object);
                 }
             //}
@@ -35,7 +39,10 @@ public class Unique_Component<T> : MonoBehaviour where T : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// 作ったオブジェクトを破棄する
+    /// </summary>
     public void OnDestroy() {
-        applicationIsQuitting = true;
+        application_is_quitting = true;
     }
 }

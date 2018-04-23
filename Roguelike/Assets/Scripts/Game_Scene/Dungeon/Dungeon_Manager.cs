@@ -6,57 +6,59 @@ using UnityEngine.UI;
 /// <summary>
 /// ダンジョンのマネージャー
 /// </summary>
-public class Dungeon_Manager : MonoBehaviour {
+public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// <summary>
-    /// 現在の状態
+    /// 自身のインスタンス
+    /// </summary>
+    public Dungeon_Manager dungeon_manager;
+    /// <summary>
+    /// ダンジョン作成クラス
+    /// </summary>
+    public Dungeon_Generator dungeon_generator;
+    /// <summary>
+    /// マップを２次元配列で管理するクラス
+    /// </summary>
+    public Map_Layer_2D map_layer_2D;
+    /// <summary>
+    /// 表示する階層
+    /// </summary>
+    int floor;
+    /// <summary>
+    /// ダンジョンの難易度
+    /// </summary>
+    int level;
+    /// <summary>
+    /// そのダンジョンの最終階層
+    /// </summary>
+    int Max_floor;
+    /// <summary>
+    /// 階層UI
+    /// </summary>
+    Text floor_text;
+
+    /// <summary>
+    /// ゲームの現在の状態
     /// </summary>
     eGame_State game_state;
     /// <summary>
-    /// マネージャーのインスタンス
+    /// 現在のダンジョンの難易度
     /// </summary>
-    public static Dungeon_Manager Instance;
-    /// <summary>
-    /// ダンジョン作成
-    /// </summary>
-    [SerializeField]
-    public Dungeon_Generator dungeon_generator;
-    /// <summary>
-    /// レベルUI
-    /// </summary>
-    private Text level_text;
-    private int level = 1;
-    /// <summary>
-    /// GUIボタン、True＝押した、False=押してない
-    /// </summary>
-    bool button_pressed = false;
-    /// <summary>
-    /// プレイヤーオブジェクト
-    /// </summary>
-    GameObject player_object;
-    /// <summary>
-    /// 階段オブジェクト
-    /// </summary>
-    GameObject stair;
+    eDungeon_Level dungeon_level;
 
-    Vector2 player_speed;
-
-    Player player;
-
-    void Start() {
-        player = Player.Instance.player;
-        player_speed = player.move_value;
+    void Awake() {
+        level = 1;
+        floor = 1;
+        Max_floor = 5;
+        dungeon_manager = gameObject.GetComponent<Dungeon_Manager>();
+        dungeon_generator = GameObject.FindObjectOfType<Dungeon_Generator>();
+        map_layer_2D = new Map_Layer_2D();
     }
 
     /// <summary>
     /// 作成したダンジョンを表示
     /// </summary>
     public void Create() {
-        Instance = this;
         game_state = eGame_State.Create_Dungeon;
-
-        dungeon_generator = GetComponent<Dungeon_Generator>();
-
-        player_object = dungeon_generator.player_object;
 
         Initialize();
     }
@@ -66,7 +68,7 @@ public class Dungeon_Manager : MonoBehaviour {
     /// </summary>
     public void NextLevel() {
         Reset();
-        ++level;
+        ++floor;
         Initialize();
     }
 
@@ -74,13 +76,13 @@ public class Dungeon_Manager : MonoBehaviour {
     ///　プレイヤー以外全てのオブジェクトを消す
     /// </summary>
     void Reset() {
-        // 全てのオブジェクトをタグで探す TODO: 重い？
+        // 全てのオブジェクトをタグで探す TODO:Findは重い？
         GameObject[] traps = GameObject.FindGameObjectsWithTag("Trap");
         GameObject[] stairs = GameObject.FindGameObjectsWithTag("Stair");
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
         GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
         GameObject[] walls = GameObject.FindGameObjectsWithTag("Wall");
-        List<GameObject> enemy_list = dungeon_generator.enemy_list;
+        List<GameObject> enemy_list = dungeon_generator.enemys;
 
         // ダンジョンを生成しなおすのに、一度オブジェクトを消す
         foreach (GameObject trap in traps) {
@@ -108,40 +110,9 @@ public class Dungeon_Manager : MonoBehaviour {
     /// ダンジョン表示する前の準備
     /// </summary>
     void Initialize() {
-        level_text = GameObject.Find("Level_Text").GetComponent<Text>();
-        level_text.text = "Level " + level;
+        floor_text = GameObject.Find("Floor_Text").GetComponent<Text>();
+        floor_text.text = string.Format("{0}階 / {1}階", new string[] { floor.ToString(), Max_floor.ToString() });
+        //TODO:現在進入中のダンジョンからダンジョンの難易度を出したものをいれる
         dungeon_generator.Load_Dungeon(level);
-    }
-
-    /// <summary>
-    /// 階段にいる時の選択
-    /// </summary>
-    public void OnGUI() {
-        stair = dungeon_generator.stair_object;
-        //デバッグ用
-        if (GUI.Button(new Rect(565, 365, 128, 32), "もう１回")) {
-            NextLevel();
-        }
-
-        if (!button_pressed) {
-            if (player.transform.position == stair.transform.position) {
-                //選ぶまで動けなくなる
-                player_speed = new Vector2(0, 0);
-
-                //次のレベルへ行く
-                if (GUI.Button(new Rect(225, 120, 128, 32), "次の階へ進む？")) {
-                    NextLevel();
-                    player_speed = new Vector2(5f, 5f);
-                }
-
-                //探索を続く
-                else if (GUI.Button(new Rect(385, 120, 128, 32), "探索を続ける？")) {
-                    button_pressed = true;
-                    player_speed = new Vector2(5f, 5f);
-                }
-            }
-        }
-        if (player.transform.position != stair.transform.position)
-            button_pressed = false;
     }
 }

@@ -1,17 +1,11 @@
-﻿/*
-制作者 石倉
-
-最終編集日 2018/02/08
- */
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// アクターの共通のステータスの変更を行うクラス
+/// アクターの共通のステータスの関係の処理を行うクラス
 /// </summary>
-public class Actor_Status : MonoBehaviour {
+public class Actor_Status {
     /// <summary>
     /// 死亡判定
     /// </summary>

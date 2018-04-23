@@ -7,51 +7,40 @@ using UnityEngine;
 /// </summary>
 public class Enemy_Action : MonoBehaviour {
     /// <summary>
-    /// エネミーのいる横座標の位置
+    /// エネミー本体のクラス
     /// </summary>
-    int enemy_width;
-
+    Enemy enemy;
     /// <summary>
-    /// エネミーのいる縦座標の位置
+    /// プレイヤーのマネージャー
     /// </summary>
-    int enemy_height;
-
+    Player_Manager manager;
     /// <summary>
-    /// プレイヤーの体力
+    /// プレイヤースクリプト
     /// </summary>
-    int player_hit_point;
-
+    Player player_script;
+    /// <summary>
+    /// ダンジョンの管理クラス
+    /// </summary>
+    Dungeon_Manager dungeon_manager;
+    /// <summary>
+    /// ダンジョンを制作するクラス
+    /// </summary>
+    static Dungeon_Generator dungeon_generator;
+    /// <summary>
+    /// エネミーのモードを判断する
+    /// </summary>
     eEnemy_Mode mode;
+    /// <summary>
+    /// エネミーの向いている方向を判断する
+    /// </summary>
     eDirection direction;
 
-    [SerializeField]
-    Dungeon_Manager dungeon_manager;
-
-    static Dungeon_Generator dungeon_generator;
-
-    Damage_Calculation damage_calculation;
-
-    static List<GameObject> enemy_list;
-
-    Enemy enemy;
-    Player player;
-
     void Start() {
-        player = Player.Instance.player;
+        enemy = Enemy_Manager.Instance.enemy_script;
+        player_script = Player_Manager.Instance.player_script;
 
         direction = eDirection.Down;
-
-        //enemy_width  = enemy.GetComponent<Object_Coordinates>().Width;
-        //enemy_height = enemy.GetComponent<Object_Coordinates>().Height;
     }
-
-    public static void Set_Dungeon_Generator(Dungeon_Generator set_dungeon_generator) {
-        dungeon_generator = set_dungeon_generator;
-    }
-
-    //public static void Set_Enemy_List(List<GameObject> set_coordinates) {
-    //    enemy_list = set_coordinates;
-    //}
 
     /// <summary>
     /// エネミーの行動処理
@@ -59,7 +48,7 @@ public class Enemy_Action : MonoBehaviour {
     public void Move_Enemy() {
         for (int i = 0; i < 1; ++i) {
         Debug.Log(enemy);
-            switch (enemy.enemys[i].AI_pattern) {
+            switch (enemy.enemy_type[i].AI_pattern) {
                 case 2:
                        // if (Search_Player(player.transform.position.x, player.transform.position.y)) {
                        //     player_hit_point -= (int)damage_calculation.Damage(enemy.GetComponent<Enemy>().enemys[i].attack, Random.Range(87, 112 + 1), 0);
@@ -118,40 +107,25 @@ public class Enemy_Action : MonoBehaviour {
     /// <summary>
     /// エネミーの移動処理
     /// </summary>
-    private void Move() {
-        for (int index = 0; index < enemy_list.Count; ++index) {
-            /// <summary>
-            /// 移動後の横座標
-            /// </summary>
+    void Move() {
+        for (int index = 0; index < dungeon_generator.enemys.Count; ++index) {
+            // 移動後の横座標
             int width = 0;
-            /// <summary>
-            /// 移動後の縦座標
-            /// </summary>
+            // 移動後の縦座標
             int height = 0;
-            /// <summary>
-            /// 移動方向を乱数で決める
-            /// </summary>
+            // 移動方向を乱数で決める
             int random_direction = Random.Range(0, (int)eDirection.Finish);
-            /// <summary>
-            /// 上述のint型乱数をenum型にキャスト
-            /// </summary>
+            // 上述のint型乱数をenum型にキャスト
             eDirection cast_random_direction = (eDirection)random_direction;
-            /// <summary>
-            /// 移動が完了したかどうかのフラグ 完了であればtrue
-            /// </summary>
+            // 移動が完了したかどうかのフラグ 完了であればtrue
             bool move_flag = false;
-            /// <summary>
-            /// 移動が可能かどうかのフラグ 可能であればtrue
-            /// </summary>
+            // 移動が可能かどうかのフラグ 可能であればtrue
             bool movement = false;
-
-            int layer_number = 2; // テスト中
 
             switch (cast_random_direction) {
                 case eDirection.Up:
-                    // TODO: 問題点有り 詳しくは Dungeon_Base の IS_Check_Move にて
-                    width    = (int)enemy_list[index].transform.position.x;
-                    height   = (int)enemy_list[index].transform.position.y + 1;
+                    width    = (int)dungeon_generator.enemys[index].transform.position.x;
+                    height   = (int)dungeon_generator.enemys[index].transform.position.y + 1;
                     break;
 
                 /*case eDirection.Upright:
@@ -205,17 +179,6 @@ public class Enemy_Action : MonoBehaviour {
                     break;
                     */
             }
-
-            if (movement) {
-                Enemy_Move(index, height, width);
-                if(index >= enemy_list.Count) {
-                    move_flag = true;
-                }
-            }
         }
-    }
-
-    void Enemy_Move(int index, int height, int width) {
-    
     }
 }
