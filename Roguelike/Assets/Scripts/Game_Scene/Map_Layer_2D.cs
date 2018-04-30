@@ -101,7 +101,7 @@ public class Map_Layer_2D {
     }
 
     /// <summary>
-    /// オブジェクトの座標から取るとき //TODO:テスト中
+    /// オブジェクトの座標から取るときに使用
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>

@@ -22,7 +22,7 @@ public class Battle_Menu : MonoBehaviour {
     Key_Observer key_observer;
 
 	void Start () {
-        player = Player_Manager.Instance.player_script;
+        player = Actor_Manager.Instance.player_script;
         key_observer = Game.Instance.key_observer;
         battle_menu_UI = GameObject.Find("Battle_Menu_UI");
 

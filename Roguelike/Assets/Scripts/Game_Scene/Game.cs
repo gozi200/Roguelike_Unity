@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 
 /// <summary>
-/// ゲームシーンに必要なユニーククラス //TODO:Titleから遷移すると継承元のInstanceがnullになる
+/// ゲームシーンに必要なユニーククラス
 /// </summary>
 public class Game : Unique_Component<Game> {
     /// <summary>
@@ -30,7 +30,7 @@ public class Game : Unique_Component<Game> {
     }
 
     void Start() {
-        // Spaceキーを押すとメニュー画面が開く
+        // Mキーを押すとメニュー画面が開く
         key_observer.On_Key_Down_AsObservable()
             .Where(key_code => key_code == KeyCode.M)
             .Subscribe(_ =>
@@ -43,5 +43,3 @@ public class Game : Unique_Component<Game> {
         key_observer.Key_Check();
     }
 }
-
-

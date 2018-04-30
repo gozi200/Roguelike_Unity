@@ -5,17 +5,11 @@ using UnityEngine;
 /// <summary>
 /// アクターの共通のステータスの関係の処理を行うクラス
 /// </summary>
-public class Actor_Status {
+public class Actor_Status : MonoBehaviour {
     /// <summary>
-    /// 死亡判定
+    /// 死亡したかを判定する 毎アクターのターンの終わりに確認する
     /// </summary>
-    /// <param name = "now_HP">アクターの現在の体力</param>
-    /// <returns>死亡したらtrue 生きていたらfalse</returns>
-    public bool Is_Dead(int now_HP) {
-        if (now_HP <= 0) {
-            now_HP = 0;
-            return true;
-        }
-        return false;
-    }
+    /// <param name="now_HP">現在の体力</param>
+    /// <returns>死亡していたらtrue</returns>
+    public virtual bool Is_Dead(int now_HP) { return true; }
 }

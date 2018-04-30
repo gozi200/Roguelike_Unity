@@ -6,21 +6,37 @@ using UnityEngine.UI;
 /// <summary>
 /// ゲームシーンのループを回す
 /// </summary>
-public class GameManager : MonoBehaviour {
+public class GameManager : Unique_Component<GameManager> {
     /// <summary>
-    /// ダンジョン全体を管理するクラス
+    /// 自身のインスタンス
     /// </summary>
-    Dungeon_Manager dungeon_manager;
+    public GameManager game_manager;
+    /// <summary>
+    /// プレイヤーアクションを管理するクラス
+    /// </summary>
+    Player_Action player_action;
+    /// <summary>
+    /// エネミーアクションを管理するクラス
+    /// </summary>
+    Enemy_Action enemy_action;
 
     /// <summary>
     /// ゲームの状態を取得
     /// </summary>
-    eGame_State game_state;
+    public eGame_State game_state;
+
+    void Awake() {
+        game_manager = gameObject.GetComponent<GameManager>();
+    }
 
     void Start() {
-        game_state = eGame_State.Create_Dungeon;
-        dungeon_manager = Dungeon_Manager.Instance.dungeon_manager;
-        dungeon_manager.Create();
+        game_state = eGame_State.Create_Base;
+        player_action = Actor_Manager.Instance.player_action;
+        enemy_action = Actor_Manager.Instance.enemy_action;
+    }
+
+    void Update() {
+        Game_Loop(game_state);
     }
 
     /// <summary>
@@ -29,7 +45,6 @@ public class GameManager : MonoBehaviour {
     /// <param name = "set_state">遷移後の状態</param>
     public void Set_Game_State(eGame_State set_state) {
         game_state = set_state;
-        Game_Loop(set_state);
     }
 
     /// <summary>
@@ -37,18 +52,23 @@ public class GameManager : MonoBehaviour {
     /// </summary>
     /// <param name = "game_state">新しい状態</param>
     void Game_Loop(eGame_State game_state) {
+        var dungeon_manager = Dungeon_Manager.Instance.manager;
+
         switch (game_state) {
             case eGame_State.Create_Base:
                 // 拠点を作る
+                Set_Game_State(eGame_State.Create_Dungeon);
                 break;
 
             case eGame_State.Create_Dungeon:
                 // ダンジョンを作る
-                dungeon_manager.NextLevel();
+                dungeon_manager.Create();
+                Set_Game_State(eGame_State.Player_Turn);
                 break;
 
             case eGame_State.Player_Turn:
-                // プレイヤーの行動
+                // プレイヤーのターン
+                player_action.Run_Action();
                 break;
 
             case eGame_State.Partner_Turn:
@@ -56,7 +76,8 @@ public class GameManager : MonoBehaviour {
                 break;
 
             case eGame_State.Enemy_Trun:
-                // エネミーの行動
+                // エネミーのターン
+                enemy_action.Move_Enemy();
                 break;
 
             case eGame_State.Dungeon_Turn:

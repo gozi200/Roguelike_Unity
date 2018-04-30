@@ -6,110 +6,35 @@ using UnityEngine.UI;
 /// <summary>
 /// エネミー本体のクラス
 /// </summary>
-public class Enemy : MonoBehaviour {
-
-    /// <summary>
-    /// 死亡判定 死んでいたらtrue
-    /// </summary>
-    bool is_dead { get; set; }
-
-    /// <summary>
-    /// 自分のいる座標
-    /// </summary>
-    Vector2 position;
-
+public class Enemy : Actor {
     /// <summary>
     /// 表示する画像を編集する
     /// </summary>
     SpriteRenderer sprite_renderer;
-    /// <summary>
-    /// 表示する画像を格納
-    /// </summary>
-    Sprite sprite;
-    
-    #region csvから読み込む変数
-    /// <summary>
-    /// 番号
-    /// </summary>
-    public int ID;
-    /// <summary>
-    /// 名前
-    /// </summary>
-    public new string name;
-    /// <summary>
-    /// クラス
-    /// </summary>
-    public int class_type;
-    /// <summary>
-    /// レベル
-    /// </summary>
-    public int level;
-    /// <summary>
-    /// 体力
-    /// </summary>
-    public int hit_point;
-    /// <summary>
-    /// 最大体力
-    /// </summary>
-    public int max_hitpoint;
-    /// <summary>
-    /// 攻撃力
-    /// </summary>
-    public int attack;
-    /// <summary>
-    /// 防御力
-    /// </summary>
-    public int defence;
-    /// <summary>
-    /// 行動力(1ターンに動ける回数)
-    /// </summary>
-    public int activity;
-    /// <summary>
-    /// クリティカルの出やすさ
-    /// </summary>
-    public int critical;
-    /// <summary>
-    /// 倒されたときにプレイヤーに与える経験値量
-    /// </summary>
-    public int experience_point;
-    /// <summary>
-    /// スキル構成(タイプ)
-    /// </summary>
-    public int skill;
-    /// <summary>
-    /// 行動パターン
-    /// </summary>
-    public int AI_pattern;
-    /// <summary>
-    /// 出現開始階層
-    /// </summary>
-    public int first_floor;
-    /// <summary>
-    /// 出現終了階層
-    /// </summary>
-    public int last_floor;
-    /// <summary>
-    /// 出現後からの経過ターン
-    /// </summary>
-    public int turn_count;
 
-#endregion
+    /// <summary>
+    /// エネミーのモードを判断する
+    /// </summary>
+    public eEnemy_Mode mode;
+    /// <summary>
+    /// エネミーの向いている方向を判断する
+    /// </summary>
+    public eDirection direction;
 
     /// <summary>
     /// 種類ごとにエネミーを格納する
     /// </summary>
-    [SerializeField]
-    public List<Enemy> enemy_type = new List<Enemy>();
+    public List<Enemy_Status> enemy_type = new List<Enemy_Status>();
 
     void Start() {
-        is_dead = false;
-
+        exist = true;
         gameObject.AddComponent<SpriteRenderer>();
         sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
         sprite_renderer.sortingOrder = Define_Value.ENEMY_LAYER_NUMBER;
-        sprite = Resources.Load<Sprite>("Chip2/Wyvern");
+        sprite_renderer.sprite = Resources.Load<Sprite>("Chip2/Wyvern");
 
         position = transform.position;
+        gameObject.transform.localScale = new Vector2(0.4f, 0.4f);
     }
 
     /// <summary>
@@ -117,17 +42,35 @@ public class Enemy : MonoBehaviour {
     /// </summary>
     /// <param name="width">スポーン座標(x座標)</param>
     /// <param name="height">スポーン座標(y座標)</param>
-    public void Set_Initialize_Position(int width, int height) {
+    public override void Set_Initialize_Position(int width, int height) {
         position.x = width;
         position.y = height;
         gameObject.transform.position = position;
     }
 
     /// <summary>
+    /// transform.positionに変更をした座標を合わせる
+    /// </summary>
+    /// <param name="new_position">変更後の座標</param>
+    public override void Set_Position(Vector2 new_position) {
+        this.position.x = new_position.x;
+        this.position.y = new_position.y;
+        gameObject.transform.position = this.position;
+    }
+
+    /// <summary>
     /// 現在のポジションを取得する
     /// </summary>
     /// <returns></returns>
-    public Vector3 Get_Position() {
+    public override Vector2 Get_Position() {
         return position;
+    }
+
+    /// <summary>
+    /// 足元にあるものを設定する
+    /// </summary>
+    /// <param name="layer_number">今のいる場所のレイヤー番号</param>
+    public override void Set_Feet(int layer_number) {
+        feet = layer_number;
     }
 }

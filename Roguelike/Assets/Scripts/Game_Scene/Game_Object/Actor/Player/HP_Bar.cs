@@ -1,12 +1,11 @@
-﻿/*
-制作者 アントニオ
-*/
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// 体力ゲージの減少を目に見えるように
+/// </summary>
 public class HP_Bar : MonoBehaviour {
     /// <summary>
     /// 体力バーのイメージ
@@ -25,11 +24,12 @@ public class HP_Bar : MonoBehaviour {
     /// 表示座標を指定する
     /// </summary>
     void Handle_Bar() {
-        health.fillAmount = Map(10, 0, 20, 0, 1);
+        var player_status = Actor_Manager.Instance.player_status;
+        health.fillAmount = Map(player_status.hit_point, 0, player_status.max_hit_point, 0, 1);
     }
 
     /// <summary>
-    /// 座標を設定する //TODO:制作者に聞く
+    /// 座標を設定する
     /// </summary>
     /// <param name="value"></param>
     /// <param name="inMin"></param>

@@ -20,10 +20,6 @@ public class Action_On_Stair : MonoBehaviour {
     /// </summary>
     Player_Action player_action;
     /// <summary>
-    /// ダンジョンのマネージャークラス
-    /// </summary>
-    Dungeon_Manager dungeon_manager;
-    /// <summary>
     /// 階段を進むか否かのコマンドを表示
     /// </summary>
     GameObject stair_command_UI;
@@ -40,10 +36,9 @@ public class Action_On_Stair : MonoBehaviour {
 
 
     void Start() {
-        player = Player_Manager.Instance.player;
-        player_script = Player_Manager.Instance.player_script;
-        player_action = Player_Manager.Instance.action;
-        dungeon_manager = Dungeon_Manager.Instance.dungeon_manager;
+        player = Actor_Manager.Instance.player;
+        player_script = Actor_Manager.Instance.player_script;
+        player_action = Actor_Manager.Instance.player_action;
 
         stair_command_UI = GameObject.Find("Stair_Command_UI");
         said_stair_command = new ReactiveProperty<bool>(false);

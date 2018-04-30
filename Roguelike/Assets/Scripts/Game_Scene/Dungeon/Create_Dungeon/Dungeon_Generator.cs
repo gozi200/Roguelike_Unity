@@ -11,29 +11,21 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     Enemy enemy;
     /// <summary>
-    /// エネミーのマネージャークラス
-    /// </summary>
-    Enemy_Manager enemy_manager;
-    /// <summary>
     /// プレイヤー
     /// /// </summary>
     Player player;
-    /// <summary>
-    /// プレイヤーのマネージャークラス
-    /// </summary>
-    Player_Manager player_manager;
     /// <summary>
     /// プレイヤーのステータスを管理するクラス
     /// </summary>
     Player_Status player_status;
     /// <summary>
+    /// エネミーのステータスを管理するクラス
+    /// </summary>
+    Enemy_Status enemy_status;
+    /// <summary>
     /// マップを２次元配列で管理するクラス
     /// </summary>
     Map_Layer_2D map_layer;
-    /// <summary>
-    /// ダンジョン全体の管理クラス
-    /// </summary>
-    Dungeon_Manager dungeon_manager;
 
     /// <summary>
     /// 床オブジェクト
@@ -82,23 +74,16 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     [SerializeField]
     public List<Dungeon_Division> divition_List = null;
-    /// <summary>
-    /// フロア内に存在しているエネミーを格納する
-    /// </summary>
-    public List<GameObject> enemys = new List<GameObject>();
 
     void Awake() {
-        player_manager = Player_Manager.Instance.manager;
-        enemy_manager = Enemy_Manager.Instance.manager;
-        enemy = Enemy_Manager.Instance.enemy_script;
+        enemy = Actor_Manager.Instance.enemy_script;
         map_layer = Dungeon_Manager.Instance.map_layer_2D;
     }
 
     void Start() {
-        player = Player_Manager.Instance.player_script;
-        dungeon_manager = Dungeon_Manager.Instance.dungeon_manager;
-        player_status = Player_Manager.Instance.status;
-        enemy_object.AddComponent<Enemy>();
+        player = Actor_Manager.Instance.player_script;
+        player_status = Actor_Manager.Instance.player_status;
+        enemy_status = Actor_Manager.Instance.enemy_status;
     }
 
     /// <summary>
@@ -174,7 +159,7 @@ public class Dungeon_Generator : MonoBehaviour {
         // ７．プレイヤー、敵、アイテム、階段の位置を決定
         Random_Actor(Define_Value.PLAYER_LAYER_NUMBER, Define_Value.STAIR_LAYER_NUMBER);
         //TODO:中身を作り終えたらスポーンさせる
-        //Random_Object(Define_Value.ENEMY_LAYER_NUMBER);
+        Random_Object(Define_Value.ENEMY_LAYER_NUMBER);
         //Random_Object(Define_Value.ITEM_LAYER_NUMBER);
         //Random_Object(Define_Value.TRAP_LAYER_NUMBER);
 
@@ -197,8 +182,10 @@ public class Dungeon_Generator : MonoBehaviour {
                     player.Set_Initialize_Position(x, y);
                     player_status.Set_Parameter(Define_Value.OKITA);
                     map_layer.Set(x, y, Define_Value.PLAYER_LAYER_NUMBER);
-                    //TODO:これだと階段の上にスポーンしたときに対応できない。
+                    //TODO:これだと床の上でのスポーンにしか対応できない
                     player.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
+                    // ここでプレイヤーに命を与える
+                    player.exist = true;
                 }
                 // 階段であれば階段用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.STAIR_LAYER_NUMBER) {
@@ -206,17 +193,31 @@ public class Dungeon_Generator : MonoBehaviour {
                     map_layer.Set(x, y, Define_Value.STAIR_LAYER_NUMBER);
                 }
                 // アイテムであればアイテム用の画像を配置
-                //TODO: アイテムはレイヤーではなく、落ちてる落ちてないでのboolか何かにするか？
+                //TODO: アイテムはレイヤーではなく、落ちてる落ちてないでのboolか何かにするか
                 else if (map_layer.Get(x, y) == Define_Value.ITEM_LAYER_NUMBER) {
                     GameObject instance_item = Instantiate(item_object, instance_pos, Quaternion.identity);
                     map_layer.Set(x, y, Define_Value.ITEM_LAYER_NUMBER);
                 }
-                // 敵であれば敵用の画像を配置
+                // 敵であれば敵を生成
                 else if (map_layer.Get(x, y) == Define_Value.ENEMY_LAYER_NUMBER) {
-                    Instantiate(enemy_object, instance_pos, Quaternion.identity);
-                    enemy.Set_Initialize_Position(x, y);
+                    var actor_manager = Actor_Manager.Instance.actor_manager;
+
+                    // リストにするので１つずつインスタンスを作る。
+                    enemy_object = new GameObject("Enemy");
+                    // エネミーのステータスを管理するクラスを追加
+                    enemy_object.AddComponent<Enemy_Status>();
+                    //TODO:マジックナンバー 1には敵の種類が入る
+                    enemy_object.GetComponent<Enemy_Status>().Set_Parameter(enemy_object, 1);
+
+                    // エネミー本体のスクリプトを追加
+                    enemy_object.AddComponent<Enemy>();
+                    // GetComponentがかさむので１時変数に
+                    var enemy_obj = enemy_object.GetComponent<Enemy>();
+                    enemy_obj.Set_Initialize_Position(x, y);
                     map_layer.Set(x, y, Define_Value.ENEMY_LAYER_NUMBER);
-                    enemys.Add(enemy_object);
+                    //TODO:これだと床の上でのスポーンにしか対応できない
+                    enemy_obj.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
+                    actor_manager.enemys.Add(enemy_object);
                 }
                 // 罠であれば罠用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.TRAP_LAYER_NUMBER) {
@@ -619,7 +620,7 @@ public class Dungeon_Generator : MonoBehaviour {
     //            enemy.transform.position = new Vector3(posx, posy, 0);
     //            GameObject instance_obj = Instantiate(enemy, enemy.transform.position, Quaternion.identity);
     //            enemy_script = instance_obj.GetComponent<Enemy>(); // TODO: ここのGetComponentどうする
-    //            //Enemy_Manager.Set_Enemy(enemy_script);
+    //            //Actor_Manager.Set_Enemy(enemy_script);
     //            enemy_list.Add(instance_obj);
     //        }
     //    }
