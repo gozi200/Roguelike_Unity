@@ -8,10 +8,6 @@ using UnityEngine.UI;
 /// </summary>
 public class GameManager : Unique_Component<GameManager> {
     /// <summary>
-    /// 自身のインスタンス
-    /// </summary>
-    public GameManager game_manager;
-    /// <summary>
     /// プレイヤーアクションを管理するクラス
     /// </summary>
     Player_Action player_action;
@@ -24,10 +20,6 @@ public class GameManager : Unique_Component<GameManager> {
     /// ゲームの状態を取得
     /// </summary>
     public eGame_State game_state;
-
-    void Awake() {
-        game_manager = gameObject.GetComponent<GameManager>();
-    }
 
     void Start() {
         game_state = eGame_State.Create_Base;
@@ -52,7 +44,7 @@ public class GameManager : Unique_Component<GameManager> {
     /// </summary>
     /// <param name = "game_state">新しい状態</param>
     void Game_Loop(eGame_State game_state) {
-        var dungeon_manager = Dungeon_Manager.Instance.manager;
+        var dungeon_manager = Dungeon_Manager.Instance;
 
         switch (game_state) {
             case eGame_State.Create_Base:

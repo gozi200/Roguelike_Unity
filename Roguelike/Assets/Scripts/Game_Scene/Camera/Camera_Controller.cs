@@ -69,7 +69,7 @@ public class Camera_Controller : MonoBehaviour {
         camera_range_width = Vector2.Distance(bottom_left, bottom_right);
         camera_range_height = Vector2.Distance(bottom_left, top_left);
         newX = Mathf.Clamp(new_position.x, decide_rectangle.stage_rect.xMin + camera_range_width / 2, decide_rectangle.stage_rect.xMax - camera_range_width / 2);
-        newY = Mathf.Clamp(new_position.y, 0, decide_rectangle.stage_rect.yMax - camera_range_height / 2);
+        newY = Mathf.Clamp(new_position.y, 2.5f, decide_rectangle.stage_rect.yMax - camera_range_height / 2);
         limit_position = new Vector3(newX, newY, Define_Value.CAMERA_DISTANCE);
         transform.position = limit_position;
     }

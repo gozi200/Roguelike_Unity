@@ -105,8 +105,11 @@ public enum eDungeon_Level {
   , Hard  // ハードモード
 }
 
-public enum eStair_Command {
-    Progress     // 進行
-  , Not_Progress // 進行しない
+/// <summary>
+/// ダンジョンの種類
+/// </summary>
+public enum eDungeon_Type {
+    Beginning_Grass // TODO:仮称
+  , Dim_Cave
 }
 

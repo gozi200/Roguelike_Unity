@@ -54,8 +54,8 @@ public class Enemy_Action : MonoBehaviour {
     bool move_end;
 
     void Start() {
-        game_manager = GameManager.Instance.game_manager;
-        actor_manager = Actor_Manager.Instance.actor_manager;
+        game_manager = GameManager.Instance;
+        actor_manager = Actor_Manager.Instance;
         player = Actor_Manager.Instance.player_script;
         enemy = Actor_Manager.Instance.enemy_script;
         enemy_status = Actor_Manager.Instance.enemy_status;
@@ -77,14 +77,14 @@ public class Enemy_Action : MonoBehaviour {
             switch (enemy_status.AI_pattern) {
                 case 1:
                     if (Search_Player(i)) {
-                        player_status.hit_point -= (int)damage_calculation.Damage(enemy_status.attack, player_status.defence);
+                        player_status.hit_point.Value -= (int)damage_calculation.Damage(enemy_status.attack, player_status.defence);
                         break;
                     }
                     Move(i);
                     break;
             }
-        // ターンを進める
-        enemy_status.Add_Turn(i);
+        // ターンを終える
+        enemy_status.End_Turn();
         }
     }
 

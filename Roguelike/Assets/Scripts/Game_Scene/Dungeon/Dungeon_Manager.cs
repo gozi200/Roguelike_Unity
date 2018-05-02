@@ -14,10 +14,6 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// </summary>
     Actor_Manager actor_manager;
     /// <summary>
-    /// 自身のインスタンス
-    /// </summary>
-    public Dungeon_Manager manager;
-    /// <summary>
     /// ダンジョン作成クラス
     /// </summary>
     public Dungeon_Generator generator;
@@ -49,13 +45,12 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
         floor = new ReactiveProperty<int>();
         floor.Value = 1;
         max_floor = 2;
-        manager = gameObject.GetComponent<Dungeon_Manager>();
         generator = GameObject.FindObjectOfType<Dungeon_Generator>();
         map_layer_2D = new Map_Layer_2D();
     }
 
     void Start() {
-        actor_manager = Actor_Manager.Instance.actor_manager;
+        actor_manager = Actor_Manager.Instance;
     }
 
     /// <summary>

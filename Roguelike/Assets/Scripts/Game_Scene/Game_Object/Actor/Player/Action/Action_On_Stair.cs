@@ -25,11 +25,6 @@ public class Action_On_Stair : MonoBehaviour {
     GameObject stair_command_UI;
 
     /// <summary>
-    /// 階段にいるときの選択肢
-    /// </summary>
-    public eStair_Command stair_command;
-
-    /// <summary>
     /// 階段コマンドの表示非表示
     /// </summary>
     public ReactiveProperty<bool> said_stair_command;
@@ -42,8 +37,6 @@ public class Action_On_Stair : MonoBehaviour {
 
         stair_command_UI = GameObject.Find("Stair_Command_UI");
         said_stair_command = new ReactiveProperty<bool>(false);
-
-        stair_command = eStair_Command.Progress;
 
         // trueで階段で進むか否かのコマンドを表示 falseで閉じる
         said_stair_command.Where(flag => !!flag)

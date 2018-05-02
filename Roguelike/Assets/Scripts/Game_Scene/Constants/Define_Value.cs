@@ -86,6 +86,7 @@ public static class Define_Value {
     /// キャラクターID
     /// </summary>
     public const int OKITA = 0;
+    public const int MASH = 1;
 
     #endregion
 
@@ -138,4 +139,14 @@ public static class Define_Value {
     public const int WALL_LAYER_NUMBER = 1001;
 
     #endregion
+
+#region その他
+
+    /// <summary>
+    /// csvの不要な行
+    /// 現在はプレイヤーエネミーに使用 2018/05/02現在
+    /// </summary>
+    public const int UNNECESSARY_COLUMN = 3;
+
+#endregion
 }

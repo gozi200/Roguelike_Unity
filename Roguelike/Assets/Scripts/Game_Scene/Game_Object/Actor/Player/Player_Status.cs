@@ -7,15 +7,6 @@ using UniRx;
 /// プレイヤーのステータスを設定する
 /// </summary>
 public class Player_Status : Actor_Status {
-    /// <summary>
-    /// ゲームマネージャー
-    /// </summary>
-    GameManager game_manager; // １か所のみの使用
-    /// <summary>
-    /// csv読み込みクラス
-    /// </summary>
-    csv_Reader reader;
-
     #region 変数(csvからの読み込み)
     //TODO:publicは使わない
     /// <summary>
@@ -38,25 +29,25 @@ public class Player_Status : Actor_Status {
     /// <summary>
     /// レベル
     /// </summary>
-    public int level;
+    public ReactiveProperty<int> level;
     /// <summary>
     /// 現在の体力
     /// </summary>
-    public int hit_point;
+    public ReactiveProperty<int> hit_point;
     /// <summary>
     /// 体力の最大値
     /// </summary>
     [HideInInspector]
-    public int max_hit_point;
+    public ReactiveProperty<int> max_hit_point;
     /// <summary>
     /// 現在の力
     /// </summary>
-    public int power;
+    public ReactiveProperty<int> power;
     /// <summary>
     /// ちからの最大値
     /// </summary>
     [HideInInspector]
-    public int max_power;
+    public ReactiveProperty<int> max_power;
     /// 行動力(行動解数)
     /// </summary>
     public int activity;
@@ -71,7 +62,7 @@ public class Player_Status : Actor_Status {
     /// <summary>
     /// はらへりポイント
     /// </summary>
-    public int hunger_point;
+    public ReactiveProperty<int> hunger_point;
     /// <summary>
     /// スキル種類
     /// </summary>
@@ -85,7 +76,7 @@ public class Player_Status : Actor_Status {
     /// <summary>
     /// スター保持数
     /// </summary>
-    public int keep_star;
+    public ReactiveProperty<int> keep_star;
     /// <summary>
     /// コマンドカード種類
     /// </summary>
@@ -131,7 +122,7 @@ public class Player_Status : Actor_Status {
     /// <summary>
     /// 宝具を撃つためのポイント
     /// </summary>
-    public int noble_phantasm;
+    public ReactiveProperty<int> noble_phantasm;
     /// <summary>
     /// NPの最大数
     /// </summary>
@@ -159,7 +150,7 @@ public class Player_Status : Actor_Status {
     #endregion
 
     /// <summary>
-    /// レベルの最大値
+    /// レベルの最大値(仮)
     /// </summary>
     const int MAX_LV = 999;
     /// <summary>
@@ -206,7 +197,14 @@ public class Player_Status : Actor_Status {
     //------------------------------------------
 
     void Start() {
-        game_manager = GameManager.Instance.game_manager;
+        level = new ReactiveProperty<int>();
+        hit_point = new ReactiveProperty<int>();
+        max_hit_point = new ReactiveProperty<int>();
+        power = new ReactiveProperty<int>();
+        max_power = new ReactiveProperty<int>();
+        hunger_point = new ReactiveProperty<int>();
+        keep_star = new ReactiveProperty<int>();
+        noble_phantasm = new ReactiveProperty<int>();
 
         // デバッグ用---------------------------
         key = Game.Instance.key_observer;
@@ -216,7 +214,7 @@ public class Player_Status : Actor_Status {
         key.On_Key_Down_AsObservable()
             .Where(key => key == KeyCode.Backspace)
             .Subscribe(_ =>
-             hit_point = 10000);
+             hit_point.Value = 10000);
         //------------------------------------------
     }
 
@@ -225,57 +223,57 @@ public class Player_Status : Actor_Status {
     /// </summary>
     /// <param name="use_chara">使用するキャラクターの番号</param>
     public void Set_Parameter(int use_chara) {
-       // player_status = Actor_Manager.Instance.player_status;
-
-        reader = Game.Instance.reader;
-        var player_status = reader.Load_csv("csv/Actor/Player/Player_csv", 3);
-        ID                 = int.Parse(player_status[use_chara][0]);  // 番号
-        name               = player_status[use_chara][1];             // 名前
-        class_type         = int.Parse(player_status[use_chara][2]);  // クラス
-        saint_graph        = int.Parse(player_status[use_chara][3]);  // 再臨状態
-        level              = int.Parse(player_status[use_chara][4]);  // レベル
-        hit_point          = int.Parse(player_status[use_chara][5]);  // 体力
-        max_hit_point      = int.Parse(player_status[use_chara][6]);  // 最大体力
-        power              = int.Parse(player_status[use_chara][7]);  // ちから(攻撃力に加味するボーナス値)
-        max_power          = int.Parse(player_status[use_chara][8]);  // 力の最大値
-        activity           = int.Parse(player_status[use_chara][9]);  // 行動力
-        attack             = int.Parse(player_status[use_chara][10]); // 攻撃力
-        defence            = int.Parse(player_status[use_chara][11]); // 防御力
-        hunger_point       = int.Parse(player_status[use_chara][12]); // はらへりポイント
-        skill              = int.Parse(player_status[use_chara][13]); // スキル(種類)
-        star_generate      = int.Parse(player_status[use_chara][14]); // スター発生率
-        keep_star          = int.Parse(player_status[use_chara][15]); // スター保持数
-        command_card       = int.Parse(player_status[use_chara][16]); // コマンドカード枚数
-        arts_card          = int.Parse(player_status[use_chara][17]); // アーツカード枚数
-        arts_hit_conut     = int.Parse(player_status[use_chara][18]); // アーツでの攻撃時のヒット回数
-        quick_card         = int.Parse(player_status[use_chara][19]); // クイックのカード枚数
-        quick_hit_attack   = int.Parse(player_status[use_chara][20]); // クイックでの攻撃時のヒット回数
-        buster_card        = int.Parse(player_status[use_chara][21]); // バスターのカード枚数
-        buster_hit_count   = int.Parse(player_status[use_chara][22]); // バスターでの攻撃時のヒット回数
-        noble_weapon       = int.Parse(player_status[use_chara][24]); // 宝具(種類)
-        extra_attack       = int.Parse(player_status[use_chara][23]); // エクストラアタック(種類)
-        noble_phantasm     = int.Parse(player_status[use_chara][25]); // 宝具を撃つためのポイント(以下NP)
-        max_noble_phantasm = int.Parse(player_status[use_chara][26]); // NPの最大値
-        attack_rise_NP     = int.Parse(player_status[use_chara][27]); // 攻撃時のNPの上昇量
-        defence_rise_NP    = int.Parse(player_status[use_chara][28]); // 被ダメージ時のNPの上昇量
-        experience_point   = int.Parse(player_status[use_chara][29]); // 経験値
-        turn_count         = int.Parse(player_status[use_chara][30]); // 経過ターンをカウント
+        csv_Reader reader = Game.Instance.reader;
+        var player_status = reader.Load_csv("csv/Actor/Player/Player_csv", Define_Value.UNNECESSARY_COLUMN);
+        ID                   = int.Parse(player_status[use_chara][0]);  // 番号
+        name                 = player_status[use_chara][1];             // 名前
+        class_type           = int.Parse(player_status[use_chara][2]);  // クラス
+        saint_graph          = int.Parse(player_status[use_chara][3]);  // 再臨状態
+        level.Value          = int.Parse(player_status[use_chara][4]);  // レベル
+        hit_point.Value      = int.Parse(player_status[use_chara][5]);  // 体力
+        max_hit_point.Value  = int.Parse(player_status[use_chara][6]);  // 最大体力
+        power.Value          = int.Parse(player_status[use_chara][7]);  // ちから(攻撃力に加味するボーナス値)
+        max_power.Value      = int.Parse(player_status[use_chara][8]);  // 力の最大値
+        activity             = int.Parse(player_status[use_chara][9]);  // 行動力
+        attack               = int.Parse(player_status[use_chara][10]); // 攻撃力
+        defence              = int.Parse(player_status[use_chara][11]); // 防御力
+        hunger_point.Value   = int.Parse(player_status[use_chara][12]); // はらへりポイント
+        skill                = int.Parse(player_status[use_chara][13]); // スキル(種類)
+        star_generate        = int.Parse(player_status[use_chara][14]); // スター発生率
+        keep_star.Value      = int.Parse(player_status[use_chara][15]); // スター保持数
+        command_card         = int.Parse(player_status[use_chara][16]); // コマンドカード枚数
+        arts_card            = int.Parse(player_status[use_chara][17]); // アーツカード枚数
+        arts_hit_conut       = int.Parse(player_status[use_chara][18]); // アーツでの攻撃時のヒット回数
+        quick_card           = int.Parse(player_status[use_chara][19]); // クイックのカード枚数
+        quick_hit_attack     = int.Parse(player_status[use_chara][20]); // クイックでの攻撃時のヒット回数
+        buster_card          = int.Parse(player_status[use_chara][21]); // バスターのカード枚数
+        buster_hit_count     = int.Parse(player_status[use_chara][22]); // バスターでの攻撃時のヒット回数
+        noble_weapon         = int.Parse(player_status[use_chara][24]); // 宝具(種類)
+        extra_attack         = int.Parse(player_status[use_chara][23]); // エクストラアタック(種類)
+        noble_phantasm.Value = int.Parse(player_status[use_chara][25]); // 宝具を撃つためのポイント(以下NP)
+        max_noble_phantasm   = int.Parse(player_status[use_chara][26]); // NPの最大値
+        attack_rise_NP       = int.Parse(player_status[use_chara][27]); // 攻撃時のNPの上昇量
+        defence_rise_NP      = int.Parse(player_status[use_chara][28]); // 被ダメージ時のNPの上昇量
+        experience_point     = int.Parse(player_status[use_chara][29]); // 経験値
+        turn_count           = int.Parse(player_status[use_chara][30]); // 経過ターンをカウント
     }
 
     /// <summary>
     /// Playerのターン経過の処理(自動回復、はらへり) プレイヤーの行動が終了したときに呼ばれる
     /// </summary>
     public void Add_Turn() {
+        var game_manager = GameManager.Instance;
+
         ++turn_count;
 
         //TODO:ひとまず
-        if(hit_point < max_hit_point) {
-            ++hit_point;
+        if(hit_point.Value < max_hit_point.Value) {
+            ++hit_point.Value;
         }
 
         // 空腹であるか
-        if (hunger_point <= 0) {
-            --hit_point;
+        if (hunger_point.Value <= 0) {
+            --hit_point.Value;
 
             //if (Is_Dead()) {
             // ログに"餓死したと流す"
@@ -283,7 +281,7 @@ public class Player_Status : Actor_Status {
         }
         // 3ターンに一度空腹ポイントを１減らす
         else if (0 == turn_count % 3) {
-            --hunger_point;
+            --hunger_point.Value;
             // 満腹値20で"お腹がすいてきた"     のログを表示
             // 満腹度 0で"お腹がすいて死にそうだ"のログを表示
         }
@@ -306,11 +304,11 @@ public class Player_Status : Actor_Status {
 
         // レベルアップに必要な経験値量を超えたか確かめる
         // TODO: - 1はいらない？ 要テスト
-        if (exp_data_base[level - 1] <= experience_point) {
+        if (exp_data_base[level.Value - 1] <= experience_point) {
             int new_Lv = Get_Exp_Level();
 
             // 一度に２レベル以上あがる場合にも対応
-            for (; level < new_Lv; ++level) {
+            for (; level.Value < new_Lv; ++level.Value) {
                 int add_hp;
                 int add_atk;
                 int add_def;
@@ -318,7 +316,7 @@ public class Player_Status : Actor_Status {
                 // 体力の最大値をランダム(3~5)で増やす
                 add_hp = Random.Range(0, 2) + 3;
 
-                max_hit_point += add_hp;
+                max_hit_point.Value += add_hp;
 
                 // TODO: 攻撃力,防御力の最大値を仕様書を参考に増やす
             }

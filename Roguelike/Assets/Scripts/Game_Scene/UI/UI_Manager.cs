@@ -5,9 +5,18 @@ using UnityEngine.UI;
 using UniRx;
 
 /// <summary>
-/// UIを管理するクラス
+/// UI(主に数値)を管理するクラス
 /// </summary>
 public class UI_Manager : MonoBehaviour {
+    /// <summary>
+    /// ダンジョンのマネージャクラス
+    /// </summary>
+    Dungeon_Manager dungeon_manager;
+    /// <summary>
+    /// プレイヤーのステータスを管理するクラス
+    /// </summary>
+    Player_Status player_status;
+    
     /// <summary>
     /// 階層UI
     /// </summary>
@@ -18,36 +27,68 @@ public class UI_Manager : MonoBehaviour {
     /// </summary>
     [SerializeField]
     Text HP_text;
-
     /// <summary>
-    /// ダンジョンのマネージャクラス
+    /// レベルUI
     /// </summary>
-    Dungeon_Manager dungeon_manager;
+    [SerializeField]
+    Text level_text;
+    /// <summary>
+    /// ちからのUI 
+    /// </summary>
+    [SerializeField]
+    Text power_text;
+    /// <summary>
+    /// ちからの最大値のUI
+    /// </summary>
+    [SerializeField]
+    Text max_power_text;
+    /// <summary>
+    /// はらへりポイントのUI
+    /// </summary>
+    [SerializeField]
+    Text hunger_point_text;
+    /// <summary>
+    /// スター保持数のUI
+    /// </summary>
+    [SerializeField]
+    Text keep_star_text;
+    /// <summary>
+    /// NPのUI
+    /// </summary>
+    [SerializeField]
+    Text noble_phantasm_text;
 
     void Start () {
-        dungeon_manager = Dungeon_Manager.Instance.manager;
-        var game_manager = GameManager.Instance.game_manager;
-        var player_status = Actor_Manager.Instance.player_status;
+        player_status = Actor_Manager.Instance.player_status;
+        dungeon_manager = Dungeon_Manager.Instance;
 
+        var game_manager = GameManager.Instance;
+        //HPのUIの反映に必要なものを１まとめにする
+        var HP = Observable.Merge(player_status.hit_point, player_status.max_hit_point);
+        var power = Observable.Merge(player_status.power, player_status.max_power);
+
+        // 現在改装に変更がかかったらUIを更新
         dungeon_manager.floor.Subscribe(_ =>
-                   Follow_Floor()
+            Set_Floor_UI()
         ).AddTo(this);
-
-//        player_status.hit_point.
+        // 現在HP、最大HPに変更がかかったらUIを更新
+        HP.Subscribe(_ =>
+            Set_HP_UI()
+        ).AddTo(this);
     }
 
     /// <summary>
-    /// 階層が変わった時に変えきなおすUIをまとめておく
+    /// 階層が変わった時に書き直すUIをまとめておく
     /// </summary>
     void Follow_Floor() {
         Set_Floor_UI();
     }
 
     /// <summary>
-    /// 階層を表示する
+    /// 階層を表示
     /// </summary>
     void Set_Floor_UI() {
-        var dungeon_manager = Dungeon_Manager.Instance.manager;
+        var dungeon_manager = Dungeon_Manager.Instance;
         floor_text.text = string.Format("{0}階 / {1}階", new string[] { dungeon_manager.floor.ToString(), dungeon_manager.max_floor.ToString() });
     }
 
@@ -55,7 +96,41 @@ public class UI_Manager : MonoBehaviour {
     /// 体力を表示
     /// </summary>
     void Set_HP_UI() {
-        var player_status = Actor_Manager.Instance.player_status;
-        HP_text.text = string.Format("{0} / {1}", new string[] { player_status.hit_point.ToString(), player_status.max_hit_point.ToString() });
+        HP_text.text = string.Format("{0} / {1}", new string[] { player_status.hit_point.Value.ToString(), player_status.max_hit_point.Value.ToString() });
+    }
+
+    /// <summary>
+    /// レベルを表示
+    /// </summary>
+    void Set_Level_UI() {
+
+    }
+
+    /// <summary>
+    /// ちからを表示
+    /// </summary>
+    void Set_Power_UI() {
+
+    }
+
+    /// <summary>
+    /// はらへり値を表示
+    /// </summary>
+    void Hunger_UI() {
+
+    }
+
+    /// <summary>
+    /// 取得スターを表示
+    /// </summary>
+    void Keep_Star_UI() {
+
+    }
+
+    /// <summary>
+    /// NPを表示
+    /// </summary>
+    void Noble_Phantasm_UI() {
+
     }
 }

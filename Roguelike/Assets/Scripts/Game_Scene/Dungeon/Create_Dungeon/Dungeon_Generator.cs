@@ -15,14 +15,6 @@ public class Dungeon_Generator : MonoBehaviour {
     /// /// </summary>
     Player player;
     /// <summary>
-    /// プレイヤーのステータスを管理するクラス
-    /// </summary>
-    Player_Status player_status;
-    /// <summary>
-    /// エネミーのステータスを管理するクラス
-    /// </summary>
-    Enemy_Status enemy_status;
-    /// <summary>
     /// マップを２次元配列で管理するクラス
     /// </summary>
     Map_Layer_2D map_layer;
@@ -82,8 +74,6 @@ public class Dungeon_Generator : MonoBehaviour {
 
     void Start() {
         player = Actor_Manager.Instance.player_script;
-        player_status = Actor_Manager.Instance.player_status;
-        enemy_status = Actor_Manager.Instance.enemy_status;
     }
 
     /// <summary>
@@ -179,6 +169,8 @@ public class Dungeon_Generator : MonoBehaviour {
                 }
                 // プレイヤーであればプレイヤー用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.PLAYER_LAYER_NUMBER) {
+                    var player_status = Actor_Manager.Instance.player_status;
+
                     player.Set_Initialize_Position(x, y);
                     player_status.Set_Parameter(Define_Value.OKITA);
                     map_layer.Set(x, y, Define_Value.PLAYER_LAYER_NUMBER);
@@ -200,7 +192,7 @@ public class Dungeon_Generator : MonoBehaviour {
                 }
                 // 敵であれば敵を生成
                 else if (map_layer.Get(x, y) == Define_Value.ENEMY_LAYER_NUMBER) {
-                    var actor_manager = Actor_Manager.Instance.actor_manager;
+                    var actor_manager = Actor_Manager.Instance;
 
                     // リストにするので１つずつインスタンスを作る。
                     enemy_object = new GameObject("Enemy");

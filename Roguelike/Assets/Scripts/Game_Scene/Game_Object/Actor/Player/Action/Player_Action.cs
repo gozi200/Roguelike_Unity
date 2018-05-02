@@ -85,7 +85,7 @@ public class Player_Action : MonoBehaviour {
         // プレイヤーが生きていたら死亡判定をする
         if (player.exist == true) {
             // 体力が 0 以下ならゲームオーバー処理に切り替える
-            if (player.state != ePlayer_State.Game_Over && player_status.Is_Dead(player_status.hit_point)) {
+            if (player.state != ePlayer_State.Game_Over && player_status.Is_Dead(player_status.hit_point.Value)) {
                 Set_Action(ePlayer_State.Game_Over);
             }
         }

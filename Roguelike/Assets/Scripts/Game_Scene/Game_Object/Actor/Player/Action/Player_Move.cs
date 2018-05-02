@@ -60,7 +60,7 @@ public class Player_Move : MonoBehaviour {
     /// </summary>
     public void Action_Move() {
         // ゲームの状態を取得
-        var game_manager = GameManager.Instance.game_manager;
+        var game_manager = GameManager.Instance;
         // 現在の座標を取得
         player_position = player.Get_Position();
         // プレイヤーのx座標

@@ -25,15 +25,15 @@ public class HP_Bar : MonoBehaviour {
     /// </summary>
     void Handle_Bar() {
         var player_status = Actor_Manager.Instance.player_status;
-        health.fillAmount = Map(player_status.hit_point, 0, player_status.max_hit_point, 0, 1);
+        health.fillAmount = Map((float)player_status.hit_point.Value, 0, (float)player_status.max_hit_point.Value, 0, 1);
     }
 
     /// <summary>
     /// 座標を設定する
     /// </summary>
-    /// <param name="value"></param>
-    /// <param name="inMin"></param>
-    /// <param name="inMax"></param>
+    /// <param name="value">現在の体力</param>
+    /// <param name="inMin">体力の最小値</param>
+    /// <param name="inMax">最大体力の値</param>
     /// <param name="outMin"></param>
     /// <param name="outMax"></param>
     /// <returns></returns>

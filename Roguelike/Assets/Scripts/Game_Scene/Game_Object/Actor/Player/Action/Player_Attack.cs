@@ -129,21 +129,27 @@ public class Player_Attack : MonoBehaviour{
     /// </summary>
     /// <param name="on_first">1マス先を取るのに使用</param>
     void Attack_Process(int adjust_value1, int adjust_value2) {
-        var actor_manager = Actor_Manager.Instance.actor_manager;
+        var actor_manager = Actor_Manager.Instance;
+        var enemy_status = Actor_Manager.Instance.enemy_status;
 
         // 隣接してるエネミーを調べる
         var side_enemy = actor_manager.Find_Enemy((int)player.transform.position.x + adjust_value1,
                                                   (int)player.transform.position.y + adjust_value2);
+
         // 隣接してるエネミーのステータスを取ってくる
         var target_enemy = side_enemy.GetComponent<Enemy_Status>();
 
         target_enemy.hit_point -= (int)damage_calculation.Damage(player_status.attack,
                                                                  target_enemy.defence);
-        player_action.Set_Action(ePlayer_State.Move);
 
-        // 攻撃した敵が死んでしたら経験値を取得
+        // 攻撃した敵が死んでいたら経験値を取得
         if (target_enemy.hit_point <= 0) {
             player_status.Add_Experience_Point(target_enemy.experience_point);
+
+            var test = actor_manager.enemys;
+            enemy_status.Dead_Enemy(test.IndexOf(side_enemy));
         }
+        // 移動状態に戻す
+        player_action.Set_Action(ePlayer_State.Move);
     }
 }

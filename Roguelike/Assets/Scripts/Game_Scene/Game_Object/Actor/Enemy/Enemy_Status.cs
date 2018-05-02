@@ -89,7 +89,7 @@ public class Enemy_Status : Actor_Status {
 
         reader = Game.Instance.reader;
         enemy_script = Actor_Manager.Instance.enemy_script;
-        var enemy_status = reader.Load_csv("csv/Actor/Enemy/Enemy_csv", 3);
+        var enemy_status = reader.Load_csv("csv/Actor/Enemy/Enemy_csv", Define_Value.UNNECESSARY_COLUMN);
 
         for(int enemy_type = 0; enemy_type < Define_Value.ENEMY_NUMBER; ++enemy_type) {
             //TODO: newだとnullが格納される 欲しい値は取れてる
@@ -144,26 +144,12 @@ public class Enemy_Status : Actor_Status {
     }
 
     /// <summary>
-    /// ターンを進める 
+    /// ターンを終える
     /// </summary>
-    public void Add_Turn(int index) {
-        Map_Layer_2D map_layer = Dungeon_Manager.Instance.map_layer_2D;
+    public void End_Turn() {
+        var game_manager = GameManager.Instance;
 
-        var actor_manager = Actor_Manager.Instance.actor_manager;
-        var enemy = actor_manager.enemys[index].GetComponent<Enemy_Status>();
-
-        GameManager game_manager = GameManager.Instance.game_manager;
         game_manager.Set_Game_State(eGame_State.Player_Turn);
-
-        // 死んだら消して、床のレイヤー番号を元のものに戻す
-        if (Is_Dead(enemy.hit_point)) {
-            // ゲームオブジェクトの解放
-            Destroy(actor_manager.enemys[index]);
-            // リストの要素の解放
-            actor_manager.enemys.RemoveAt(index);
-            map_layer.Tile_Swap(enemy.transform.position,
-                                enemy_script.feet);
-        }
     }
 
     /// <summary>
@@ -177,5 +163,25 @@ public class Enemy_Status : Actor_Status {
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// 死んでいたらオブジェクトとリストから消す
+    /// </summary>
+    /// <param name="index">エネミーリストの要素数</param>
+    public void Dead_Enemy(int index) {
+        Map_Layer_2D map_layer = Dungeon_Manager.Instance.map_layer_2D;
+        var actor_manager = Actor_Manager.Instance;
+        var enemy = actor_manager.enemys[index].GetComponent<Enemy_Status>();
+
+        // 死んだら消して、床のレイヤー番号を元のものに戻す
+         if (Is_Dead(enemy.hit_point)) {
+            map_layer.Tile_Swap(actor_manager.enemys[index].transform.position,
+                                actor_manager.enemys[index].GetComponent<Enemy>().feet);
+            // ゲームオブジェクトの解放
+            Destroy(actor_manager.enemys[index]);
+            // リストの要素の解放
+            actor_manager.enemys.RemoveAt(index);
+        }
     }
 }

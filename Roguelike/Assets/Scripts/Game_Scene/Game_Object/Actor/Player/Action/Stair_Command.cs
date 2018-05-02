@@ -29,7 +29,7 @@ public class Stair_Command : MonoBehaviour {
     /// 進むボタンを押したときの処理
     /// </summary>
     public void Decide_Progress() {
-        var dungeon_manager = Dungeon_Manager.Instance.manager;
+        var dungeon_manager = Dungeon_Manager.Instance;
 
         dungeon_manager.NextLevel();
         player_script.move_value = Define_Value.MOVE_VAULE;
@@ -44,6 +44,5 @@ public class Stair_Command : MonoBehaviour {
         player_script.move_value = Define_Value.MOVE_VAULE;
         action_stair.said_stair_command.Value = false;
         player_action.Set_Action(ePlayer_State.Move);
-        action_stair.stair_command = eStair_Command.Progress;
     }
 }

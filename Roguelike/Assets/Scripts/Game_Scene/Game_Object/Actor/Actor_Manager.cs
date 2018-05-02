@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using UniRx.Triggers;
 
 /// <summary>
 /// アクターを共通の動きを管理するクラス
 /// </summary>
 public class Actor_Manager : Unique_Component<Actor_Manager> {
-    /// <summary>
-    /// 自身のインスタンス
-    /// </summary>
-    public Actor_Manager actor_manager;
     /// <summary>
     /// アクター共通のステータスを関係の処理を管理するクラス
     /// </summary>
@@ -81,12 +79,20 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
     }
 
     void Start() {
+        // エネミーの画像を取り除く
+        this.UpdateAsObservable().First()
+            .Subscribe (_ => 
+            Destroy(GetComponent<SpriteRenderer>())
+         ).AddTo(this);
+
         player_attack = gameObject.AddComponent<Player_Attack>();
 
-        actor_manager = gameObject.GetComponent<Actor_Manager>();
         actor_status = new Actor_Status();
 
         enemy_status.Create_Enemy();
+
+        //var enemy_sprite = this.GetComponent<SpriteRenderer>();
+        //enemy_sprite.enabled = false;
     }
 
     /// <summary>
@@ -96,10 +102,10 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
     /// <param name="y">探す座標</param>
     /// <returns>そこにいる敵</returns>
     public GameObject Find_Enemy(int x, int y) {
-        for (int i = 0; i < actor_manager.enemys.Count; ++i) {
-            if (actor_manager.enemys[i].transform.position.x == x &&
-                actor_manager.enemys[i].transform.position.y == y) {
-                return actor_manager.enemys[i];
+        for (int i = 0; i < enemys.Count; ++i) {
+            if (enemys[i].transform.position.x == x &&
+                enemys[i].transform.position.y == y) {
+                return enemys[i];
             }
         }
         return null;
