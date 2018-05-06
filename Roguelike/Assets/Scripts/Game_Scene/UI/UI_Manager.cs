@@ -75,6 +75,9 @@ public class UI_Manager : MonoBehaviour {
         HP.Subscribe(_ =>
             Set_HP_UI()
         ).AddTo(this);
+        player_status.level.Subscribe(_ =>
+            Set_Level_UI()
+        ).AddTo(this);
     }
 
     /// <summary>
@@ -103,7 +106,7 @@ public class UI_Manager : MonoBehaviour {
     /// レベルを表示
     /// </summary>
     void Set_Level_UI() {
-
+        level_text.text = string.Format("Level.{0}", new string[] { player_status.level.Value.ToString() });
     }
 
     /// <summary>

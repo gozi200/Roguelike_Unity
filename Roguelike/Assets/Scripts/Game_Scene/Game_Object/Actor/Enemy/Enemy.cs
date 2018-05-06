@@ -31,7 +31,7 @@ public class Enemy : Actor {
         gameObject.AddComponent<SpriteRenderer>();
         sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
         sprite_renderer.sortingOrder = Define_Value.ENEMY_LAYER_NUMBER;
-        sprite_renderer.sprite = Resources.Load<Sprite>("Chip2/Wyvern");
+        sprite_renderer.sprite = Resources.Load<Sprite>("Enemy/Wyvern");
 
         position = transform.position;
         gameObject.transform.localScale = new Vector2(0.4f, 0.4f);

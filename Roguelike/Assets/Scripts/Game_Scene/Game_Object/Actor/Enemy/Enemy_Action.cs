@@ -68,9 +68,9 @@ public class Enemy_Action : MonoBehaviour {
     }
 
     /// <summary>
-    /// エネミーの行動処理
+    /// エネミーの行動を制御
     /// </summary>
-    public void Move_Enemy() {
+    public void Action() {
         for (int i = 0; i < actor_manager.enemys.Count; ++i) {
             // 全部やっていたら重いのでこれを使う
             var enemy_status = actor_manager.enemys[i].GetComponent<Enemy_Status>();
@@ -83,8 +83,8 @@ public class Enemy_Action : MonoBehaviour {
                     Move(i);
                     break;
             }
-        // ターンを終える
-        enemy_status.End_Turn();
+            // ターンを終える
+            enemy_status.End_Turn();
         }
     }
 

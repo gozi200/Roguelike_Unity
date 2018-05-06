@@ -38,12 +38,13 @@ public enum eDirection {
 /// 現在行っている状態を割り当てる
 /// </summary>
 public enum ePlayer_State {
-    Move        // 移動処理
-  , Attack      // 攻撃処理
-  , Battle_Menu // バトルメニューを開く
-  , On_Stair    // 階段に乗っているとき
-  , Game_Over   // ゲームオーバー
-  , Action_Max  // Player_Actionで宣言されているActionの最大値
+    Move           // 移動処理
+  , Attack         // 攻撃処理
+  , Battle_Menu    // バトルメニューを開く
+  , On_Stair       // 階段に乗っているとき
+  , Decide_Command // コマンド選択中(ダンジョン選択や、店で話しているとき等)
+  , Game_Over      // ゲームオーバー
+  , Action_Max     // Player_Actionで宣言されているActionの最大値
 };
 
 /// <summary>
@@ -109,7 +110,15 @@ public enum eDungeon_Level {
 /// ダンジョンの種類
 /// </summary>
 public enum eDungeon_Type {
-    Beginning_Grass // TODO:仮称
+    Beginning_Grass
   , Dim_Cave
 }
 
+/// <summary>
+/// 床の状態(これに合わせて画像を変更する)
+/// </summary>
+public enum eDungeon_Tile_State {
+    Grass // 草原
+  , Stone // 石
+  , Finish // 種類数の取得に使用
+}

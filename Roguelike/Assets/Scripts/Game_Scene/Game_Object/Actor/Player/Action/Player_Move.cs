@@ -226,6 +226,8 @@ public class Player_Move : MonoBehaviour {
         else if (move_end) {
             // 移動後に階段に到達しているか調べる
             Check_Stair();
+            // ダンジョン移動マスに踏んでいるか調べる
+            Check_Move_Dungeon();
             player_status.Add_Turn();
         }
     }
@@ -243,9 +245,18 @@ public class Player_Move : MonoBehaviour {
     /// <summary>
     /// プレイヤーが階段に乗っているかを調べる
     /// </summary>
-    public void Check_Stair() {
+    void Check_Stair() {
         if (player.feet == Define_Value.STAIR_LAYER_NUMBER) {
             player.state = ePlayer_State.On_Stair;
+        }
+    }
+
+    /// <summary>
+    /// ダンジョン移動用のマスを踏んでいるか調べる
+    /// </summary>
+    void Check_Move_Dungeon() {
+        if (player.feet == Define_Value.MOVE_DUNGEON_TILE) {
+            player.state = ePlayer_State.Decide_Command;
         }
     }
 

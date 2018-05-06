@@ -64,17 +64,6 @@ public class Map_Layer_2D {
     }
 
     /// <summary>
-    /// 座標をインデックスに変換する
-    /// </summary>
-    /// <param name="x">座標</param>
-    /// <param name="y">座標</param>
-    /// <returns></returns>
-    // TODO:使ってない 2018/04/21
-    public int To_Index(int x, int y) {
-        return x + (y * width);
-    }
-
-    /// <summary>
     /// 領域内であるかを判断する
     /// </summary>
     /// <param name="x">x座標</param>

@@ -74,6 +74,10 @@ public class Player_Action : MonoBehaviour {
             case ePlayer_State.On_Stair:
                 action_stair.Action_Stair();
                 break;
+            case ePlayer_State.Decide_Command:
+                var decide_dungeon= new Decide_Dungeon();
+                decide_dungeon.In_Decide();
+                break;
             case ePlayer_State.Battle_Menu:
                 Action_Battle_Menu();
                 break;
@@ -100,7 +104,7 @@ public class Player_Action : MonoBehaviour {
     }
 
     /// <summary>
-    /// バトルメニューの処理 //TODO: TEST中
+    /// バトルメニューの処理 //TODO: テスト中
     /// </summary>
     void Action_Battle_Menu() {
         int flag_number = 1;

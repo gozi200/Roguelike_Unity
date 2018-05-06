@@ -37,7 +37,6 @@ public class Player_Status : Actor_Status {
     /// <summary>
     /// 体力の最大値
     /// </summary>
-    [HideInInspector]
     public ReactiveProperty<int> max_hit_point;
     /// <summary>
     /// 現在の力
@@ -46,7 +45,6 @@ public class Player_Status : Actor_Status {
     /// <summary>
     /// ちからの最大値
     /// </summary>
-    [HideInInspector]
     public ReactiveProperty<int> max_power;
     /// 行動力(行動解数)
     /// </summary>
@@ -223,8 +221,9 @@ public class Player_Status : Actor_Status {
     /// </summary>
     /// <param name="use_chara">使用するキャラクターの番号</param>
     public void Set_Parameter(int use_chara) {
-        csv_Reader reader = Game.Instance.reader;
+        var reader = Game.Instance.reader;
         var player_status = reader.Load_csv("csv/Actor/Player/Player_csv", Define_Value.UNNECESSARY_COLUMN);
+
         ID                   = int.Parse(player_status[use_chara][0]);  // 番号
         name                 = player_status[use_chara][1];             // 名前
         class_type           = int.Parse(player_status[use_chara][2]);  // クラス
@@ -303,7 +302,6 @@ public class Player_Status : Actor_Status {
         }
 
         // レベルアップに必要な経験値量を超えたか確かめる
-        // TODO: - 1はいらない？ 要テスト
         if (exp_data_base[level.Value - 1] <= experience_point) {
             int new_Lv = Get_Exp_Level();
 
@@ -345,7 +343,8 @@ public class Player_Status : Actor_Status {
     /// <returns>死亡していたらtrue</returns>
     public override bool Is_Dead(int now_HP) {
         if (now_HP <= 0) {
-            now_HP = 0;
+            var player_status = Actor_Manager.Instance.player_status;
+            player_status.hit_point.Value = 0;
             return true;
         }
         return false;

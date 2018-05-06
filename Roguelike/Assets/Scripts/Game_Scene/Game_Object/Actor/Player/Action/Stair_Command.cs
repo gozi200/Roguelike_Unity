@@ -30,8 +30,9 @@ public class Stair_Command : MonoBehaviour {
     /// </summary>
     public void Decide_Progress() {
         var dungeon_manager = Dungeon_Manager.Instance;
+        var dungeon_data = new Dungeon_Data();
 
-        dungeon_manager.NextLevel();
+        dungeon_manager.NextLevel(dungeon_data.level);
         player_script.move_value = Define_Value.MOVE_VAULE;
         player_action.Set_Action(ePlayer_State.Move);
         action_stair.said_stair_command.Value = false;

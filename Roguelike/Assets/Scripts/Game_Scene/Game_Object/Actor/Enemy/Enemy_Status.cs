@@ -92,7 +92,6 @@ public class Enemy_Status : Actor_Status {
         var enemy_status = reader.Load_csv("csv/Actor/Enemy/Enemy_csv", Define_Value.UNNECESSARY_COLUMN);
 
         for(int enemy_type = 0; enemy_type < Define_Value.ENEMY_NUMBER; ++enemy_type) {
-            //TODO: newだとnullが格納される 欲しい値は取れてる
             var enemy = new Enemy_Status();
 
             enemy.ID               = int.Parse(enemy_status[enemy_type][0]);  // 番号

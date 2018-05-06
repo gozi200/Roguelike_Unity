@@ -8,13 +8,13 @@ using UnityEngine.UI;
 /// </summary>
 public class GameManager : Unique_Component<GameManager> {
     /// <summary>
-    /// プレイヤーアクションを管理するクラス
+    /// 拠点用マネージャーのオブジェクト
     /// </summary>
-    Player_Action player_action;
+    GameObject base_manager_object;
     /// <summary>
-    /// エネミーアクションを管理するクラス
+    /// 拠点のマネージャースクリプト
     /// </summary>
-    Enemy_Action enemy_action;
+    Base_Manager base_manager;
 
     /// <summary>
     /// ゲームの状態を取得
@@ -23,8 +23,8 @@ public class GameManager : Unique_Component<GameManager> {
 
     void Start() {
         game_state = eGame_State.Create_Base;
-        player_action = Actor_Manager.Instance.player_action;
-        enemy_action = Actor_Manager.Instance.enemy_action;
+        base_manager_object = GameObject.Find("Base_Manager");
+        base_manager = base_manager_object.GetComponent<Base_Manager>();
     }
 
     void Update() {
@@ -44,36 +44,39 @@ public class GameManager : Unique_Component<GameManager> {
     /// </summary>
     /// <param name = "game_state">新しい状態</param>
     void Game_Loop(eGame_State game_state) {
-        var dungeon_manager = Dungeon_Manager.Instance;
-
         switch (game_state) {
             case eGame_State.Create_Base:
                 // 拠点を作る
-                Set_Game_State(eGame_State.Create_Dungeon);
-                break;
-
-            case eGame_State.Create_Dungeon:
-                // ダンジョンを作る
-                dungeon_manager.Create();
+                base_manager.Create_Base();
                 Set_Game_State(eGame_State.Player_Turn);
                 break;
-
+            case eGame_State.Create_Dungeon:
+                var dungeon_manager = Dungeon_Manager.Instance;
+                var decide_dungeon = GameObject.Find("Decide_Dungeon").GetComponent<Decide_Dungeon>();
+                // ダンジョンを作る
+                dungeon_manager.Create(decide_dungeon.dungeon_data.level);
+                Set_Game_State(eGame_State.Player_Turn);
+                break;
             case eGame_State.Player_Turn:
+                var player_action = Actor_Manager.Instance.player_action;
                 // プレイヤーのターン
                 player_action.Run_Action();
                 break;
-
             case eGame_State.Partner_Turn:
                 // パートナーの行動
+                Set_Game_State(eGame_State.Enemy_Trun);
                 break;
-
             case eGame_State.Enemy_Trun:
-                // エネミーのターン
-                enemy_action.Move_Enemy();
+                var enemy_action = Actor_Manager.Instance.enemy_action;
+                // エネミーの行動
+                enemy_action.Action();
+                Set_Game_State(eGame_State.Dungeon_Turn);
                 break;
-
             case eGame_State.Dungeon_Turn:
                 // ダンジョンのターン(敵のスポーンなど)
+                var dungeon_generator = Dungeon_Manager.Instance.dungeon_generator;
+                dungeon_generator.Turn_Tick();
+                Set_Game_State(eGame_State.Player_Turn);
                 break;
         }
     }

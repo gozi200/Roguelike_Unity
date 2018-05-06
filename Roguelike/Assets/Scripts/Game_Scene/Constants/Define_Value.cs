@@ -5,6 +5,19 @@ public static class Define_Value {
     #region マップに関する定数
 
     /// <summary>
+    /// プレイヤーからカメラまでの距離
+    /// </summary>
+    public const int CAMERA_DISTANCE = -5;
+    /// <summary>
+    /// 1マスの大きさ
+    /// </summary>
+    public const int TILE_SCALE = 1;
+
+    #endregion
+
+    #region ダンジョンに関する定義
+
+    /// <summary>
     /// 難易度優しい
     /// </summary>
     public const int EASY = 1;
@@ -57,13 +70,34 @@ public static class Define_Value {
     /// </summary>
     public const int POSITION_MERGIN = 2;
     /// <summary>
-    /// プレイヤーからカメラまでの距離
+    /// エネミーがスポーンする周期(ターン)
     /// </summary>
-    public const int CAMERA_DISTANCE = -5;
+    public const int SPAWN_INTERVAL = 20;
+
+
+    #endregion
+
+    #region ダンジョンの種類(csvの読み込みに使う)
+ 
     /// <summary>
-    /// 1マスの大きさ
+    /// 名前が決まったらそれ
     /// </summary>
-    public const int TILE_SCALE = 1;
+    public const int GRASS = 1;
+    public const int CAVE = 2;
+
+
+    #endregion
+
+    #region 拠点に関する定義
+
+    /// <summary>
+    /// カルデアでのスポーンポイント(x軸)
+    /// </summary>
+    public const int CALDEA_SPAWN_X = 15;
+    /// <summary>
+    /// カルデアでのスポーンポイント(y軸)
+    /// </summary>
+    public const int CALDEA_SPAWN_Y = 15;
 
     #endregion
 
@@ -122,6 +156,10 @@ public static class Define_Value {
     /// アイテムのレイヤーナンバー
     /// </summary>
     public const int ITEM_LAYER_NUMBER = 4;
+    /// <summary>
+    /// 踏むとダンジョン移動コマンドを出現させる
+    /// </summary>
+    public const int MOVE_DUNGEON_TILE = 5;
 
     /// <summary>
     /// プレイヤーのレイヤーナンバー
@@ -140,11 +178,11 @@ public static class Define_Value {
 
     #endregion
 
-#region その他
+    #region その他
 
     /// <summary>
     /// csvの不要な行
-    /// 現在はプレイヤーエネミーに使用 2018/05/02現在
+    /// 現在はプレイヤーエネミーに使用
     /// </summary>
     public const int UNNECESSARY_COLUMN = 3;
 

@@ -16,7 +16,11 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// <summary>
     /// ダンジョン作成クラス
     /// </summary>
-    public Dungeon_Generator generator;
+    public Dungeon_Generator dungeon_generator;
+    /// <summary>
+    /// ダンジョンに配置するタイルの画像を設定
+    /// </summary>
+    public Dungeon_Tiles dungeon_tiles;
     /// <summary>
     /// マップを２次元配列で管理するクラス
     /// </summary>
@@ -39,31 +43,41 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// 現在のダンジョンの難易度
     /// </summary>
     eDungeon_Level dungeon_level;
+    /// <summary>
+    /// ダンジョンの種類
+    /// </summary>
+    public eDungeon_Type dungeon_type;
+    /// <summary>
+    /// ダンジョンに配置するタイルの状態
+    /// </summary>
+    public ReactiveProperty<eDungeon_Tile_State> tile_state;
 
     void Awake() {
         level = 1;
         floor = new ReactiveProperty<int>();
         floor.Value = 1;
         max_floor = 2;
-        generator = GameObject.FindObjectOfType<Dungeon_Generator>();
+        dungeon_generator = GameObject.FindObjectOfType<Dungeon_Generator>();
         map_layer_2D = new Map_Layer_2D();
     }
 
     void Start() {
         actor_manager = Actor_Manager.Instance;
+        dungeon_tiles = gameObject.AddComponent<Dungeon_Tiles>();
+        tile_state = new ReactiveProperty<eDungeon_Tile_State>();
     }
 
     /// <summary>
     /// ダンジョンを作る準備
     /// </summary>
-    public void Create() {
-        Initialize();
+    public void Create(int level) {
+        dungeon_generator.Load_Dungeon(level);
     }
 
     /// <summary>
     /// 次のダンジョンへの移動処理
     /// </summary>
-    public void NextLevel() {
+    public void NextLevel(int level) {
         // 最終フロアーを越したらリザルト画面へ
         if (floor.Value >= max_floor) {
             SceneManager.LoadScene("Result");
@@ -71,7 +85,7 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
         else {
             Reset();
             ++floor.Value;
-            Initialize();
+            dungeon_generator.Load_Dungeon(level);
         }
     }
 
@@ -109,13 +123,5 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
             Destroy(wall.gameObject);
         }
         enemy_list.Clear();
-    }
-
-    /// <summary>
-    /// ダンジョンの初期化
-    /// </summary>
-    void Initialize() {
-        //TODO:現在進入中のダンジョンからダンジョンの難易度を出したものをいれる
-        generator.Load_Dungeon(level);
     }
 }
