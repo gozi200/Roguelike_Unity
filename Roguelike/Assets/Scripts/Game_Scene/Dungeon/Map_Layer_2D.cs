@@ -13,8 +13,8 @@ public class Map_Layer_2D {
     /// <summary>
     /// マップデータを配列で扱う
     /// </summary>
-    int[] coordinates = null;
-
+    public int[] coordinates = null;
+     
     /// <summary>
     /// 幅
     /// </summary>
@@ -50,6 +50,11 @@ public class Map_Layer_2D {
         if (width > 0 && height > 0) {
             Create(width, height);
         }
+    }
+
+    /// 座標をインデックスに変換する
+    public int To_Index(int x, int y) {
+        return x + (y * width);
     }
 
     /// <summary>

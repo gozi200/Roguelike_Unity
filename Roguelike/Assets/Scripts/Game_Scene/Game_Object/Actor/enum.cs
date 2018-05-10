@@ -117,8 +117,19 @@ public enum eDungeon_Type {
 /// <summary>
 /// 床の状態(これに合わせて画像を変更する)
 /// </summary>
-public enum eDungeon_Tile_State {
+public enum eTile_State {
     Grass // 草原
   , Stone // 石
   , Finish // 種類数の取得に使用
 }
+
+/// <summary>
+/// 壁の状態(これに合わせて画像を変更する)
+/// </summary>
+public enum eWall_State {
+    Tree // 木
+  , Stone // 石
+  , Finish // 種類数の取得に使用
+}
+
+

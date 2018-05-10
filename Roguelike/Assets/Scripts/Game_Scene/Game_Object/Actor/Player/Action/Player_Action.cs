@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UniRx;
 using System;
 using UnityEngine.SceneManagement;
 
@@ -63,6 +62,7 @@ public class Player_Action : MonoBehaviour {
         Debug.Log(player.state);
         Debug.Log(player.mode);
         Debug.Log(player.direction);
+        Debug.Log("player_feet = " + player.feet);
 
         switch (player.state) {
             case ePlayer_State.Move:

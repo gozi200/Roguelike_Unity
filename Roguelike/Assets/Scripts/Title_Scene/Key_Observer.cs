@@ -16,7 +16,6 @@ public class Key_Observer {
         for (KeyCode key = 0; (int)key < (int)KeyCode.Menu; ++key) {
             if (Input.GetKeyDown(key)) {
                 on_key_down_sbject.OnNext(key);
-                Debug.Log(key);
             }
         }
     }

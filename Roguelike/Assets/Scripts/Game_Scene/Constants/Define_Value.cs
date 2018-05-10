@@ -73,7 +73,10 @@ public static class Define_Value {
     /// エネミーがスポーンする周期(ターン)
     /// </summary>
     public const int SPAWN_INTERVAL = 20;
-
+    /// <summary>
+    /// ダンジョン進入時の階層
+    /// </summary>
+    public const int INITIAL_FLOOR = 1;
 
     #endregion
 

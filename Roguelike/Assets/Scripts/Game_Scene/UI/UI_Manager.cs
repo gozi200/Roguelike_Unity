@@ -62,13 +62,13 @@ public class UI_Manager : MonoBehaviour {
         player_status = Actor_Manager.Instance.player_status;
         dungeon_manager = Dungeon_Manager.Instance;
 
-        var game_manager = GameManager.Instance;
-        //HPのUIの反映に必要なものを１まとめにする
+        // 最大の値と現在の値をまとめる
         var HP = Observable.Merge(player_status.hit_point, player_status.max_hit_point);
         var power = Observable.Merge(player_status.power, player_status.max_power);
+        var floor = Observable.Merge(dungeon_manager.floor, dungeon_manager.max_floor);
 
-        // 現在改装に変更がかかったらUIを更新
-        dungeon_manager.floor.Subscribe(_ =>
+        // 現在の階層に変更がかかったらUIを更新
+        floor.Subscribe(_ =>
             Set_Floor_UI()
         ).AddTo(this);
         // 現在HP、最大HPに変更がかかったらUIを更新

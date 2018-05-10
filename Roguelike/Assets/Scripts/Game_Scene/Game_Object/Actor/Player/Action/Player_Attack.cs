@@ -57,7 +57,7 @@ public class Player_Attack : MonoBehaviour{
 
         switch (player_script.direction) {
             case eDirection.Up:
-                // 自分の向いている方向の１マス先に敵がいるか判断
+                // 自分の向いている方向の１マス先に敵がいるか判断 上から順に時計回りに検索
                 if (map_layer.Get(player_x, player_y + tile_scale) !=
                     Define_Value.ENEMY_LAYER_NUMBER) {
                     player_action.Set_Action(ePlayer_State.Move);
@@ -135,7 +135,6 @@ public class Player_Attack : MonoBehaviour{
         // 隣接してるエネミーを調べる
         var side_enemy = actor_manager.Find_Enemy((int)player.transform.position.x + adjust_value1,
                                                   (int)player.transform.position.y + adjust_value2);
-
         // 隣接してるエネミーのステータスを取ってくる
         var target_enemy = side_enemy.GetComponent<Enemy_Status>();
 
@@ -146,8 +145,10 @@ public class Player_Attack : MonoBehaviour{
         if (target_enemy.hit_point <= 0) {
             player_status.Add_Experience_Point(target_enemy.experience_point);
 
-            var test = actor_manager.enemys;
-            enemy_status.Dead_Enemy(test.IndexOf(side_enemy));
+            // ダンジョンに出現中の敵のリストを取得
+            var enemy_list = actor_manager.enemys;
+            // プレイヤーに隣接しているものを抽出
+            enemy_status.Dead_Enemy(enemy_list.IndexOf(side_enemy));
         }
         // 移動状態に戻す
         player_action.Set_Action(ePlayer_State.Move);

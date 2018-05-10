@@ -18,10 +18,6 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// </summary>
     public Dungeon_Generator dungeon_generator;
     /// <summary>
-    /// ダンジョンに配置するタイルの画像を設定
-    /// </summary>
-    public Dungeon_Tiles dungeon_tiles;
-    /// <summary>
     /// マップを２次元配列で管理するクラス
     /// </summary>
     public Map_Layer_2D map_layer_2D;
@@ -33,38 +29,34 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// <summary>
     /// そのダンジョンの最終階層
     /// </summary>
-    public int max_floor { set; get; }
-    /// <summary>
-    /// ダンジョンの難易度
-    /// </summary>
-    int level;
+    public ReactiveProperty<int> max_floor;// { set; get; }
 
     /// <summary>
-    /// 現在のダンジョンの難易度
-    /// </summary>
-    eDungeon_Level dungeon_level;
-    /// <summary>
-    /// ダンジョンの種類
+    /// 生成するダンジョンの種類
     /// </summary>
     public eDungeon_Type dungeon_type;
     /// <summary>
-    /// ダンジョンに配置するタイルの状態
+    /// 配置するタイルの状態
     /// </summary>
-    public ReactiveProperty<eDungeon_Tile_State> tile_state;
+    public ReactiveProperty<eTile_State> tile_state;
+    /// <summary>
+    /// 配置する壁の状態
+    /// </summary>
+    public ReactiveProperty<eWall_State> wall_state;
 
     void Awake() {
-        level = 1;
-        floor = new ReactiveProperty<int>();
-        floor.Value = 1;
-        max_floor = 2;
-        dungeon_generator = GameObject.FindObjectOfType<Dungeon_Generator>();
+        dungeon_generator = GameObject.Find("Dungeon_Generator").GetComponent<Dungeon_Generator>();
         map_layer_2D = new Map_Layer_2D();
     }
 
     void Start() {
+        var dungeon_data = new Dungeon_Data();
+
         actor_manager = Actor_Manager.Instance;
-        dungeon_tiles = gameObject.AddComponent<Dungeon_Tiles>();
-        tile_state = new ReactiveProperty<eDungeon_Tile_State>();
+        floor = new ReactiveProperty<int>(Define_Value.INITIAL_FLOOR);
+        max_floor = new ReactiveProperty<int>();
+        tile_state = new ReactiveProperty<eTile_State>(eTile_State.Grass);
+        wall_state = new ReactiveProperty<eWall_State>(eWall_State.Tree);
     }
 
     /// <summary>
@@ -77,15 +69,15 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// <summary>
     /// 次のダンジョンへの移動処理
     /// </summary>
-    public void NextLevel(int level) {
+    public void Next_Level(int level) {
         // 最終フロアーを越したらリザルト画面へ
-        if (floor.Value >= max_floor) {
-            SceneManager.LoadScene("Result");
-        }
-        else {
+        if (floor.Value < max_floor.Value) {
             Reset();
             ++floor.Value;
             dungeon_generator.Load_Dungeon(level);
+        }
+        else if (floor.Value >= max_floor.Value) {
+            SceneManager.LoadScene("Result");
         }
     }
 
@@ -93,7 +85,7 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     ///　プレイヤー以外全てのオブジェクトを消す
     /// </summary>
     void Reset() {
-        // 全てのオブジェクトをタグで探す TODO:Findは重い？
+        // 全てのオブジェクトをタグで探す
         GameObject[] traps = GameObject.FindGameObjectsWithTag("Trap");
         GameObject[] stairs = GameObject.FindGameObjectsWithTag("Stair");
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");

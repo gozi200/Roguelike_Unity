@@ -79,7 +79,7 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
     }
 
     void Start() {
-        // エネミーの画像を取り除く
+        // エネミーの画像を取り除く TODO:これ以外の方法で消したい
         this.UpdateAsObservable().First()
             .Subscribe (_ => 
             Destroy(GetComponent<SpriteRenderer>())

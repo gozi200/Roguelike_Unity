@@ -55,5 +55,11 @@ public class Dungeon_Data {
         safety_zone  = int.Parse(dungeon_data[(int)dungeon_type][4]); // 中間ポイント
         boss_floor   = int.Parse(dungeon_data[(int)dungeon_type][5]); // ボスフロア
         appear_enemy = int.Parse(dungeon_data[(int)dungeon_type][6]); // 出現敵タイプ
+
+        //DEBUG ダンジョンの作り直しに使用------------------
+        var dun_type = Dungeon_Manager.Instance.dungeon_type;
+        dun_type = dungeon_type;
+        //-------------------------------------------------
+
     }
 }

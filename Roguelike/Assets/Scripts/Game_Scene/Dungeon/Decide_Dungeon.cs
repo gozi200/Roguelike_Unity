@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO:１時変数をまとめる
+/// <summary>
+/// 選択されたダンジョンを作る準備をする
+/// </summary>
 public class Decide_Dungeon : MonoBehaviour {
-    /// <summary>
-    /// プレイヤー本体のクラス
-    /// </summary>
-    Player player;
     /// <summary>
     /// ゲームのマネージャークラス
     /// </summary>
@@ -42,20 +40,24 @@ public class Decide_Dungeon : MonoBehaviour {
     /// </summary>
     public void Move_Grass() {
         var player = Actor_Manager.Instance.player_script;
+        // 移動先のダンジョンの情報をcsvファイルからロード
+        dungeon_data.Load_Dungeon(eDungeon_Type.Beginning_Grass);
+        // そのダンジョンの最終階層を設定
+        dungeon_manager.max_floor.Value = dungeon_data.max_floor;
+        // ゲームの状態をダンジョン制作のものに
+        game_manager.Set_Game_State(eGame_State.Create_Dungeon);
+        // 配置する床を進入ダンジョンに合ったのものに
+        dungeon_manager.tile_state.Value = eTile_State.Grass;
+        // 配置する壁を進入ダンジョンに合ったのものに
+        dungeon_manager.wall_state.Value = eWall_State.Tree;
+        // ダンジョン選択UIを消す
+        base_manager.dungeon_command.Value = false;
+        // ダンジョンの進入するので拠点を消去
+        Reset();
         // ダンジョン移動後はプレイヤーのターンから
         player_action.Set_Action(ePlayer_State.Move);
         // 選択中は０なので1に戻して歩けるように
         player.move_value = 1;
-        // ダンジョン選択UIを消す
-        base_manager.dungeon_command.Value = false;
-        // 移動先のダンジョンの情報をcsvファイルからロード
-        dungeon_data.Load_Dungeon(eDungeon_Type.Beginning_Grass);
-        // ゲームの状態をダンジョン制作のものに
-        game_manager.Set_Game_State(eGame_State.Create_Dungeon);
-        // 配置する床を進入ダンジョンに合ったのものに
-        dungeon_manager.dungeon_tiles.dungeon_tiles.Value = eDungeon_Tile_State.Grass;
-        // ダンジョンの進入するので拠点を消去
-        Reset();
     }
 
     /// <summary>
@@ -64,13 +66,15 @@ public class Decide_Dungeon : MonoBehaviour {
     public void Move_Cave() {
         var player = Actor_Manager.Instance.player_script;
 
+        dungeon_data.Load_Dungeon(eDungeon_Type.Dim_Cave);
+        dungeon_manager.max_floor.Value = dungeon_data.max_floor;
+        game_manager.Set_Game_State(eGame_State.Create_Dungeon);
+        dungeon_manager.tile_state.Value = eTile_State.Stone;
+        dungeon_manager.wall_state.Value = eWall_State.Stone;
+        base_manager.dungeon_command.Value = false;
+        Reset();
         player_action.Set_Action(ePlayer_State.Move);
         player.move_value = 1;
-        base_manager.dungeon_command.Value = false;
-        dungeon_data.Load_Dungeon(eDungeon_Type.Dim_Cave);
-        game_manager.Set_Game_State(eGame_State.Create_Dungeon);
-        dungeon_manager.dungeon_tiles.dungeon_tiles.Value = eDungeon_Tile_State.Stone;
-        Reset();
     }
 
     /// <summary>
@@ -81,6 +85,7 @@ public class Decide_Dungeon : MonoBehaviour {
         var base_manager_object = GameObject.Find("Base_Manager");
         var base_manager = base_manager_object.GetComponent<Base_Manager>();
 
+        // 歩けなくする
         player.move_value = 0;
         base_manager.dungeon_command.Value = true;
     }
@@ -89,8 +94,12 @@ public class Decide_Dungeon : MonoBehaviour {
     /// 拠点を抜けたら拠点を消す
     /// </summary>
     void Reset() {
+        var map_layer = Dungeon_Manager.Instance.map_layer_2D;
+
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
         GameObject[] walls = GameObject.FindGameObjectsWithTag("Wall");
+        // レイヤー番号を保持している配列を解放
+        map_layer.coordinates = null;
 
         foreach (GameObject tile in tiles) {
             Destroy(tile);

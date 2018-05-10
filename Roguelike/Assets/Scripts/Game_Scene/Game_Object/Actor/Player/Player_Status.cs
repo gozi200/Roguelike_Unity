@@ -190,7 +190,7 @@ public class Player_Status : Actor_Status {
 	,MAX_EXP // 25
         };
 
-    // デバッグ用--------------------------------
+    // DEBUG--------------------------------
     Key_Observer key;
     //------------------------------------------
 
@@ -204,11 +204,8 @@ public class Player_Status : Actor_Status {
         keep_star = new ReactiveProperty<int>();
         noble_phantasm = new ReactiveProperty<int>();
 
-        // デバッグ用---------------------------
+        // DEBUG---------------------------
         key = Game.Instance.key_observer;
-        //-------------------------------------
-
-        // デバッグ用--------------------------------
         key.On_Key_Down_AsObservable()
             .Where(key => key == KeyCode.Backspace)
             .Subscribe(_ =>
