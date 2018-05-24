@@ -68,7 +68,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ae819e6e11ee2448a2ffd8c6f6f5001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ID: 0
   name: 
   class_type: 0
   level: 0
@@ -84,6 +83,8 @@ MonoBehaviour:
   first_floor: 0
   last_floor: 0
   turn_count: 0
+  now_room: 0
+  before_coordinate: 0
 --- !u!212 &212597621848275188
 SpriteRenderer:
   m_ObjectHideFlags: 1

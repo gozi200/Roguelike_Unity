@@ -10,7 +10,7 @@ namespace UniRx
         bool isStopped;
         bool isDisposed;
         T lastValue;
-        Exception lastError;
+        Exception lA_Starror;
         IObserver<T> outObserver = EmptyObserver<T>.Instance;
 
         public BehaviorSubject(T defaultValue)
@@ -23,7 +23,7 @@ namespace UniRx
             get
             {
                 ThrowIfDisposed();
-                if (lastError != null) throw lastError;
+                if (lA_Starror != null) throw lA_Starror;
                 return lastValue;
             }
         }
@@ -65,7 +65,7 @@ namespace UniRx
                 old = outObserver;
                 outObserver = EmptyObserver<T>.Instance;
                 isStopped = true;
-                lastError = error;
+                lA_Starror = error;
             }
 
             old.OnError(error);
@@ -121,7 +121,7 @@ namespace UniRx
                 }
                 else
                 {
-                    ex = lastError;
+                    ex = lA_Starror;
                 }
             }
 
@@ -148,7 +148,7 @@ namespace UniRx
             {
                 isDisposed = true;
                 outObserver = DisposedObserver<T>.Instance;
-                lastError = null;
+                lA_Starror = null;
                 lastValue = default(T);
             }
         }

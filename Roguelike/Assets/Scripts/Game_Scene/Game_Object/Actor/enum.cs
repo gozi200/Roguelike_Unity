@@ -66,9 +66,9 @@ public enum ePlayer_Mode {
 /// 敵の現在のモード
 /// </summary>
 public enum eEnemy_Mode {
-    Move_Mode      // 移動モード
-  , Encounter_Mode // エンカウントモード
-  , Attack_Mode    // 攻撃モード
+    Move_Floor_Mode // 部屋移動モード
+  , Move_Road_Mode  // 通路移動モード
+  , Encounter_Mode  // エンカウントモード
 }
 
 /// <summary>
@@ -132,4 +132,11 @@ public enum eWall_State {
   , Finish // 種類数の取得に使用
 }
 
-
+/// <summary>
+/// IDでエネミーを扱う
+/// </summary>
+public enum eEnemy_ID {
+    None // 初期化に使用
+  , Wyvern // ワイバーン
+  , Golem // ゴーレム
+}

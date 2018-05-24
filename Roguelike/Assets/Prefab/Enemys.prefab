@@ -20,10 +20,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4318593559058122}
   - component: {fileID: 212750064058538884}
-  - component: {fileID: 114415466929318048}
+  - component: {fileID: 114926875941549860}
   m_Layer: 0
   m_Name: Enemys
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -41,7 +41,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114415466929318048
+--- !u!114 &114926875941549860
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -52,9 +52,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c5ba45e72bf1a54c9517efa6e8dfd24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy_sprite:
-  - {fileID: 21300002, guid: 53fe6aa9ed5f6004fbe65f7c89c85220, type: 3}
-  - {fileID: 21300000, guid: 53fe6aa9ed5f6004fbe65f7c89c85220, type: 3}
+  enemy_atlas_: {fileID: 4343727234628468602, guid: 7d974777c2be34442b69157aaad1d03f,
+    type: 2}
 --- !u!212 &212750064058538884
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -97,5 +96,5 @@ SpriteRenderer:
   m_Size: {x: 1.9, y: 2.22}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0

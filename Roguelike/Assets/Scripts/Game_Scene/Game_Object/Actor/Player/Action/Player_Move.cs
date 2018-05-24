@@ -94,7 +94,7 @@ public class Player_Move : MonoBehaviour {
                 // 進行方向が移動可能かを判断
                 if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
                                             map_layer.Get_(player_x, player_y + move_value))) {
-                    return;
+                   return;
                 }
                 Move_Process(not_move, move_value);
             }
@@ -166,8 +166,8 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown(KeyCode.A)) {
                 player.direction = eDirection.Left;
                 // 進行方向が移動可能かを判断
-                if (actor_action.Move_Check(map_layer.Get_(player_position.x, player_position.y),
-                                            map_layer.Get_(player_position.x - move_value, player_position.y))) {
+                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
+                                            map_layer.Get_(player_x - move_value, player_y))) {
                     return;
                 }
                 Move_Process(-move_value, not_move);
@@ -175,13 +175,13 @@ public class Player_Move : MonoBehaviour {
             // Qキーが押されたとき
             else if (Input.GetKeyDown(KeyCode.Q)) {
                 player.direction = eDirection.Upleft;
-                if (actor_action.Move_Check(map_layer.Get_(player_position.x, player_position.y),
-                                            map_layer.Get_(player_position.x - move_value, player_position.y + move_value))) {
+                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
+                                            map_layer.Get_(player_x - move_value, player_y + move_value))) {
                     return;
                 }
                 // 左方向か上方向に壁があるとき(移動不可になる)
-                if (actor_action.Slant_Check(map_layer.Get_(player_position.x - move_value, player_position.y),
-                                                  map_layer.Get_(player_position.x, player_position.y + move_value))) {
+                if (actor_action.Slant_Check(map_layer.Get_(player_x - move_value, player_y),
+                                                  map_layer.Get_(player_x, player_y + move_value))) {
                     return;
                 }
                 Move_Process(-move_value, move_value);

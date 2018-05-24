@@ -2,19 +2,39 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using UnityEngine.U2D;
 
 /// <summary>
-/// IDに合った画像をエネミーに貼る //現在制作中 2018/05/10
+/// IDに合った画像をエネミーに貼る
 /// </summary>
 public class Enemy_Sprite_Changer : Sprite_Changer {
     /// <summary>
-    /// エネミーに貼る画像を格納
+    /// 敵画像をまとめたもの
     /// </summary>
     [SerializeField]
-    Sprite[] enemy_sprite = new Sprite[Define_Value.ENEMY_NUMBER];
+    SpriteAtlas enemy_atlas;
+    /// <summary>
+    /// いくつのものをまとめたかを格納
+    /// </summary>
+    int sprite_count;
+    /// <summary>
+    /// まとめた画像の１つずつを格納
+    /// </summary>
+    Sprite[] sprite_array;
+    /// <summary>
+    /// 教示する画像を設定
+    /// </summary>
+    SpriteRenderer sprite_renderer;
 
     void Start() {
-        
+        enemy_atlas = Resources.Load<SpriteAtlas>("Enemy_Atlas");
+        sprite_count = enemy_atlas.spriteCount;
+        sprite_array = new Sprite[sprite_count];
+        enemy_atlas.GetSprites(sprite_array);
+        var enemy_status = gameObject.GetComponent<Enemy_Status>();
+        var actor_manager = Actor_Manager.Instance;
+
+        Set_Sprite(enemy_status.ID.Value);
     }
 
     /// <summary>
@@ -22,7 +42,7 @@ public class Enemy_Sprite_Changer : Sprite_Changer {
     /// </summary>
     /// <param name="type">spritesの要素数</param>
     protected override void Set_Sprite(int type) {
-        SpriteRenderer sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
-        sprite_renderer.sprite = enemy_sprite[type];
+        var sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
+        sprite_renderer.sprite = sprite_array[type];
     }
 }

@@ -181,11 +181,11 @@ namespace UniRx
         /// <summary>Called on the client when a connection attempt fails for some reason.</summary>
         public virtual void OnFailedToConnect(NetworkConnectionError error) { }
 
-        /// <summary>Called on clients or servers when there is a problem connecting to the MasterServer.</summary>
-        public virtual void OnFailedToConnectToMasterServer(NetworkConnectionError info) { }
+        /// <summary>Called on clients or servers when there is a problem connecting to the MA_StarServer.</summary>
+        public virtual void OnFailedToConnectToMA_StarServer(NetworkConnectionError info) { }
 
-        /// <summary>Called on clients or servers when reporting events from the MasterServer.</summary>
-        public virtual void OnMasterServerEvent(MasterServerEvent msEvent) { }
+        /// <summary>Called on clients or servers when reporting events from the MA_StarServer.</summary>
+        public virtual void OnMA_StarServerEvent(MA_StarServerEvent msEvent) { }
 
         /// <summary>Called on objects which have been network instantiated with Network Instantiate.</summary>
         public virtual void OnNetworkInstantiate(NetworkMessageInfo info) { }

@@ -15,6 +15,10 @@ public class Decide_Dungeon : MonoBehaviour {
     /// </summary>
     Player_Action player_action;
     /// <summary>
+    /// エネミーのステータスを管理するクラス
+    /// </summary>
+    Enemy_Status enemy_status;
+    /// <summary>
     /// 拠点のマネージャー
     /// </summary>
     [SerializeField]
@@ -33,6 +37,7 @@ public class Decide_Dungeon : MonoBehaviour {
         dungeon_manager = Dungeon_Manager.Instance;
         player_action = Actor_Manager.Instance.player_action;
         dungeon_data = new Dungeon_Data();
+        enemy_status = Actor_Manager.Instance.enemy_status;
     }
 
     /// <summary>
@@ -40,8 +45,11 @@ public class Decide_Dungeon : MonoBehaviour {
     /// </summary>
     public void Move_Grass() {
         var player = Actor_Manager.Instance.player_script;
+
         // 移動先のダンジョンの情報をcsvファイルからロード
         dungeon_data.Load_Dungeon(eDungeon_Type.Beginning_Grass);
+        // そのダンジョンに出現するエネミーをcsvファイルからロードする
+        enemy_status.Create_Enemy();
         // そのダンジョンの最終階層を設定
         dungeon_manager.max_floor.Value = dungeon_data.max_floor;
         // ゲームの状態をダンジョン制作のものに
@@ -67,6 +75,7 @@ public class Decide_Dungeon : MonoBehaviour {
         var player = Actor_Manager.Instance.player_script;
 
         dungeon_data.Load_Dungeon(eDungeon_Type.Dim_Cave);
+        enemy_status.Create_Enemy();
         dungeon_manager.max_floor.Value = dungeon_data.max_floor;
         game_manager.Set_Game_State(eGame_State.Create_Dungeon);
         dungeon_manager.tile_state.Value = eTile_State.Stone;

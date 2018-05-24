@@ -974,7 +974,7 @@ namespace UniRx
             switch (dispatchType)
             {
                 case MainThreadDispatchType.Update:
-                    return source.ObserveOnMainThread(); // faster path
+                    return source.ObserveOnMainThread(); // fA_Star path
 
                 // others, bit slower
 
@@ -1009,7 +1009,7 @@ namespace UniRx
         //    switch (dispatchType)
         //    {
         //        case MainThreadDispatchType.Update:
-        //            return source.SubscribeOnMainThread(); // faster path
+        //            return source.SubscribeOnMainThread(); // fA_Star path
 
         //        // others, bit slower
 

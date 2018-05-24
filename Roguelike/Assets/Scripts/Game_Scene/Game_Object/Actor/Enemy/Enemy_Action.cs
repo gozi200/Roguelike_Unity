@@ -44,9 +44,14 @@ public class Enemy_Action : MonoBehaviour {
     Damage_Calculation damage_calculation;
 
     /// <summary>
-    /// エネミーのいる座標
+    /// 自分の座標
     /// </summary>
     Vector3 enemy_position;
+
+    /// <summary>
+    /// エネミーのモード
+    /// </summary>
+    eEnemy_Mode enemy_mode;
 
     /// <summary>
     /// 移動が終了したかを判断
@@ -80,7 +85,7 @@ public class Enemy_Action : MonoBehaviour {
                         player_status.hit_point.Value -= (int)damage_calculation.Damage(enemy_status.attack, player_status.defence);
                         break;
                     }
-                    Move(i);
+                    actor_manager.enemys[i].GetComponent<A_Star>().Action();
                     break;
             }
             // ターンを終える
@@ -181,6 +186,19 @@ public class Enemy_Action : MonoBehaviour {
             // 上述のint型乱数をenum型にキャスト
             eDirection cast_random_direction = (eDirection)random_direction;
 
+            // 状態に合わせて行動を決める
+            switch (enemy_mode) {
+                case eEnemy_Mode.Move_Floor_Mode:
+                    Move_Floor();
+                    break;
+                case eEnemy_Mode.Move_Road_Mode:
+                    Move_Road();
+                    break;
+                case eEnemy_Mode.Encounter_Mode:
+                    Encounter_Mode();
+                    break;
+            }
+
             switch (cast_random_direction) {
                 case eDirection.Up:
                     // 進行方向が移動可能かを判断
@@ -189,7 +207,6 @@ public class Enemy_Action : MonoBehaviour {
                         return;
                     }
                     Move_Process(not_move, move_value, index);
-                    move_end = true;
                     break;
                 case eDirection.Upright:
                     // 進行方向が移動可能かを判断
@@ -203,7 +220,6 @@ public class Enemy_Action : MonoBehaviour {
                         return;
                     }
                     Move_Process(move_value, move_value, index);
-                    move_end = true;
                     break;
                 case eDirection.Right:
                     if (actor_action.Move_Check(map_layer.Get_(enemy_x , enemy_y),
@@ -211,7 +227,6 @@ public class Enemy_Action : MonoBehaviour {
                         return;
                     }
                     Move_Process(move_value, not_move, index);
-                    move_end = true;
                     break;
                 case eDirection.Downright:
                     // 進行方向が移動可能かを判断
@@ -225,7 +240,6 @@ public class Enemy_Action : MonoBehaviour {
                         return;
                     }
                     Move_Process(move_value, -move_value, index);
-                    move_end = true;
                     break;
                 case eDirection.Down:
                     if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
@@ -233,7 +247,6 @@ public class Enemy_Action : MonoBehaviour {
                         return;
                     }
                     Move_Process(not_move, -move_value, index);
-                    move_end = true;
                     break;
                 case eDirection.Downleft:
                     // 進行方向が移動可能かを判断
@@ -247,7 +260,6 @@ public class Enemy_Action : MonoBehaviour {
                         return;
                     }
                     Move_Process(-move_value, -move_value, index);
-                    move_end = true;
                     break;
                 case eDirection.Left:
                     if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
@@ -255,7 +267,6 @@ public class Enemy_Action : MonoBehaviour {
                         return;
                     }
                     Move_Process(-move_value, not_move, index);
-                    move_end = true;
                     break;
                 case eDirection.Upleft:
                     // 進行方向が移動可能かを判断
@@ -272,6 +283,26 @@ public class Enemy_Action : MonoBehaviour {
                     break;
             }
         }
+    }
+
+    /// <summary>
+    /// 部屋にいるときのAI
+    /// </summary>
+    void Move_Floor() {
+    }
+
+    /// <summary>
+    /// 通路にいるときのAI
+    /// </summary>
+    void Move_Road() {
+        
+    }
+
+    /// <summary>
+    /// プレイヤーとエンカウントしているときのAI
+    /// </summary>
+    void Encounter_Mode() {
+        //Astarを使う
     }
 
     /// <summary>

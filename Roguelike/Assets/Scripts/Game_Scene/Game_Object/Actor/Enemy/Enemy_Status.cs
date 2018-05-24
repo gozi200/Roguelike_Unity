@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Linq;
+using UniRx;
 
 /// <summary>
 /// エネミーのステータス関係を管理するクラス
@@ -14,9 +15,9 @@ public class Enemy_Status : Actor_Status {
     #region csvから読み込む変数
     //TODO:publicは使わない
     /// <summary>
-    /// 番号
+    /// 番号 TODO:Reactiveじゃなくてもいい？
     /// </summary>
-    public int ID;
+    public ReactiveProperty<int> ID = new ReactiveProperty<int>();
     /// <summary>
     /// 名前
     /// </summary>
@@ -81,20 +82,28 @@ public class Enemy_Status : Actor_Status {
     #endregion
 
     /// <summary>
-    /// ステータスを設定し、リストに格納する
+    /// 自分のいる部屋番号
+    /// </summary>
+    public int now_room;
+    /// <summary>
+    /// １つ前にいた座標
+    /// </summary>
+    public int before_coordinate;
+
+    /// <summary>
+    /// ダンジョンに出現する敵の種類ごとにステータスを設定し、リストに格納する
     /// </summary>
     public void Create_Enemy() {
         // csv読み込みクラス
         csv_Reader reader;
-
         reader = Game.Instance.reader;
         enemy_script = Actor_Manager.Instance.enemy_script;
         var enemy_status = reader.Load_csv("csv/Actor/Enemy/Enemy_csv", Define_Value.UNNECESSARY_COLUMN);
 
         for(int enemy_type = 0; enemy_type < Define_Value.ENEMY_NUMBER; ++enemy_type) {
-            var enemy = new Enemy_Status();
+            var enemy = gameObject.AddComponent<Enemy_Status>();
 
-            enemy.ID               = int.Parse(enemy_status[enemy_type][0]);  // 番号
+            enemy.ID.Value         = int.Parse(enemy_status[enemy_type][0]);  // 番号
             enemy.name             = enemy_status          [enemy_type][1] ;  // 名前
             enemy.class_type       = int.Parse(enemy_status[enemy_type][2]);  // クラス
             enemy.level            = int.Parse(enemy_status[enemy_type][3]);  // レベル
@@ -162,6 +171,25 @@ public class Enemy_Status : Actor_Status {
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// どこの部屋にいるのかを調べる
+    /// </summary>
+    /// <param name="x">知りたいものの座標</param>
+    /// <param name="y">知りたいものの座標</param>
+    public void Where_Floor(int x, int y) {
+        var dungeon_generator = Dungeon_Manager.Instance.dungeon_generator;
+        var enemy = Actor_Manager.Instance.enemy_script;
+
+        for (int i = 0; i < dungeon_generator.division_list.Count; ++i) {
+            if (x > dungeon_generator.division_list[i].Room.Left   - 1 &&
+                x < dungeon_generator.division_list[i].Room.Right      &&
+                y < dungeon_generator.division_list[i].Room.Bottom     &&
+                y > dungeon_generator.division_list[i].Room.Top - 1) {
+                now_room = i;
+            }
+        }
     }
 
     /// <summary>

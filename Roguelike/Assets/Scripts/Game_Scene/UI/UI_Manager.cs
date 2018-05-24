@@ -92,7 +92,7 @@ public class UI_Manager : MonoBehaviour {
     /// </summary>
     void Set_Floor_UI() {
         var dungeon_manager = Dungeon_Manager.Instance;
-        floor_text.text = string.Format("{0}階 / {1}階", new string[] { dungeon_manager.floor.ToString(), dungeon_manager.max_floor.ToString() });
+        floor_text.text = string.Format("{0}階 / {1}階", new string[] { dungeon_manager.floor.ToString(), dungeon_manager.max_floor.Value.ToString() });
     }
 
     /// <summary>

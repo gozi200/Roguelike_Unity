@@ -10,7 +10,7 @@ namespace UniRx
 
         bool isStopped;
         bool isDisposed;
-        Exception lastError;
+        Exception lA_Starror;
         IObserver<T> outObserver = EmptyObserver<T>.Instance;
 
         readonly int bufferSize;
@@ -107,7 +107,7 @@ namespace UniRx
                 old = outObserver;
                 outObserver = EmptyObserver<T>.Instance;
                 isStopped = true;
-                lastError = error;
+                lA_Starror = error;
                 Trim();
             }
 
@@ -165,7 +165,7 @@ namespace UniRx
                     subscription = new Subscription(this, observer);
                 }
 
-                ex = lastError;
+                ex = lA_Starror;
                 Trim();
                 foreach (var item in queue)
                 {
@@ -195,7 +195,7 @@ namespace UniRx
             {
                 isDisposed = true;
                 outObserver = DisposedObserver<T>.Instance;
-                lastError = null;
+                lA_Starror = null;
                 queue = null;
             }
         }

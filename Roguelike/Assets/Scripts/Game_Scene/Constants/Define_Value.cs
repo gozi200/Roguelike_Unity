@@ -148,21 +148,29 @@ public static class Define_Value {
     /// </summary>
     public const int TILE_LAYER_NUMBER = 1;
     /// <summary>
+    /// 通路の床番号
+    /// </summary>
+    public const int ROAD_LAYER_NUMBER = 2;
+    /// <summary>
+    /// 入口の床番号
+    /// </summary>
+    public const int ENTRANCE_LAYER_NUMBER = 3;
+    /// <summary>
     /// 階段のレイヤーナンバー
     /// </summary>
-    public const int STAIR_LAYER_NUMBER = 2;
+    public const int STAIR_LAYER_NUMBER = 4;
     /// <summary>
     /// 罠のレイヤーナンバー
     /// </summary>
-    public const int TRAP_LAYER_NUMBER = 3;
+    public const int TRAP_LAYER_NUMBER = 5;
     /// <summary>
     /// アイテムのレイヤーナンバー
     /// </summary>
-    public const int ITEM_LAYER_NUMBER = 4;
+    public const int ITEM_LAYER_NUMBER = 6;
     /// <summary>
     /// 踏むとダンジョン移動コマンドを出現させる
     /// </summary>
-    public const int MOVE_DUNGEON_TILE = 5;
+    public const int MOVE_DUNGEON_TILE = 7;
 
     /// <summary>
     /// プレイヤーのレイヤーナンバー

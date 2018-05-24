@@ -776,32 +776,32 @@ namespace UniRx
             return onFailedToConnect ?? (onFailedToConnect = new Subject<NetworkConnectionError>());
         }
 
-        Subject<NetworkConnectionError> onFailedToConnectToMasterServer;
+        Subject<NetworkConnectionError> onFailedToConnectToMA_StarServer;
 
-        /// <summary>Called on clients or servers when there is a problem connecting to the MasterServer.</summary>
-        public override void OnFailedToConnectToMasterServer(NetworkConnectionError info)
+        /// <summary>Called on clients or servers when there is a problem connecting to the MA_StarServer.</summary>
+        public override void OnFailedToConnectToMA_StarServer(NetworkConnectionError info)
         {
-            if (onFailedToConnectToMasterServer != null) onFailedToConnectToMasterServer.OnNext(info);
+            if (onFailedToConnectToMA_StarServer != null) onFailedToConnectToMA_StarServer.OnNext(info);
         }
 
-        /// <summary>Called on clients or servers when there is a problem connecting to the MasterServer.</summary>
-        public IObservable<NetworkConnectionError> OnFailedToConnectToMasterServerAsObservable()
+        /// <summary>Called on clients or servers when there is a problem connecting to the MA_StarServer.</summary>
+        public IObservable<NetworkConnectionError> OnFailedToConnectToMA_StarServerAsObservable()
         {
-            return onFailedToConnectToMasterServer ?? (onFailedToConnectToMasterServer = new Subject<NetworkConnectionError>());
+            return onFailedToConnectToMA_StarServer ?? (onFailedToConnectToMA_StarServer = new Subject<NetworkConnectionError>());
         }
 
-        Subject<MasterServerEvent> onMasterServerEvent;
+        Subject<MA_StarServerEvent> onMA_StarServerEvent;
 
-        /// <summary>Called on clients or servers when reporting events from the MasterServer.</summary>
-        public override void OnMasterServerEvent(MasterServerEvent msEvent)
+        /// <summary>Called on clients or servers when reporting events from the MA_StarServer.</summary>
+        public override void OnMA_StarServerEvent(MA_StarServerEvent msEvent)
         {
-            if (onMasterServerEvent != null) onMasterServerEvent.OnNext(msEvent);
+            if (onMA_StarServerEvent != null) onMA_StarServerEvent.OnNext(msEvent);
         }
 
-        /// <summary>Called on clients or servers when reporting events from the MasterServer.</summary>
-        public IObservable<MasterServerEvent> OnMasterServerEventAsObservable()
+        /// <summary>Called on clients or servers when reporting events from the MA_StarServer.</summary>
+        public IObservable<MA_StarServerEvent> OnMA_StarServerEventAsObservable()
         {
-            return onMasterServerEvent ?? (onMasterServerEvent = new Subject<MasterServerEvent>());
+            return onMA_StarServerEvent ?? (onMA_StarServerEvent = new Subject<MA_StarServerEvent>());
         }
 
         Subject<NetworkMessageInfo> onNetworkInstantiate;

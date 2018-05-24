@@ -20,7 +20,7 @@ namespace UniRx
         bool hasValue;
         bool isStopped;
         bool isDisposed;
-        Exception lastError;
+        Exception lA_Starror;
         IObserver<T> outObserver = EmptyObserver<T>.Instance;
 
         public T Value
@@ -29,7 +29,7 @@ namespace UniRx
             {
                 ThrowIfDisposed();
                 if (!isStopped) throw new InvalidOperationException("AsyncSubject is not completed yet");
-                if (lastError != null) throw lastError;
+                if (lA_Starror != null) throw lA_Starror;
                 return lastValue;
             }
         }
@@ -85,7 +85,7 @@ namespace UniRx
                 old = outObserver;
                 outObserver = EmptyObserver<T>.Instance;
                 isStopped = true;
-                lastError = error;
+                lA_Starror = error;
             }
 
             old.OnError(error);
@@ -137,7 +137,7 @@ namespace UniRx
                     return new Subscription(this, observer);
                 }
 
-                ex = lastError;
+                ex = lA_Starror;
                 v = lastValue;
                 hv = hasValue;
             }
@@ -165,7 +165,7 @@ namespace UniRx
             {
                 isDisposed = true;
                 outObserver = DisposedObserver<T>.Instance;
-                lastError = null;
+                lA_Starror = null;
                 lastValue = default(T);
             }
         }
@@ -313,9 +313,9 @@ namespace UniRx
                 e.WaitOne();
             }
 
-            if (lastError != null)
+            if (lA_Starror != null)
             {
-                throw lastError;
+                throw lA_Starror;
             }
 
             if (!hasValue)

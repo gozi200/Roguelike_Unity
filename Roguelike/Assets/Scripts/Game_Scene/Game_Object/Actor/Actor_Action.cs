@@ -26,12 +26,29 @@ public class Actor_Action : MonoBehaviour {
     /// <param name="check_layer1">壁1</param>
     /// <param name="check_layer2">壁2</param>
     /// <returns>移動不可能であればtrue</returns>
-    public bool Slant_Check(int check_layer1, int check_layer2) {
-        // ななめ移動時に移動不可となる場合の壁の位置を調べる
-        if (check_layer1 >= Define_Value.WALL_LAYER_NUMBER ||
-            check_layer2 >= Define_Value.WALL_LAYER_NUMBER) {
+     public bool Slant_Check(int check_layer1, int check_layer2) {
+         // ななめ移動時に移動不可となる場合の壁の位置を調べる
+         if (check_layer1 >= Define_Value.WALL_LAYER_NUMBER ||
+             check_layer2 >= Define_Value.WALL_LAYER_NUMBER) {
+             return true;
+         }
+         return false;
+     }
+
+    // ↑↓どっち使う？　↓を使うなら第一引数をアクターの持っているfeetに変えなきゃダメ
+    /*
+    /// <summary>
+    /// ななめ移動ができない場合を調べる
+    /// </summary>
+    /// <param name="now_feet">自分が踏んでいる床の情報</param>
+    /// <param name="after_feet">移動先の場所</param>
+    /// <returns></returns>
+    public bool Slant_Check(int before_feet, int after_feet) {
+        if (before_feet == Define_Value.ENTRANCE_LAYER_NUMBER ||
+            after_feet == Define_Value.ENTRANCE_LAYER_NUMBER) {
             return true;
         }
         return false;
     }
+    */
 }

@@ -31,7 +31,7 @@ public class Tile_Sprite_Changer : Sprite_Changer {
     /// </summary>
     /// <param name="type">spritesの要素数</param>
     protected override void Set_Sprite(int type) {
-        SpriteRenderer sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
+        var sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
         sprite_renderer.sprite = tile_sprite[type];
     }
 }

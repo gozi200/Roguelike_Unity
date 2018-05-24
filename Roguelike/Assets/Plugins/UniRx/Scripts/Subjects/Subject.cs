@@ -11,7 +11,7 @@ namespace UniRx
 
         bool isStopped;
         bool isDisposed;
-        Exception lastError;
+        Exception lA_Starror;
         IObserver<T> outObserver = EmptyObserver<T>.Instance;
 
         public bool HasObservers
@@ -51,7 +51,7 @@ namespace UniRx
                 old = outObserver;
                 outObserver = EmptyObserver<T>.Instance;
                 isStopped = true;
-                lastError = error;
+                lA_Starror = error;
             }
 
             old.OnError(error);
@@ -94,7 +94,7 @@ namespace UniRx
                     return new Subscription(this, observer);
                 }
 
-                ex = lastError;
+                ex = lA_Starror;
             }
 
             if (ex != null)

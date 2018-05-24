@@ -16,7 +16,6 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
     /// アクター共通の行動を管理するクラス
     /// </summary>
     public Actor_Action actor_action;
-
     /// <summary>
     /// プレイヤー本体
     /// </summary>
@@ -63,6 +62,11 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
     /// </summary>
     public List<GameObject> enemys = new List<GameObject>();
 
+    /// <summary>
+    /// IDで操作するのに使用(１なら誰などの条件etc.)
+    /// </summary>
+    public eEnemy_ID enemy_id;
+
     void Awake() {
         player = GameObject.Find("Player");
         player_script = player.GetComponent<Player>();
@@ -79,20 +83,14 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
     }
 
     void Start() {
-        // エネミーの画像を取り除く TODO:これ以外の方法で消したい
+        player_attack = gameObject.AddComponent<Player_Attack>();
+        actor_status = gameObject.AddComponent<Actor_Status>();
+
+        // エネミーの画像を取り除く TODO:いけてるが他の方法を調べてみる
         this.UpdateAsObservable().First()
             .Subscribe (_ => 
-            Destroy(GetComponent<SpriteRenderer>())
-         ).AddTo(this);
-
-        player_attack = gameObject.AddComponent<Player_Attack>();
-
-        actor_status = new Actor_Status();
-
-        enemy_status.Create_Enemy();
-
-        //var enemy_sprite = this.GetComponent<SpriteRenderer>();
-        //enemy_sprite.enabled = false;
+            Destroy(gameObject.GetComponent<SpriteRenderer>())
+           ).AddTo(this);
     }
 
     /// <summary>

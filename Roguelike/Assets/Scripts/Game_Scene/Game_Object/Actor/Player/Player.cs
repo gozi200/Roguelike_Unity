@@ -30,6 +30,7 @@ public class Player : Actor {
 
     void Start() {
         gameObject.transform.localScale = new Vector2(0.4f, 0.4f);
+        status = Actor_Manager.Instance.player_status;
     }
 
     /// <summary>

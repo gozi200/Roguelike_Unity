@@ -14,6 +14,10 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// </summary>
     Actor_Manager actor_manager;
     /// <summary>
+    /// 部屋の情報を設定するクラス
+    /// </summary>
+    public Room_Detail room_detail;
+    /// <summary>
     /// ダンジョン作成クラス
     /// </summary>
     public Dungeon_Generator dungeon_generator;
@@ -29,7 +33,7 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// <summary>
     /// そのダンジョンの最終階層
     /// </summary>
-    public ReactiveProperty<int> max_floor;// { set; get; }
+    public ReactiveProperty<int> max_floor;
 
     /// <summary>
     /// 生成するダンジョンの種類
@@ -44,14 +48,20 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// </summary>
     public ReactiveProperty<eWall_State> wall_state;
 
+    /// <summary>
+    /// 部屋ごとに情報を格納する
+    /// </summary>
+    public List<Room_Detail> room_list;
+
     void Awake() {
         dungeon_generator = GameObject.Find("Dungeon_Generator").GetComponent<Dungeon_Generator>();
         map_layer_2D = new Map_Layer_2D();
     }
 
     void Start() {
-        var dungeon_data = new Dungeon_Data();
+        room_list = new List<Room_Detail>();
 
+        room_detail = new Room_Detail();
         actor_manager = Actor_Manager.Instance;
         floor = new ReactiveProperty<int>(Define_Value.INITIAL_FLOOR);
         max_floor = new ReactiveProperty<int>();
@@ -115,5 +125,6 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
             Destroy(wall.gameObject);
         }
         enemy_list.Clear();
+        room_list.Clear();
     }
 }

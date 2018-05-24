@@ -15,7 +15,7 @@ namespace UniRx
         /// <summary>
         /// Publish target property when value is changed. If source is destroyed/destructed, publish OnCompleted.
         /// </summary>
-        /// <param name="fastDestroyCheck">If true and target is UnityObject, use destroyed check by additional component. It is faster check for lifecycle but needs initial cost.</param>
+        /// <param name="fastDestroyCheck">If true and target is UnityObject, use destroyed check by additional component. It is fA_Star check for lifecycle but needs initial cost.</param>
         public static IObservable<TProperty> ObserveEveryValueChanged<TSource, TProperty>(this TSource source, Func<TSource, TProperty> propertySelector, FrameCountType frameCountType = FrameCountType.Update, bool fastDestroyCheck = false)
             where TSource : class
         {
@@ -34,7 +34,7 @@ namespace UniRx
         /// <summary>
         /// Publish target property when value is changed. If source is destroyed/destructed, publish OnCompleted.
         /// </summary>
-        /// <param name="fastDestroyCheck">If true and target is UnityObject, use destroyed check by additional component. It is faster check for lifecycle but needs initial cost.</param>
+        /// <param name="fastDestroyCheck">If true and target is UnityObject, use destroyed check by additional component. It is fA_Star check for lifecycle but needs initial cost.</param>
         public static IObservable<TProperty> ObserveEveryValueChanged<TSource, TProperty>(this TSource source, Func<TSource, TProperty> propertySelector, FrameCountType frameCountType, IEqualityComparer<TProperty> comparer, bool fastDestroyCheck)
             where TSource : class
         {
@@ -176,7 +176,7 @@ namespace UniRx
                         }
                     }
 
-                    // can't use faster path
+                    // can't use fA_Star path
                     if (gameObject == null) goto STANDARD_LOOP;
 
                     destroyTrigger = GetOrAddDestroyTrigger(gameObject);
