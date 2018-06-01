@@ -29,7 +29,7 @@ public class Map_Layer_2D {
     /// 幅を取得
     /// </summary>
     /// <returns></returns>
-    public int Get_Width() {
+    public int GetWidth() {
         return width;
     }
 
@@ -37,7 +37,7 @@ public class Map_Layer_2D {
     /// 高さを取得
     /// </summary>
     /// <returns></returns>
-    public int Get_Height() {
+    public int GetHeight() {
         return height;
     }
 
@@ -93,14 +93,13 @@ public class Map_Layer_2D {
         }
         return coordinates[y * width + x];
     }
-
     /// <summary>
     /// オブジェクトの座標から取るときに使用
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <returns></returns>
-    public int Get_(float x, float y) {
+    public int Get(float x, float y) {
         if(Is_Out_Of_Range((int)x, (int)y)) {
             return out_of_range;
         }
@@ -119,6 +118,19 @@ public class Map_Layer_2D {
             return;
         }
         coordinates[y * width + x] = layer_number;
+    }
+    /// <summary>
+    /// 値の設定
+    /// </summary>
+    /// <param name = "x">x座標</param>
+    /// <param name = "y">y座標</param>
+    /// <param name = "layer_number">レイヤー番号</param>
+    public void Set(float x, float y, int layer_number) {
+        if (Is_Out_Of_Range((int)x, (int)y)) {
+            // 領域外を指定した
+            return;
+        }
+        coordinates[(int)y * width + (int)x] = layer_number;
     }
 
     /// <summary>
@@ -176,9 +188,9 @@ public class Map_Layer_2D {
     /// <summary>
     /// 移動後やアイテム取得後にレイヤー番号を変更する
     /// </summary>
-    /// <param name="layer_nuber">変更をかける座標</param>
-    /// <param name="layer_number">変更後のレイヤーナンバー</param>
-    public void Tile_Swap(Vector2 player_position, int new_layer_number) {
-        Set((int)player_position.x, (int)player_position.y, new_layer_number);
+    /// <param name="actor_position">変更をかける座標</param>
+    /// <param name="new_layer_number">変更後のレイヤーナンバー</param>
+    public void Tile_Swap(Vector2 actor_position, int new_layer_number) {
+        Set((int)actor_position.x, (int)actor_position.y, new_layer_number);
     }
 }

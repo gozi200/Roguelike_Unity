@@ -58,7 +58,7 @@ public class Player : Actor {
     /// 現在の座標を取得
     /// </summary>
     /// <returns></returns>
-    public override Vector2 Get_Position() {
+    public override Vector2 GetPosition() {
         return position;
     }
 

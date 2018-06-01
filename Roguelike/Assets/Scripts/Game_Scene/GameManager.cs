@@ -51,10 +51,10 @@ public class GameManager : Unique_Component<GameManager> {
                 Set_Game_State(eGame_State.Player_Turn);
                 break;
             case eGame_State.Create_Dungeon:
-                var dungeon_manager = Dungeon_Manager.Instance;
+                var dungeon_manager = Dungeon_Manager.Instance.dungeon_generator;
                 var decide_dungeon = GameObject.Find("Decide_Dungeon").GetComponent<Decide_Dungeon>();
                 // ダンジョンを作る
-                dungeon_manager.Create(decide_dungeon.dungeon_data.level);
+                dungeon_manager.Load_Dungeon(decide_dungeon.dungeon_data.level);
                 Set_Game_State(eGame_State.Player_Turn);
                 break;
             case eGame_State.Player_Turn:

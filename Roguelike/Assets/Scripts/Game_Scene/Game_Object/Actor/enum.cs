@@ -110,16 +110,16 @@ public enum eDungeon_Level {
 /// ダンジョンの種類
 /// </summary>
 public enum eDungeon_Type {
-    Beginning_Grass
-  , Dim_Cave
+    Beginning_Grass // 仮名
+  , Dim_Cave        // 仮名
 }
 
 /// <summary>
 /// 床の状態(これに合わせて画像を変更する)
 /// </summary>
 public enum eTile_State {
-    Grass // 草原
-  , Stone // 石
+    Grass  // 草原
+  , Stone  // 石
   , Finish // 種類数の取得に使用
 }
 
@@ -127,8 +127,8 @@ public enum eTile_State {
 /// 壁の状態(これに合わせて画像を変更する)
 /// </summary>
 public enum eWall_State {
-    Tree // 木
-  , Stone // 石
+    Tree   // 木
+  , Stone  // 石
   , Finish // 種類数の取得に使用
 }
 
@@ -136,7 +136,18 @@ public enum eWall_State {
 /// IDでエネミーを扱う
 /// </summary>
 public enum eEnemy_ID {
-    None // 初期化に使用
+    None   // 初期化に使用
   , Wyvern // ワイバーン
-  , Golem // ゴーレム
+  , Golem  // ゴーレム
+}
+
+/// <summary>
+/// ノードの状態
+/// </summary>
+enum eNode_Status {
+    None,   // 触れてないノード
+    Open,   // 開らいたのノード
+    Closed, // 閉じたノード
+
+
 }

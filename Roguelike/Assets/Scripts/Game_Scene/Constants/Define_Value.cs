@@ -12,6 +12,10 @@ public static class Define_Value {
     /// 1マスの大きさ
     /// </summary>
     public const int TILE_SCALE = 1;
+    /// <summary>
+    /// 部屋の枠部分(入口がある囲い)
+    /// </summary>
+    public const int ROOM_FLAME = 1;
 
     #endregion
 
@@ -60,7 +64,7 @@ public static class Define_Value {
     /// <summary>
     /// 最大の部屋サイズ
     /// </summary>
-    public const int MAX_ROOM = 5;
+    public const int MAX_ROOM = 6;
     /// <summary>
     /// 区画と部屋の余白サイズ
     /// </summary>
@@ -193,7 +197,6 @@ public static class Define_Value {
 
     /// <summary>
     /// csvの不要な行
-    /// 現在はプレイヤーエネミーに使用
     /// </summary>
     public const int UNNECESSARY_COLUMN = 3;
 

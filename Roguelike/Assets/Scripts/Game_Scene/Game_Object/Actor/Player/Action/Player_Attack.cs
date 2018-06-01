@@ -49,11 +49,11 @@ public class Player_Attack : MonoBehaviour{
         var player_x = (int)player.transform.position.x;
         var player_y = (int)player.transform.position.y;
         // タイルの大きさ
-        var tile_scale = Define_Value.TILE_SCALE;
+        int tile_scale = Define_Value.TILE_SCALE;
         // 調整用変数 ４方向は斜めがいらないので0
-        var adjust_value_zero = 0; 
+        int adjust_value_zero = 0; 
         // 調整用変数 １マス先
-        var adjust_value_add = Define_Value.TILE_SCALE;
+        int adjust_value_add = Define_Value.TILE_SCALE;
 
         switch (player_script.direction) {
             case eDirection.Up:
@@ -133,12 +133,12 @@ public class Player_Attack : MonoBehaviour{
         var enemy_status = Actor_Manager.Instance.enemy_status;
 
         // 隣接してるエネミーを調べる
-        var side_enemy = actor_manager.Find_Enemy((int)player.transform.position.x + adjust_value1,
-                                                  (int)player.transform.position.y + adjust_value2);
+        GameObject side_enemy = actor_manager.Find_Enemy(player.transform.position.x + adjust_value1,
+                                                         player.transform.position.y + adjust_value2);
         // 隣接してるエネミーのステータスを取ってくる
         var target_enemy = side_enemy.GetComponent<Enemy_Status>();
 
-        target_enemy.hit_point -= (int)damage_calculation.Damage(player_status.attack,
+        target_enemy.hit_point -= damage_calculation.Damage(player_status.attack,
                                                                  target_enemy.defence);
 
         // 攻撃した敵が死んでいたら経験値を取得
@@ -146,7 +146,7 @@ public class Player_Attack : MonoBehaviour{
             player_status.Add_Experience_Point(target_enemy.experience_point);
 
             // ダンジョンに出現中の敵のリストを取得
-            var enemy_list = actor_manager.enemys;
+            List<GameObject> enemy_list = actor_manager.enemys;
             // プレイヤーに隣接しているものを抽出
             enemy_status.Dead_Enemy(enemy_list.IndexOf(side_enemy));
         }

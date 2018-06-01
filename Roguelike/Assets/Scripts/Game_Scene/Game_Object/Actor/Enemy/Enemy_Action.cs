@@ -49,11 +49,6 @@ public class Enemy_Action : MonoBehaviour {
     Vector3 enemy_position;
 
     /// <summary>
-    /// エネミーのモード
-    /// </summary>
-    eEnemy_Mode enemy_mode;
-
-    /// <summary>
     /// 移動が終了したかを判断
     /// </summary>
     bool move_end;
@@ -77,16 +72,21 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     public void Action() {
         for (int i = 0; i < actor_manager.enemys.Count; ++i) {
-            // 全部やっていたら重いのでこれを使う
+            // 全部Getしていたら重いのでこれを使う
             var enemy_status = actor_manager.enemys[i].GetComponent<Enemy_Status>();
+
+            // AIによって入れる処理を変える
             switch (enemy_status.AI_pattern) {
                 case 1:
                     if (Search_Player(i)) {
-                        player_status.hit_point.Value -= (int)damage_calculation.Damage(enemy_status.attack, player_status.defence);
+                        player_status.hit_point.Value -= damage_calculation.Damage(enemy_status.attack, player_status.defence);
                         break;
                     }
-                    actor_manager.enemys[i].GetComponent<A_Star>().Action();
-                    break;
+                    else {
+                        actor_manager.enemys[i].GetComponent<Enemy_Move>().Move_Action();
+                        Set_Enemy_State(actor_manager.enemys[i].GetComponent<Enemy>().mode, actor_manager.enemys[i].GetComponent<Enemy>().feet);
+                        break;
+                    }
             }
             // ターンを終える
             enemy_status.End_Turn();
@@ -98,63 +98,65 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     /// <returns>プレイヤーがいた場合はtrue</returns>
     bool Search_Player(int index) {
+        var enemy = Actor_Manager.Instance.enemys[index].GetComponent<Enemy>();
         // 長くなるので１時変数に格納
-        var enemy_x = actor_manager.enemys[index].transform.position.x;
-        var enemy_y = actor_manager.enemys[index].transform.position.y;
+        float enemy_x = actor_manager.enemys[index].transform.position.x;
+        float enemy_y = actor_manager.enemys[index].transform.position.y;
         // 移動量
-        var move_value = Define_Value.MOVE_VAULE;
+        int move_value = Define_Value.MOVE_VAULE;
+
         // 上方向から時計回りに検索
-        if (map_layer.Get_(enemy_x, enemy_y + Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
+        if (map_layer.Get(enemy_x, enemy_y + Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
             enemy.direction = eDirection.Up;
             return true;
         }
         // 右上
-        else if (map_layer.Get_(enemy_x + Define_Value.TILE_SCALE, enemy_y + Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
-            if (actor_action.Slant_Check(map_layer.Get_(enemy_x + move_value, enemy_y),
-                                         map_layer.Get_(enemy_x, enemy_y + move_value))) {
+        else if (map_layer.Get(enemy_x + Define_Value.TILE_SCALE, enemy_y + Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
+            if (actor_action.Slant_Check(map_layer.Get(enemy_x + move_value, enemy_y),
+                                         map_layer.Get(enemy_x, enemy_y + move_value))) {
                 return false;
             }
             enemy.direction = eDirection.Upright;
             return true;
         }
         // 右
-        else if (map_layer.Get_(enemy_x + Define_Value.TILE_SCALE, enemy_y) == Define_Value.PLAYER_LAYER_NUMBER) {
+        else if (map_layer.Get(enemy_x + Define_Value.TILE_SCALE, enemy_y) == Define_Value.PLAYER_LAYER_NUMBER) {
             enemy.direction = eDirection.Right;
             return true;
 
         }
         // 右下
-        else if (map_layer.Get_(enemy_x + Define_Value.TILE_SCALE, enemy_y - Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
-            if (actor_action.Slant_Check(map_layer.Get_(enemy_x + move_value, enemy_y),
-                                         map_layer.Get_(enemy_x, enemy_y - move_value))) {
+        else if (map_layer.Get(enemy_x + Define_Value.TILE_SCALE, enemy_y - Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
+            if (actor_action.Slant_Check(map_layer.Get(enemy_x + move_value, enemy_y),
+                                         map_layer.Get(enemy_x, enemy_y - move_value))) {
                 return false;
             }
             enemy.direction = eDirection.Downright;
             return true;
         }
         // 下
-        else if (map_layer.Get_(enemy_x, enemy_y - Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
+        else if (map_layer.Get(enemy_x, enemy_y - Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
             enemy.direction = eDirection.Down;
             return true;
         }
         // 左下
-        else if (map_layer.Get_(enemy_x - Define_Value.TILE_SCALE, enemy_y - Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
-            if (actor_action.Slant_Check(map_layer.Get_(enemy_x - move_value, enemy_y),
-                                         map_layer.Get_(enemy_x, enemy_y - move_value))) {
+        else if (map_layer.Get(enemy_x - Define_Value.TILE_SCALE, enemy_y - Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
+            if (actor_action.Slant_Check(map_layer.Get(enemy_x - move_value, enemy_y),
+                                         map_layer.Get(enemy_x, enemy_y - move_value))) {
                 return false;
             }
             enemy.direction = eDirection.Downleft;
             return true;
         }
         // 左
-        else if (map_layer.Get_(enemy_x - Define_Value.TILE_SCALE, enemy_y) == Define_Value.PLAYER_LAYER_NUMBER) {
+        else if (map_layer.Get(enemy_x - Define_Value.TILE_SCALE, enemy_y) == Define_Value.PLAYER_LAYER_NUMBER) {
             enemy.direction = eDirection.Left;
             return true;
         }
         // 左上
-        else if (map_layer.Get_(enemy_x - Define_Value.TILE_SCALE, enemy_y + Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
-            if (actor_action.Slant_Check(map_layer.Get_(enemy_x - move_value, enemy_y),
-                                         map_layer.Get_(enemy_x, enemy_y + move_value))) {
+        else if (map_layer.Get(enemy_x - Define_Value.TILE_SCALE, enemy_y + Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
+            if (actor_action.Slant_Check(map_layer.Get(enemy_x - move_value, enemy_y),
+                                         map_layer.Get(enemy_x, enemy_y + move_value))) {
                 return false;
             }
             enemy.direction = eDirection.Upleft;
@@ -165,163 +167,41 @@ public class Enemy_Action : MonoBehaviour {
     }
 
     /// <summary>
-    /// エネミーの移動処理
+    /// エネミーの状態を設定する
     /// </summary>
-    void Move(int index) {
-        // リスト要素ごとの持っているエネミースクリプトを格納
-        var enemy_script = actor_manager.enemys[index].GetComponent<Enemy>();
-        // エネミーのx座標
-        var enemy_x = enemy_script.transform.position.x;
-        // エネミーのy座標
-        var enemy_y = enemy_script.transform.position.y;
-        // 移動量
-        var move_value = Define_Value.MOVE_VAULE;
-        // 上下左右の動きに使う(斜め方向には0を足す)
-        var not_move = 0;
-        move_end = false;
-
-        while (!move_end) {
-            // 移動方向を乱数で決める
-            int random_direction = Random.Range(0, (int)eDirection.Finish);
-            // 上述のint型乱数をenum型にキャスト
-            eDirection cast_random_direction = (eDirection)random_direction;
-
-            // 状態に合わせて行動を決める
-            switch (enemy_mode) {
-                case eEnemy_Mode.Move_Floor_Mode:
-                    Move_Floor();
-                    break;
-                case eEnemy_Mode.Move_Road_Mode:
-                    Move_Road();
-                    break;
-                case eEnemy_Mode.Encounter_Mode:
-                    Encounter_Mode();
-                    break;
-            }
-
-            switch (cast_random_direction) {
-                case eDirection.Up:
-                    // 進行方向が移動可能かを判断
-                    if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
-                                                map_layer.Get_(enemy_x, enemy_y + move_value))) {
-                        return;
-                    }
-                    Move_Process(not_move, move_value, index);
-                    break;
-                case eDirection.Upright:
-                    // 進行方向が移動可能かを判断
-                    if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
-                                                map_layer.Get_(enemy_x + move_value, enemy_y + move_value))) {
-                        return;
-                    }
-                    // 右方向か上方向に壁があるとき(移動不可になる)
-                    if (actor_action.Slant_Check(map_layer.Get_(enemy_x + move_value, enemy_y),
-                                                      map_layer.Get_(enemy_x, enemy_y + move_value))) {
-                        return;
-                    }
-                    Move_Process(move_value, move_value, index);
-                    break;
-                case eDirection.Right:
-                    if (actor_action.Move_Check(map_layer.Get_(enemy_x , enemy_y),
-                                                map_layer.Get_(enemy_x + move_value, enemy_y))) {
-                        return;
-                    }
-                    Move_Process(move_value, not_move, index);
-                    break;
-                case eDirection.Downright:
-                    // 進行方向が移動可能かを判断
-                    if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
-                                                map_layer.Get_(enemy_x + move_value, enemy_y - move_value))) {
-                        return;
-                    }
-                    // 右方向か下方向に壁があるとき(移動不可になる)
-                    if (actor_action.Slant_Check(map_layer.Get_(enemy_x + move_value, enemy_y),
-                                                      map_layer.Get_(enemy_x, enemy_y - move_value))) {
-                        return;
-                    }
-                    Move_Process(move_value, -move_value, index);
-                    break;
-                case eDirection.Down:
-                    if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
-                                                map_layer.Get_(enemy_x, enemy_y - move_value))) {
-                        return;
-                    }
-                    Move_Process(not_move, -move_value, index);
-                    break;
-                case eDirection.Downleft:
-                    // 進行方向が移動可能かを判断
-                    if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
-                                                map_layer.Get_(enemy_x + move_value, enemy_y - move_value))) {
-                        return;
-                    }
-                    // 左方向か下方向に壁があるとき(移動不可になる)
-                    if (actor_action.Slant_Check(map_layer.Get_(enemy_x - move_value, enemy_y),
-                                                      map_layer.Get_(enemy_x, enemy_y - move_value))) {
-                        return;
-                    }
-                    Move_Process(-move_value, -move_value, index);
-                    break;
-                case eDirection.Left:
-                    if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
-                                                map_layer.Get_(enemy_x - move_value, enemy_y))) {
-                        return;
-                    }
-                    Move_Process(-move_value, not_move, index);
-                    break;
-                case eDirection.Upleft:
-                    // 進行方向が移動可能かを判断
-                    if (actor_action.Move_Check(map_layer.Get_(enemy_x, enemy_y),
-                                                map_layer.Get_(enemy_x - move_value, enemy_y + move_value))) {
-                        return;
-                    }
-                    // 左方向か上方向に壁があるとき(移動不可になる)
-                    if (actor_action.Slant_Check(map_layer.Get_(enemy_x - move_value, enemy_y),
-                                                      map_layer.Get_(enemy_x, enemy_y + move_value))) {
-                        return;
-                    }
-                    Move_Process(-move_value, +move_value, index);
-                    break;
-            }
+    /// <param name="feet">足元のレイヤー番号</param>
+    void Set_Enemy_State(eEnemy_Mode mode, int feet) {
+        switch (feet) {
+            case Define_Value.TILE_LAYER_NUMBER:
+                mode = eEnemy_Mode.Move_Floor_Mode;
+                break;
+            case Define_Value.ENTRANCE_LAYER_NUMBER:
+                // 通路から部屋への進入
+                if (mode == eEnemy_Mode.Move_Road_Mode) {
+                    mode = eEnemy_Mode.Move_Floor_Mode;
+                    actor_manager.enemy_move.Stack_List();
+                }
+                // 部屋から通路への進入
+                else if (mode == eEnemy_Mode.Move_Floor_Mode) {
+                    mode = eEnemy_Mode.Move_Road_Mode;
+                }
+                break;
         }
     }
 
     /// <summary>
-    /// 部屋にいるときのAI
+    /// レイヤー番号を入れ替える
     /// </summary>
-    void Move_Floor() {
-    }
+    /// <param name="index">要素番号。何番目の敵なのか</param>
+    public void Set_Tile(int index) {
+        // 要素数に使うので0からの値に合わせる
+        index -= 1;
+        var enemy_position = actor_manager.enemys[index].transform.position;
+        enemy.Set_Feet(map_layer.Get(enemy_position.x, enemy_position.y));
 
-    /// <summary>
-    /// 通路にいるときのAI
-    /// </summary>
-    void Move_Road() {
-        
-    }
+        Debug.Log("Enemyfeet: = " + gameObject.GetComponent<Enemy>().feet);
 
-    /// <summary>
-    /// プレイヤーとエンカウントしているときのAI
-    /// </summary>
-    void Encounter_Mode() {
-        //Astarを使う
-    }
-
-    /// <summary>
-    /// 実際にエネミーを動かしゲームを進める
-    /// </summary>
-    /// <param name="move_value_x">プレイヤーの移動量</param>
-    /// <param name="move_value_y">プレイヤーの移動量</param>
-    void Move_Process(int move_value_x, int move_value_y, int index) {
-        // リスト要素ごとの持っているエネミースクリプトを格納
-        var enemy_script = actor_manager.enemys[index].GetComponent<Enemy>();
-
-        enemy_position = enemy_script.Get_Position();
-        map_layer.Tile_Swap(enemy_script.transform.position,
-                            enemy_script.feet);
-        enemy_position.x += move_value_x;
-        enemy_position.y += move_value_y;
-        enemy_script.Set_Position(enemy_position);
-        enemy_script.Set_Feet(map_layer.Get_(enemy_position.x, enemy_position.y));
-        map_layer.Tile_Swap(actor_manager.enemys[index].GetComponent<Enemy>().transform.position, 
+        map_layer.Tile_Swap(actor_manager.enemys[index].GetComponent<Enemy>().transform.position,
                             Define_Value.ENEMY_LAYER_NUMBER);
         move_end = true;
     }

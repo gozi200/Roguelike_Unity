@@ -120,7 +120,7 @@ public class Dungeon_Division {
     /// 通路が存在するかどうか
     /// </summary>
     /// <returns>通路が存在すればtrue</returns>
-    public bool HasRoad() {
+    public bool Has_Road() {
         return Road != null;
     }
 
@@ -131,7 +131,7 @@ public class Dungeon_Division {
     /// <param name = "top"    >上</param>
     /// <param name = "right"  >右</param>
     /// <param name = "bottom" >下</param>
-    public void CreateRoad(int left, int top, int right, int bottom) {
+    public void Create_Road(int left, int top, int right, int bottom) {
         Road = new Dungeon_Rectangle(left, top, right, bottom);
     }
 }

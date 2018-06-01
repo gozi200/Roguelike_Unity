@@ -34,8 +34,8 @@ public class HP_Bar : MonoBehaviour {
     /// <param name="value">現在の体力</param>
     /// <param name="inMin">体力の最小値</param>
     /// <param name="inMax">最大体力の値</param>
-    /// <param name="outMin"></param>
-    /// <param name="outMax"></param>
+    /// <param name="outMin">表示域</param>
+    /// <param name="outMax">表示域</param>
     /// <returns></returns>
     float Map(float value, float inMin, float inMax, float outMin, float outMax) {
         return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;

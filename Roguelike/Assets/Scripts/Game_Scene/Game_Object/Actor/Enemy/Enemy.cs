@@ -8,6 +8,11 @@ using UnityEngine.UI;
 /// </summary>
 public class Enemy : Actor {
     /// <summary>
+    /// 自分の番号
+    /// </summary>
+    public int my_number{ get; set; }
+
+    /// <summary>
     /// 表示する画像を編集する
     /// </summary>
     SpriteRenderer sprite_renderer;
@@ -28,6 +33,9 @@ public class Enemy : Actor {
 
     void Start() {
         exist = true;
+        // 部屋の中でしかスポーンしない
+        mode = eEnemy_Mode.Move_Floor_Mode;
+
         gameObject.AddComponent<SpriteRenderer>();
         sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
         sprite_renderer.sortingOrder = Define_Value.ENEMY_LAYER_NUMBER;
@@ -62,7 +70,7 @@ public class Enemy : Actor {
     /// 現在のポジションを取得する
     /// </summary>
     /// <returns></returns>
-    public override Vector2 Get_Position() {
+    public override Vector2 GetPosition() {
         return position;
     }
 

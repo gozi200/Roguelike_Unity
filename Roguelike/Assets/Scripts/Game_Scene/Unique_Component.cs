@@ -21,25 +21,13 @@ public class Unique_Component<T> : MonoBehaviour where T : MonoBehaviour {
     /// </summary>
     public static T Instance {
         get {
-            //if (application_is_quitting) {
-            //    return null;
-            //}
-
             if (_instance == null) {
                 GameObject game_object = new GameObject(typeof(T).ToString());
                 _instance = game_object.AddComponent<T>();
                 // シーンが変わってもDestroyされないようにする
                 //DontDestroyOnLoad(game_object);
             }
-
             return _instance;
         }
-    }
-
-    /// <summary>
-    /// 作ったオブジェクトを破棄する
-    /// </summary>
-    public void OnDestroy() {
-        application_is_quitting = true;
     }
 }

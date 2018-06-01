@@ -204,7 +204,7 @@ public class Player_Status : Actor_Status {
         keep_star = new ReactiveProperty<int>();
         noble_phantasm = new ReactiveProperty<int>();
 
-        // DEBUG---------------------------
+        // DEBUG------------------------------------
         key = Game.Instance.key_observer;
         key.On_Key_Down_AsObservable()
             .Where(key => key == KeyCode.Backspace)
@@ -298,9 +298,10 @@ public class Player_Status : Actor_Status {
             experience_point = MAX_EXP;
         }
 
-        // レベルアップに必要な経験値量を超えたか確かめる
+        // レベルアップに必要な経験値量を超えたか確かめる 
+        // 要素数に合わせるために-1
         if (exp_data_base[level.Value - 1] <= experience_point) {
-            int new_Lv = Get_Exp_Level();
+            int new_Lv = GetExp_Level();
 
             // 一度に２レベル以上あがる場合にも対応
             for (; level.Value < new_Lv; ++level.Value) {
@@ -322,15 +323,15 @@ public class Player_Status : Actor_Status {
     /// 経験値量からレベルを算出
     /// </summary>
     /// <returns>実際に上がった後のレベル</returns>
-    int Get_Exp_Level() {
-        int lv;
+    int GetExp_Level() {
+        int level;
 
-        for (lv = 0; lv < MAX_LV; ++lv) {
-            if (exp_data_base[lv] > experience_point) {
+        for (level = 0; level < MAX_LV; ++level) {
+            if (exp_data_base[level] > experience_point) {
                 break;
             }
         }
-        return lv + 1;
+        return level + 1;
     }
 
     /// <summary>
@@ -345,5 +346,24 @@ public class Player_Status : Actor_Status {
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// 自分がどこの部屋にいるのかを探す 
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    public override void Where_Floor(int x, int y) { 
+        var dungeon_generator = Dungeon_Manager.Instance.dungeon_generator;
+        var enemy = Actor_Manager.Instance.enemy_script;
+
+        for (int i = 0; i < dungeon_generator.division_list.Count; ++i) {
+            if (x > dungeon_generator.division_list[i].Room.Left - Define_Value.ROOM_FLAME &&
+                x < dungeon_generator.division_list[i].Room.Right &&
+                y < dungeon_generator.division_list[i].Room.Bottom &&
+                y > dungeon_generator.division_list[i].Room.Top - Define_Value.ROOM_FLAME) {
+                now_room = i;
+            }
+        }
     }
 }

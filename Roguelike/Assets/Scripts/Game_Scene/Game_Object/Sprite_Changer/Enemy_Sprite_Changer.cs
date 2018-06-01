@@ -21,10 +21,6 @@ public class Enemy_Sprite_Changer : Sprite_Changer {
     /// まとめた画像の１つずつを格納
     /// </summary>
     Sprite[] sprite_array;
-    /// <summary>
-    /// 教示する画像を設定
-    /// </summary>
-    SpriteRenderer sprite_renderer;
 
     void Start() {
         enemy_atlas = Resources.Load<SpriteAtlas>("Enemy_Atlas");
@@ -34,7 +30,7 @@ public class Enemy_Sprite_Changer : Sprite_Changer {
         var enemy_status = gameObject.GetComponent<Enemy_Status>();
         var actor_manager = Actor_Manager.Instance;
 
-        Set_Sprite(enemy_status.ID.Value);
+        Set_Sprite(enemy_status.ID);
     }
 
     /// <summary>

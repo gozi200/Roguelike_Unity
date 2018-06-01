@@ -70,13 +70,6 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     }
 
     /// <summary>
-    /// ダンジョンを作る準備
-    /// </summary>
-    public void Create(int level) {
-        dungeon_generator.Load_Dungeon(level);
-    }
-
-    /// <summary>
     /// 次のダンジョンへの移動処理
     /// </summary>
     public void Next_Level(int level) {

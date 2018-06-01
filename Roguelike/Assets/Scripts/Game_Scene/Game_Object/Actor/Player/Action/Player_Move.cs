@@ -61,15 +61,15 @@ public class Player_Move : MonoBehaviour {
         // ゲームの状態を取得
         var game_manager = GameManager.Instance;
         // 現在の座標を取得
-        player_position = player.Get_Position();
+        player_position = player.GetPosition();
         // プレイヤーのx座標
         var player_x = player_position.x;
         // プレイヤーのy座標
         var player_y = player_position.y;
         // 移動量
-        var move_value = Define_Value.MOVE_VAULE;
+        int move_value = Define_Value.MOVE_VAULE;
         // 移動しないときは0
-        var not_move = 0;
+        int not_move = 0;
         move_end = false;
 
         // 方向転換モードの切り替え
@@ -92,8 +92,8 @@ public class Player_Move : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.W)) {
                 player.direction = eDirection.Up;
                 // 進行方向が移動可能かを判断
-                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
-                                            map_layer.Get_(player_x, player_y + move_value))) {
+                if (actor_action.Move_Check(map_layer.Get(player_x, player_y),
+                                            map_layer.Get(player_x, player_y + move_value))) {
                    return;
                 }
                 Move_Process(not_move, move_value);
@@ -102,13 +102,13 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown(KeyCode.E)) {
                 player.direction = eDirection.Upright;
                 // 進行方向が移動可能かを判断
-                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
-                                            map_layer.Get_(player_x + move_value, player_y + move_value))) {
+                if (actor_action.Move_Check(map_layer.Get(player_x, player_y),
+                                            map_layer.Get(player_x + move_value, player_y + move_value))) {
                     return;
                 }
                 // 右方向か上方向に壁があるとき(移動不可になる)
-                if (actor_action.Slant_Check(map_layer.Get_(player_x + move_value, player_y),
-                                                  map_layer.Get_(player_x, player_y + move_value))) {
+                if (actor_action.Slant_Check(map_layer.Get(player_x + move_value, player_y),
+                                                  map_layer.Get(player_x, player_y + move_value))) {
                     return;
                 }
                 Move_Process(move_value, move_value);
@@ -117,8 +117,8 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown(KeyCode.D)) {
                 player.direction = eDirection.Right;
                 // 進行方向が移動可能かを判断
-                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
-                                            map_layer.Get_(player_x + move_value, player_y))) {
+                if (actor_action.Move_Check(map_layer.Get(player_x, player_y),
+                                            map_layer.Get(player_x + move_value, player_y))) {
                     return;
                 }
                 Move_Process(move_value, not_move);
@@ -127,13 +127,13 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown(KeyCode.C)) {
                 player.direction = eDirection.Downright;
                 // 進行方向が移動可能かを判断
-                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
-                                            map_layer.Get_(player_x + move_value, player_y - move_value))) {
+                if (actor_action.Move_Check(map_layer.Get(player_x, player_y),
+                                            map_layer.Get(player_x + move_value, player_y - move_value))) {
                     return;
                 }
                 // 右方向か下方向に壁があるかを判断(移動不可になる)
-                if (actor_action.Slant_Check(map_layer.Get_(player_x + move_value, player_y),
-                                                  map_layer.Get_(player_x, player_y - move_value))) {
+                if (actor_action.Slant_Check(map_layer.Get(player_x + move_value, player_y),
+                                                  map_layer.Get(player_x, player_y - move_value))) {
                     return;
                 }
                 Move_Process(move_value, -move_value);
@@ -142,8 +142,8 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown(KeyCode.X)) {
                 player.direction = eDirection.Down;
                 // 進行方向が移動可能かを判断
-                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
-                                            map_layer.Get_(player_x, player_y - move_value))) {
+                if (actor_action.Move_Check(map_layer.Get(player_x, player_y),
+                                            map_layer.Get(player_x, player_y - move_value))) {
                     return;
                 }
                 Move_Process(not_move, -move_value);
@@ -151,13 +151,13 @@ public class Player_Move : MonoBehaviour {
             // Zキーが押されたとき
             else if (Input.GetKeyDown(KeyCode.Z)) {
                 player.direction = eDirection.Downleft;
-                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
-                                            map_layer.Get_(player_x - move_value, player_y - move_value))) {
+                if (actor_action.Move_Check(map_layer.Get(player_x, player_y),
+                                            map_layer.Get(player_x - move_value, player_y - move_value))) {
                     return;
                 }
                 // 左方向か下方向に壁があるとき(移動不可になる)
-                if (actor_action.Slant_Check(map_layer.Get_(player_x - move_value, player_y),
-                                                  map_layer.Get_(player_x, player_y - move_value))) {
+                if (actor_action.Slant_Check(map_layer.Get(player_x - move_value, player_y),
+                                                  map_layer.Get(player_x, player_y - move_value))) {
                     return;
                 }
                 Move_Process(-move_value, -move_value);
@@ -166,8 +166,8 @@ public class Player_Move : MonoBehaviour {
             else if (Input.GetKeyDown(KeyCode.A)) {
                 player.direction = eDirection.Left;
                 // 進行方向が移動可能かを判断
-                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
-                                            map_layer.Get_(player_x - move_value, player_y))) {
+                if (actor_action.Move_Check(map_layer.Get(player_x, player_y),
+                                            map_layer.Get(player_x - move_value, player_y))) {
                     return;
                 }
                 Move_Process(-move_value, not_move);
@@ -175,13 +175,13 @@ public class Player_Move : MonoBehaviour {
             // Qキーが押されたとき
             else if (Input.GetKeyDown(KeyCode.Q)) {
                 player.direction = eDirection.Upleft;
-                if (actor_action.Move_Check(map_layer.Get_(player_x, player_y),
-                                            map_layer.Get_(player_x - move_value, player_y + move_value))) {
+                if (actor_action.Move_Check(map_layer.Get(player_x, player_y),
+                                            map_layer.Get(player_x - move_value, player_y + move_value))) {
                     return;
                 }
                 // 左方向か上方向に壁があるとき(移動不可になる)
-                if (actor_action.Slant_Check(map_layer.Get_(player_x - move_value, player_y),
-                                                  map_layer.Get_(player_x, player_y + move_value))) {
+                if (actor_action.Slant_Check(map_layer.Get(player_x - move_value, player_y),
+                                                  map_layer.Get(player_x, player_y + move_value))) {
                     return;
                 }
                 Move_Process(-move_value, move_value);
@@ -269,7 +269,7 @@ public class Player_Move : MonoBehaviour {
         player_position.x += move_value_x;
         player_position.y += move_value_y;
         player.Set_Position(player_position);
-        player.Set_Feet(map_layer.Get_(player_position.x, player_position.y));
+        player.Set_Feet(map_layer.Get(player_position.x, player_position.y));
         map_layer.Tile_Swap(player.position, Define_Value.PLAYER_LAYER_NUMBER);
         move_end = true;
     }

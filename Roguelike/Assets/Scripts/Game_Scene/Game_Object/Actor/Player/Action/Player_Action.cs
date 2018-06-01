@@ -86,6 +86,10 @@ public class Player_Action : MonoBehaviour {
                 break;
         }
 
+        if (player.feet == Define_Value.ENTRANCE_LAYER_NUMBER) {
+            player_status.Where_Floor((int)player.position.x, (int)player.position.y);
+        }
+
         // プレイヤーが生きていたら死亡判定をする
         if (player.exist == true) {
             // 体力が 0 以下ならゲームオーバー処理に切り替える
@@ -104,7 +108,7 @@ public class Player_Action : MonoBehaviour {
     }
 
     /// <summary>
-    /// バトルメニューの処理 //TODO: テスト中
+    /// バトルメニューの処理 //TODO: 未完
     /// </summary>
     void Action_Battle_Menu() {
         int flag_number = 1;

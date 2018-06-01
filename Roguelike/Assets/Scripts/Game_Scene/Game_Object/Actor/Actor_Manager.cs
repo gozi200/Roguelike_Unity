@@ -58,6 +58,10 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
     /// </summary>
     public Enemy_Status enemy_status;
     /// <summary>
+    /// エネミーの行動を制御
+    /// </summary>
+    public Enemy_Move enemy_move;
+    /// <summary>
     /// フロア内に存在しているエネミーを格納する
     /// </summary>
     public List<GameObject> enemys = new List<GameObject>();
@@ -78,6 +82,7 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
         enemy_script = gameObject.AddComponent<Enemy>();
         enemy_action = gameObject.AddComponent<Enemy_Action>();
         enemy_status = gameObject.AddComponent<Enemy_Status>();
+        enemy_move = gameObject.AddComponent<Enemy_Move>();
 
         actor_action = gameObject.AddComponent<Actor_Action>();
     }
@@ -99,7 +104,7 @@ public class Actor_Manager : Unique_Component<Actor_Manager> {
     /// <param name="x">探す座標</param>
     /// <param name="y">探す座標</param>
     /// <returns>そこにいる敵</returns>
-    public GameObject Find_Enemy(int x, int y) {
+    public GameObject Find_Enemy(float x, float y) {
         for (int i = 0; i < enemys.Count; ++i) {
             if (enemys[i].transform.position.x == x &&
                 enemys[i].transform.position.y == y) {

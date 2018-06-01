@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Linq;
-using UniRx;
 
 /// <summary>
 /// エネミーのステータス関係を管理するクラス
@@ -17,7 +16,7 @@ public class Enemy_Status : Actor_Status {
     /// <summary>
     /// 番号 TODO:Reactiveじゃなくてもいい？
     /// </summary>
-    public ReactiveProperty<int> ID = new ReactiveProperty<int>();
+    public int ID;
     /// <summary>
     /// 名前
     /// </summary>
@@ -82,10 +81,6 @@ public class Enemy_Status : Actor_Status {
     #endregion
 
     /// <summary>
-    /// 自分のいる部屋番号
-    /// </summary>
-    public int now_room;
-    /// <summary>
     /// １つ前にいた座標
     /// </summary>
     public int before_coordinate;
@@ -103,7 +98,7 @@ public class Enemy_Status : Actor_Status {
         for(int enemy_type = 0; enemy_type < Define_Value.ENEMY_NUMBER; ++enemy_type) {
             var enemy = gameObject.AddComponent<Enemy_Status>();
 
-            enemy.ID.Value         = int.Parse(enemy_status[enemy_type][0]);  // 番号
+            enemy.ID         = int.Parse(enemy_status[enemy_type][0]);  // 番号
             enemy.name             = enemy_status          [enemy_type][1] ;  // 名前
             enemy.class_type       = int.Parse(enemy_status[enemy_type][2]);  // クラス
             enemy.level            = int.Parse(enemy_status[enemy_type][3]);  // レベル
@@ -174,19 +169,19 @@ public class Enemy_Status : Actor_Status {
     }
 
     /// <summary>
-    /// どこの部屋にいるのかを調べる
+    /// 自分がどこの部屋にいるのかを探す
     /// </summary>
-    /// <param name="x">知りたいものの座標</param>
-    /// <param name="y">知りたいものの座標</param>
-    public void Where_Floor(int x, int y) {
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    public override void Where_Floor(int x, int y) {
         var dungeon_generator = Dungeon_Manager.Instance.dungeon_generator;
         var enemy = Actor_Manager.Instance.enemy_script;
 
         for (int i = 0; i < dungeon_generator.division_list.Count; ++i) {
-            if (x > dungeon_generator.division_list[i].Room.Left   - 1 &&
-                x < dungeon_generator.division_list[i].Room.Right      &&
-                y < dungeon_generator.division_list[i].Room.Bottom     &&
-                y > dungeon_generator.division_list[i].Room.Top - 1) {
+            if (x > dungeon_generator.division_list[i].Room.Left - Define_Value.ROOM_FLAME &&
+                x < dungeon_generator.division_list[i].Room.Right &&
+                y < dungeon_generator.division_list[i].Room.Bottom &&
+                y > dungeon_generator.division_list[i].Room.Top - Define_Value.ROOM_FLAME) {
                 now_room = i;
             }
         }
@@ -203,6 +198,8 @@ public class Enemy_Status : Actor_Status {
 
         // 死んだら消して、床のレイヤー番号を元のものに戻す
          if (Is_Dead(enemy.hit_point)) {
+            var enemy_script = Actor_Manager.Instance.enemy_script;
+            // 足元のレイヤーを元に戻す
             map_layer.Tile_Swap(actor_manager.enemys[index].transform.position,
                                 actor_manager.enemys[index].GetComponent<Enemy>().feet);
             // ゲームオブジェクトの解放

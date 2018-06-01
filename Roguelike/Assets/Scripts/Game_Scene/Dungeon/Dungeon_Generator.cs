@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UniRx;
 
 /// <summary>
 /// ダンジョンの自動生成モジュール 
@@ -53,33 +53,43 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     /// １フロアに存在している敵の数を数える
     /// </summary>
-    int enemy_count;
+    int enemy_counter;
     /// <summary>
     /// ターンを数える
     /// </summary>
     public int turn_count = 0;
-    // 部屋番号を数える
+    /// <summary>
+    /// 部屋番号を数える
+    /// </summary>
     int room_counter = 0;
-    /// <summary>
-    /// ダンジョンの横幅
-    /// </summary>
-    public int dungeon_width;
-    /// <summary>
-    /// ダンジョンの縦幅
-    /// </summary>
-    public int dungeon_height;
     /// <summary>
     /// 乱数を格納。(スポーンの時に使用)
     /// </summary>
     int spawn_random_enemy;
-
     /// <summary>
     /// 区画リスト
     /// </summary>
-    [SerializeField]
     public List<Dungeon_Division> division_list = null;
+    
+    /// <summary>
+    /// 格納用変数。これに入れた値をentrance_positionsに格納していく
+    /// </summary>
+    Vector2 entrance_position;
+    /// <summary>
+    /// 入口の座標リスト
+    /// </summary>
+    List<Vector2> entrance_positions = new List<Vector2>();
+    /// <summary>
+    /// 部屋ごとの入口の座標。要素数 == ルームナンバー
+    /// </summary>
+    List<Vector2> room_entrance = new List<Vector2>();
+    /// <summary>
+    /// 部屋ごとの詳細
+    /// </summary>
+    Room_Detail room_detail;
 
     void Awake() {
+        division_list = new List<Dungeon_Division>();
         enemy = Actor_Manager.Instance.enemy_script;
         map_layer = Dungeon_Manager.Instance.map_layer_2D;
     }
@@ -90,10 +100,17 @@ public class Dungeon_Generator : MonoBehaviour {
     }
 
     /// <summary>
-    /// 新しくダンジョンを作る。フロア移動のたびに呼ばれる。
+    /// 新しくダンジョンを作る。開始時、フロア移動時に呼ばれる。
     /// </summary>
     /// <param name="level">どの難易度のダンジョンが呼ばれたか</param>
     public void Load_Dungeon(int level) {
+        // ダンジョンの横幅
+        int dungeon_width = 0;
+        // ダンジョンの縦幅
+        int dungeon_height = 0;
+        // 敵の出現数をリセット
+        enemy_counter = 1;
+
         // レベルに合った大きさのダンジョンの生成する
         switch (level) {
             case Define_Value.EASY:
@@ -117,7 +134,7 @@ public class Dungeon_Generator : MonoBehaviour {
         // すべてを壁にする
         map_layer.Fill(Define_Value.WALL_LAYER_NUMBER);
 
-        // 最初の区画を作る
+        // 最初の区画を作る // 0から作っているので-1する
         Create_Division(0, 0, dungeon_width - 1, dungeon_height - 1);
 
         // 区画を分割する
@@ -130,8 +147,9 @@ public class Dungeon_Generator : MonoBehaviour {
 
         // 部屋同士をつなぐ
         Connect_Rooms();
-        // 使ったカウンターを初期化
-        room_counter = 0;
+
+        // 入口(出口)となる部分に専用のレイヤーを貼る
+        Set_Entrance_Position();
 
         // プレイヤー、敵、アイテム、階段の位置を決定
         Random_Actor(Define_Value.PLAYER_LAYER_NUMBER);
@@ -145,8 +163,8 @@ public class Dungeon_Generator : MonoBehaviour {
 
         Vector3 instance_position = Vector3.zero;
         // タイルを配置
-        for (int x = 0; x < map_layer.Get_Width(); ++x) {
-            for (int y = 0; y < map_layer.Get_Height(); ++y) {
+        for (int x = 0; x < map_layer.GetWidth(); ++x) {
+            for (int y = 0; y < map_layer.GetHeight(); ++y) {
                 // 壁以外であれば床用の画像を配置
                 if (map_layer.Get(x, y) != Define_Value.WALL_LAYER_NUMBER) {
                     GameObject instance_tile = Instantiate(tile_object, instance_position, Quaternion.identity);
@@ -163,6 +181,8 @@ public class Dungeon_Generator : MonoBehaviour {
                     // TODO:足元のものを取って来たい
                     player.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
                     player.Set_Position(player_position);
+                    var player_status = Actor_Manager.Instance.player_status;
+                    player_status.Where_Floor(x, y);
                 }
                 // 階段であれば階段用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.STAIR_LAYER_NUMBER) {
@@ -176,6 +196,7 @@ public class Dungeon_Generator : MonoBehaviour {
                 // エネミーであればエネミーを生成
                 else if (map_layer.Get(x, y) == Define_Value.ENEMY_LAYER_NUMBER) {
                     Create_Enemy(x, y);
+                    ++enemy_counter;
                 }
                 // 罠であれば罠用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.TRAP_LAYER_NUMBER) {
@@ -294,12 +315,10 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <param name = "set_player">プレイヤー</param>
     public void Random_Actor(int set_player) {
         // プレイヤーのランダム部屋号
-        int random_div1 = Random.Range(0, division_list.Count - 1);
-        // 階段のランダム部屋号
-        int random_div2 = Random.Range(0, division_list.Count - 1);
+        int random_division = Random.Range(0, division_list.Count);
         // 部屋番号を探す
         for (int i = 0; i < division_list.Count; i++) {
-            if (i == random_div1) {
+            if (i == random_division) {
                 // 部屋内のプレイヤーのランダムのタイル
                 int x = Random.Range(division_list[i].Room.Left, division_list[i].Room.Right);
                 int y = Random.Range(division_list[i].Room.Top, division_list[i].Room.Bottom);
@@ -334,7 +353,7 @@ public class Dungeon_Generator : MonoBehaviour {
         // (最小の部屋サイズ + 余白)
         // 2分割なので x2 する
         // +1 して連絡通路用のサイズも残す
-        int min = (Define_Value.MIN_ROOM + Define_Value.MERGIN_SIZE) * 2 + 1;
+        int min = (Define_Value.MIN_ROOM + Define_Value.MERGIN_SIZE) * 2 + Define_Value.TILE_SCALE;
 
         return size >= min;
     }
@@ -423,18 +442,13 @@ public class Dungeon_Generator : MonoBehaviour {
     }
 
     /// <summary>
-    /// 指定した部屋の間を通路でつなぐ
+    /// 指定した部屋の間を通路でつなぎ、部屋に隣接している通路を入口とする
     /// </summary>
     /// <param name="division_A">部屋1</param>
     /// <param name="division_B">部屋2</param>
 	/// <param name="grand_child">孫チェックするかどうか</param>
     /// <returns>つなぐことができたらtrue</returns>
 	bool Create_Road(Dungeon_Division division_A, Dungeon_Division division_B, bool grand_child = false) {
-        bool A_road_exist = false;
-        bool B_road_exist = false;
-        var entrance_position_A = new Vector2();
-        var entrance_position_B = new Vector2();
-
         // 上下でつながっている
         if (division_A.Outer.Bottom == division_B.Outer.Top || division_A.Outer.Top == division_B.Outer.Bottom) {
             // 部屋から伸ばす通路の開始位置を決める
@@ -444,13 +458,11 @@ public class Dungeon_Generator : MonoBehaviour {
 
             if (grand_child) {
                 // すでに通路が存在していたらその情報を使用する
-                if (division_A.HasRoad()) {
+                if (division_A.Has_Road()) {
                     x1 = division_A.Road.Left;
-                    A_road_exist = true;
                 }
-                if (division_B.HasRoad()) {
+                if (division_B.Has_Road()) {
                     x2 = division_B.Road.Left;
-                    B_road_exist = true;
                 }
             }
 
@@ -460,52 +472,15 @@ public class Dungeon_Generator : MonoBehaviour {
             if (division_A.Outer.Top > division_B.Outer.Top) {
                 y = division_A.Outer.Top;
                 // 通路を作成
-                division_B.CreateRoad(x2, division_B.Room.Bottom + 1, x2 + 1, y);
+                division_B.Create_Road(x2, division_B.Room.Bottom + Define_Value.TILE_SCALE, x2 + Define_Value.TILE_SCALE, y);
                 // 通路を作成
-                division_A.CreateRoad(x1, y + 1, x1 + 1, division_A.Room.Top - 2);
+                division_A.Create_Road(x1, y + Define_Value.TILE_SCALE, x1 + Define_Value.TILE_SCALE, division_A.Room.Top - Define_Value.TILE_SCALE);
 
-                // 入口の座標を取る
-                entrance_position_B = new Vector2(x2, division_B.Room.Bottom);
-                entrance_position_A = new Vector2(x1, division_A.Room.Top - 1);
-                // すでに入口となっているか判断
-                if (map_layer.Get((int)entrance_position_B.x, (int)entrance_position_B.y) != Define_Value.ENTRANCE_LAYER_NUMBER) {
-                    if (B_road_exist) {
-                        for (int i = 0; i < division_list.Count; ++i) {
-                            if (division_list[i].Road.Left == x2) {
-                                Dungeon_Manager.Instance.room_list[i].entrance.Add(entrance_position_B);
-                                map_layer.Set((int)entrance_position_B.x, (int)entrance_position_B.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            }
-                        }
-                    }
-                    if (A_road_exist) {
-                        for (int i = 0; i < division_list.Count; ++i) {
-                            if (division_list[i].Road.Left == x1) {
-                                Dungeon_Manager.Instance.room_list[i].entrance.Add(entrance_position_A);
-                                map_layer.Set((int)entrance_position_A.x, (int)entrance_position_A.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            }
-                        }
-                    }
-                        
-                    else {
-                        // 作った部屋の情報を保持
-                        var room_detail = new Room_Detail();
-                        // 部屋の入り口となる部分に専用のレイヤー番号を敷く
-                        map_layer.Set((int)entrance_position_B.x, (int)entrance_position_B.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                        room_detail.entrance.Add(entrance_position_B);
-                        Dungeon_Manager.Instance.room_list.Add(room_detail);
-
-                        if (map_layer.Get((int)entrance_position_A.x, (int)entrance_position_A.y) != Define_Value.ENTRANCE_LAYER_NUMBER) {
-                            // 作った部屋の情報を保持
-                            var room_detail2 = new Room_Detail();
-                            // 部屋の入り口となる部分に専用のレイヤー番号を敷く
-                            map_layer.Set((int)entrance_position_A.x, (int)entrance_position_A.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            room_detail2.entrance.Add(entrance_position_A);
-                            Dungeon_Manager.Instance.room_list.Add(room_detail2);
-                        }
-                    }
-                }
-                A_road_exist = false;
-                B_road_exist = false;
+                // 入口の座標を保持
+                entrance_position = new Vector2(x2, division_B.Room.Bottom);
+                entrance_positions.Add(entrance_position);
+                entrance_position = new Vector2(x1, division_A.Room.Top - Define_Value.ROOM_FLAME);
+                entrance_positions.Add(entrance_position);
             }
             // B 
             // | 
@@ -513,49 +488,17 @@ public class Dungeon_Generator : MonoBehaviour {
             else {
                 y = division_B.Outer.Top;
                 // 通路を作成
-                division_A.CreateRoad(x1, division_A.Room.Bottom + 1, x1 + 1, y);
+                division_A.Create_Road(x1, division_A.Room.Bottom + Define_Value.TILE_SCALE, x1 + Define_Value.TILE_SCALE, y);
                 // 通路を作成
-                division_B.CreateRoad(x2, y, x2 + 1, division_B.Room.Top - 2);
+                division_B.Create_Road(x2, y, x2 + Define_Value.TILE_SCALE, division_B.Room.Top - Define_Value.TILE_SCALE);
 
-                entrance_position_A = new Vector2(x1, division_A.Room.Bottom);
-                entrance_position_B = new Vector2(x2, division_B.Room.Top - 1);
-                if (map_layer.Get((int)entrance_position_A.x, (int)entrance_position_A.y) != Define_Value.ENTRANCE_LAYER_NUMBER) {
-                    if (A_road_exist) {
-                        for (int i = 0; i < division_list.Count; ++i) {
-                            if (division_list[i].Road.Left == x1) {
-                                Dungeon_Manager.Instance.room_list[i].entrance.Add(entrance_position_A);
-                                map_layer.Set((int)entrance_position_A.x, (int)entrance_position_A.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            }
-                        }
-                    }
-                    if (B_road_exist) {
-                        for (int i = 0; i < division_list.Count; ++i) {
-                            if (division_list[i].Road.Left == x2) {
-                                Dungeon_Manager.Instance.room_list[i].entrance.Add(entrance_position_B);
-                                map_layer.Set((int)entrance_position_B.x, (int)entrance_position_B.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            }
-                        }
-                    }
-                    else {
-                        // 作った部屋の情報を保持
-                        var room_detail = new Room_Detail();
-                        // 部屋の入り口となる部分に専用のレイヤー番号を敷く
-                        map_layer.Set((int)entrance_position_A.x, (int)entrance_position_A.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                        room_detail.entrance.Add(entrance_position_A);
-                        Dungeon_Manager.Instance.room_list.Add(room_detail);
-
-                        if (map_layer.Get((int)entrance_position_B.x, (int)entrance_position_B.y) != Define_Value.ENTRANCE_LAYER_NUMBER) {
-                            var room_detail2 = new Room_Detail();
-                            // 部屋の入り口となる部分に専用のレイヤー番号を敷く
-                            map_layer.Set((int)entrance_position_B.x, (int)entrance_position_B.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            room_detail2.entrance.Add(entrance_position_B);
-                            Dungeon_Manager.Instance.room_list.Add(room_detail2);
-                        }
-                    }
-                }
-                A_road_exist = false;
-                B_road_exist = false;
+                // 入口の座標を保持
+                entrance_position = new Vector2(x1, division_A.Room.Bottom);
+                entrance_positions.Add(entrance_position);
+                entrance_position = new Vector2(x2, division_B.Room.Top - Define_Value.ROOM_FLAME);
+                entrance_positions.Add(entrance_position);
             }
+
             Fill_Dungeon_Rectangle_Road(division_A.Road);
             Fill_Dungeon_Rectangle_Road(division_B.Road);
 
@@ -575,13 +518,11 @@ public class Dungeon_Generator : MonoBehaviour {
 
             if (grand_child) {
                 // すでに通路が存在していたらその情報を使う
-                if (division_A.HasRoad()) {
+                if (division_A.Has_Road()) {
                     y1 = division_A.Road.Top;
-                    A_road_exist= true;
                 }
-                if (division_B.HasRoad()) {
+                if (division_B.Has_Road()) {
                     y2 = division_B.Road.Top;
-                    B_road_exist = true;
                 }
             }
 
@@ -589,98 +530,31 @@ public class Dungeon_Generator : MonoBehaviour {
             if (division_A.Outer.Left > division_B.Outer.Left) {
                 x = division_A.Outer.Left;
                 // 通路を作成
-                division_B.CreateRoad(division_B.Room.Right + 1, y2, x, y2 + 1);
+                division_B.Create_Road(division_B.Room.Right + Define_Value.TILE_SCALE, y2, x, y2 + Define_Value.TILE_SCALE);
                 // 通路を作成
-                division_A.CreateRoad(x + 1, y1, division_A.Room.Left - 2, y1 + 1);
+                division_A.Create_Road(x + Define_Value.TILE_SCALE, y1, division_A.Room.Left - Define_Value.TILE_SCALE, y1 + Define_Value.TILE_SCALE);
 
-                // 作った部屋の情報を保持
-                var room_detail = new Room_Detail();
-
-                entrance_position_A = new Vector2(division_B.Room.Right, y2);
-                entrance_position_B= new Vector2(division_A.Room.Left - 1, y1);
-                if (map_layer.Get((int)entrance_position_A.x, (int)entrance_position_A.y) != Define_Value.ENTRANCE_LAYER_NUMBER) {
-                    if (A_road_exist) {
-                        for (int i = 0; i < division_list.Count; ++i) {
-                            if (division_list[i].Road.Left == y2) {
-                                Dungeon_Manager.Instance.room_list[i].entrance.Add(entrance_position_A);
-                                map_layer.Set((int)entrance_position_A.x, (int)entrance_position_A.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            }
-                        }
-                    }
-                    if (B_road_exist) {
-                        for (int i = 0; i < division_list.Count; ++i) {
-                            if (division_list[i].Road.Top == y1) {
-                                Dungeon_Manager.Instance.room_list[i].entrance.Add(entrance_position_B);
-                                map_layer.Set((int)entrance_position_B.x, (int)entrance_position_B.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            }
-                        }
-                    }
-                    else {
-                        // 部屋の入り口となる部分に専用のレイヤー番号を敷く
-                        map_layer.Set((int)entrance_position_A.x, (int)entrance_position_A.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                        room_detail.entrance.Add(entrance_position_A);
-                        Dungeon_Manager.Instance.room_list.Add(room_detail);
-
-                        if (map_layer.Get((int)entrance_position_B.x, (int)entrance_position_B.y) != Define_Value.ENTRANCE_LAYER_NUMBER) {
-                            var room_detail2 = new Room_Detail();
-                            // 部屋の入り口となる部分に専用のレイヤー番号を敷く
-                            map_layer.Set((int)entrance_position_B.x, (int)entrance_position_B.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            room_detail2.entrance.Add(entrance_position_B);
-                            Dungeon_Manager.Instance.room_list.Add(room_detail2);
-                        }
-                    }
-                }
-                A_road_exist = false;
-                B_road_exist = false;
+                // 入口の座標を保持
+                entrance_position = new Vector2(division_B.Room.Right, y2);
+                entrance_positions.Add(entrance_position);
+                entrance_position = new Vector2(division_A.Room.Left - Define_Value.ROOM_FLAME, y1);
+                entrance_positions.Add(entrance_position);
             }
             // A - B (Aが左側)
             else {
                 x = division_B.Outer.Left;
                 // 通路を作成
-                division_A.CreateRoad(division_A.Room.Right + 1, y1, x, y1 + 1);
+                division_A.Create_Road(division_A.Room.Right + Define_Value.TILE_SCALE, y1, x, y1 + Define_Value.TILE_SCALE);
                 // 通路を作成
-                division_B.CreateRoad(x, y2, division_B.Room.Left - 2, y2 + 1);
+                division_B.Create_Road(x, y2, division_B.Room.Left - Define_Value.TILE_SCALE, y2 + Define_Value.TILE_SCALE);
 
-                // 作った部屋の情報を保持
-                var room_detail = new Room_Detail();
-
-                entrance_position_A = new Vector2(division_A.Room.Right, y1);
-                entrance_position_B = new Vector2(division_B.Room.Left - 1, y2);
-                if (map_layer.Get((int)entrance_position_A.x, (int)entrance_position_A.y) != Define_Value.ENTRANCE_LAYER_NUMBER) {
-                    if (A_road_exist) {
-                        for (int i = 0; i < division_list.Count; ++i) {
-                            if (division_list[i].Road.Left == y1) {
-                                Dungeon_Manager.Instance.room_list[i].entrance.Add(entrance_position_A);
-                                map_layer.Set((int)entrance_position_A.x, (int)entrance_position_A.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            }
-                        }
-                    }
-                    if (B_road_exist) {
-                        for (int i = 0; i < division_list.Count; ++i) {
-                            if (division_list[i].Road.Top == y1) {
-                                Dungeon_Manager.Instance.room_list[i].entrance.Add(entrance_position_B);
-                                map_layer.Set((int)entrance_position_B.x, (int)entrance_position_B.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            }
-                        }
-                    }
-                    else {
-                        // 部屋の入り口となる部分に専用のレイヤー番号を敷く
-                        map_layer.Set((int)entrance_position_A.x, (int)entrance_position_A.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                        room_detail.entrance.Add(entrance_position_A);
-                        Dungeon_Manager.Instance.room_list.Add(room_detail);
-
-                        if (map_layer.Get((int)entrance_position_B.x, (int)entrance_position_B.y) != Define_Value.ENTRANCE_LAYER_NUMBER) {
-                            var room_detail2 = new Room_Detail();
-                            // 部屋の入り口となる部分に専用のレイヤー番号を敷く
-                            map_layer.Set((int)entrance_position_B.x, (int)entrance_position_B.y, Define_Value.ENTRANCE_LAYER_NUMBER);
-                            room_detail2.entrance.Add(entrance_position_B);
-                            Dungeon_Manager.Instance.room_list.Add(room_detail2);
-                        }
-                    }
-                }
-                A_road_exist = false;
-                B_road_exist = false;
+                // 入口の座標を保持
+                entrance_position = new Vector2(division_A.Room.Right, y1);
+                entrance_positions.Add(entrance_position);
+                entrance_position = new Vector2(division_B.Room.Left - Define_Value.ROOM_FLAME, y2);
+                entrance_positions.Add(entrance_position);
             }
+
             Fill_Dungeon_Rectangle_Road(division_A.Road);
             Fill_Dungeon_Rectangle_Road(division_B.Road);
 
@@ -691,6 +565,56 @@ public class Dungeon_Generator : MonoBehaviour {
             return true;
         }
         // つなげなかった
+        return false;
+    }
+
+    /// <summary>
+    /// 入口(出口)を各部屋に割り当てる
+    /// </summary>
+    void Set_Entrance_Position() {
+        // 座標が被っている入口は削除
+        for (int i = 0; i < entrance_positions.Count; ++i) {
+            for (int j = 1; j < entrance_positions.Count; ++j) {
+                // 範囲外にならないように
+                if ((i + j) < entrance_positions.Count) {
+                    if (entrance_positions[i].x == entrance_positions[i + j].x &&
+                        entrance_positions[i].y == entrance_positions[i + j].y) {
+                        entrance_positions.RemoveAt(i);
+                    }
+                }
+            }
+        }
+        // 区画番号 == 部屋番号なので、すべての区画(部屋)を回す
+        for (int i = 0; i < division_list.Count; ++i) {
+            // リストに貯めるので新しいインスタンスを生成
+            room_detail = new Room_Detail();
+            // 全ての入口の数分回す
+            for (int j = 0; j < entrance_positions.Count; ++j) {
+                if (Is_Witch_Room(i,j)) {  
+                // リストに貯めるので新しいインスタンスを生成
+                    var entrance_positions_ = new List<Vector2>(entrance_positions);
+                    room_detail.entrance.Add(entrance_positions_[j]);
+                }
+            }
+            Dungeon_Manager.Instance.room_list.Add(room_detail);
+        }
+        // 格納しておいた座標を入口とする
+        for (int i = 0; i < entrance_positions.Count; ++i) {
+            map_layer.Set((int)entrance_positions[i].x, (int)entrance_positions[i].y, Define_Value.ENTRANCE_LAYER_NUMBER);
+        }
+    } 
+    /// <summary>
+    /// その入口がどの部屋に隣接しているかを調べる
+    /// </summary>
+    /// <param name="i">ダンジョンの区画の要素番号</param>
+    /// <param name="j">入口を格納してるリストの要素番号</param>
+    /// <returns>区画番号に合った入口を見つけたらtrue</returns>
+    bool Is_Witch_Room(int i, int j) {
+        // 部屋の枠部分(出入り口のある周)も見るため -1 で調整
+        if ((division_list[i].Room.Left - Define_Value.ROOM_FLAME <= entrance_positions[j].x && entrance_positions[j].x <= division_list[i].Room.Right) &&
+             division_list[i].Room.Top  - Define_Value.ROOM_FLAME <= entrance_positions[j].y && entrance_positions[j].y <= division_list[i].Room.Bottom) {
+            return true;
+        }
         return false;
     }
 
@@ -707,7 +631,7 @@ public class Dungeon_Generator : MonoBehaviour {
             left = right;
             right = tmp;
         }
-        map_layer.Fill_Rectangle_LTRB(left, y, right + 1, y + 1, Define_Value.ROAD_LAYER_NUMBER);
+        map_layer.Fill_Rectangle_LTRB(left, y, right + Define_Value.TILE_SCALE, y + Define_Value.TILE_SCALE, Define_Value.ROAD_LAYER_NUMBER);
     }
 
     /// <summary>
@@ -723,7 +647,7 @@ public class Dungeon_Generator : MonoBehaviour {
             top = bottom;
             bottom = tmp;
         }
-        map_layer.Fill_Rectangle_LTRB(x, top, x + 1, bottom + 1, Define_Value.ROAD_LAYER_NUMBER);
+        map_layer.Fill_Rectangle_LTRB(x, top, x + Define_Value.TILE_SCALE, bottom + Define_Value.TILE_SCALE, Define_Value.ROAD_LAYER_NUMBER);
     }
 
     /// <summary>
@@ -741,9 +665,6 @@ public class Dungeon_Generator : MonoBehaviour {
                  Define_Value.NOMAL_DUNGEON_HEIGHT <= Define_Value.HARD_DUNGEON_HEIGHT) {
             total = Random.Range(5, 8);
         }
-        else {
-            total = Random.Range(0, division_list.Count - 1);
-        }
 
         if (total != 0) {
             for (int j = 1; j <= total; j++) {
@@ -760,10 +681,6 @@ public class Dungeon_Generator : MonoBehaviour {
                 }
             }
         }
-        // エネミー生成時はエネミーの数を数える
-        if(set_object == Define_Value.ENEMY_LAYER_NUMBER) {
-            enemy_count = total;
-        }
     }
 
     /// <summary>
@@ -771,8 +688,8 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     /// <returns>スポーンさせるエネミーのID</returns>
     void Random_Enemy_Type() {
-        var appear_enemy_list = Actor_Manager.Instance.enemy_script.enemy_type;
-        var now_floor = Dungeon_Manager.Instance.floor;
+        List<Enemy_Status> appear_enemy_list = Actor_Manager.Instance.enemy_script.enemy_type;
+        ReactiveProperty<int> now_floor = Dungeon_Manager.Instance.floor;
         int[] lottery_enemy = new int[appear_enemy_list.Count];
 
         // 現在の階層から出現階層を調べ、満たしているものを抽出する
@@ -780,7 +697,7 @@ public class Dungeon_Generator : MonoBehaviour {
             if (appear_enemy_list[i].first_floor <= now_floor.Value &&
                 appear_enemy_list[i].last_floor >= now_floor.Value) {
 
-                lottery_enemy[i] = appear_enemy_list[i].ID.Value;
+                lottery_enemy[i] = appear_enemy_list[i].ID;
             }
         }
         // その階層に出現する敵を乱数で選出
@@ -806,6 +723,7 @@ public class Dungeon_Generator : MonoBehaviour {
         enemy_object.AddComponent<Enemy>();
         // GetComponentがかさむので１時変数に
         var enemy_script = enemy_object.GetComponent<Enemy>();
+        enemy_script.my_number = enemy_counter;
         enemy_script.Set_Initialize_Position(x, y);
 
         //TODO:足元のものを取って来たい
@@ -813,7 +731,13 @@ public class Dungeon_Generator : MonoBehaviour {
         // 今いる部屋番号を取得
         enemy_object.GetComponent<Enemy_Status>().Where_Floor(x, y);
 
-        enemy_object.AddComponent<A_Star>();
+        enemy_object.AddComponent<Enemy_Move>();
+        var enemy_move = enemy_object.GetComponent<Enemy_Move>();
+        // 移動に必要なものを初期化
+        enemy_move.Initialize();
+        // 移動先を決めておく
+        enemy_move.Stack_List();
+
         enemy_object.AddComponent<Enemy_Sprite_Changer>();
         // ダンジョンに出現しているエネミーを格納するものに追加
         actor_manager.enemys.Add(enemy_object);

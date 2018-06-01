@@ -37,7 +37,7 @@ public class Actor : MonoBehaviour {
     /// 現在のポジションを取得する
     /// </summary>
     /// <returns></returns>
-    public virtual Vector2 Get_Position() { return position; }
+    public virtual Vector2 GetPosition() { return position; }
 
     /// <summary>
     /// 足元にあるものを設定する
