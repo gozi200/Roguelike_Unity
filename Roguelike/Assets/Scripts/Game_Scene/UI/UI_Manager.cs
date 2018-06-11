@@ -59,7 +59,9 @@ public class UI_Manager : MonoBehaviour {
     Text noble_phantasm_text;
 
     void Start () {
-        player_status = Actor_Manager.Instance.player_status;
+        player_status = Player_Manager.Instance.player_status;
+        player_status.Set_Parameter(Define_Value.OKITA);
+
         dungeon_manager = Dungeon_Manager.Instance;
 
         // 最大の値と現在の値をまとめる

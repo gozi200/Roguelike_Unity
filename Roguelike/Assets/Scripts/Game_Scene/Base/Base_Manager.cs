@@ -77,8 +77,8 @@ public class Base_Manager : MonoBehaviour {
     /// <param name="map_matrix">拠点のデータ</param>
     public void Create_Base() {
         var map_layer = Dungeon_Manager.Instance.map_layer_2D;
-        var player = Actor_Manager.Instance.player_script;
-        var player_status = Actor_Manager.Instance.player_status;
+        var player = Player_Manager.Instance.player_script;
+        var player_status = Player_Manager.Instance.player_status;
 
         // 初期化
         map_layer.Initialise(Define_Value.CALDEA_SPAWN_X, Define_Value.CALDEA_SPAWN_Y);
@@ -112,12 +112,12 @@ public class Base_Manager : MonoBehaviour {
                     Instantiate(stone_tile, new Vector2(x + 1, y + 1), Quaternion.identity);
 
                     player.Set_Initialize_Position(x + 1, y + 1);
-                    player_status.Set_Parameter(Define_Value.OKITA);
+
                     map_layer.Set(x + 1, y + 1, Define_Value.PLAYER_LAYER_NUMBER);
                     //TODO:足元のものを取って来たい
                     player.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
                     // ここでプレイヤーに命を与える
-                    player.exist = true;
+                    player.Exist = true;
                 }
             }
         }

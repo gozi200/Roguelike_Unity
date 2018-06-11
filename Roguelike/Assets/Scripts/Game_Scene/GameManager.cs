@@ -45,35 +45,35 @@ public class GameManager : Unique_Component<GameManager> {
     /// <param name = "game_state">新しい状態</param>
     void Game_Loop(eGame_State game_state) {
         switch (game_state) {
+            // 拠点を作る
             case eGame_State.Create_Base:
-                // 拠点を作る
                 base_manager.Create_Base();
                 Set_Game_State(eGame_State.Player_Turn);
                 break;
+            // ダンジョンを作る
             case eGame_State.Create_Dungeon:
                 var dungeon_manager = Dungeon_Manager.Instance.dungeon_generator;
                 var decide_dungeon = GameObject.Find("Decide_Dungeon").GetComponent<Decide_Dungeon>();
-                // ダンジョンを作る
                 dungeon_manager.Load_Dungeon(decide_dungeon.dungeon_data.level);
                 Set_Game_State(eGame_State.Player_Turn);
                 break;
+            // プレイヤーターン
             case eGame_State.Player_Turn:
-                var player_action = Actor_Manager.Instance.player_action;
-                // プレイヤーのターン
+                var player_action = Player_Manager.Instance.player_action;
                 player_action.Run_Action();
                 break;
+            // パートナーの行動
             case eGame_State.Partner_Turn:
-                // パートナーの行動
                 Set_Game_State(eGame_State.Enemy_Trun);
                 break;
+            // エネミーの行動
             case eGame_State.Enemy_Trun:
-                var enemy_action = Actor_Manager.Instance.enemy_action;
-                // エネミーの行動
+                var enemy_action = Enemy_Manager.Instance.enemy_action;
                 enemy_action.Action();
                 Set_Game_State(eGame_State.Dungeon_Turn);
                 break;
+            // ダンジョンのターン(敵のスポーンなど)
             case eGame_State.Dungeon_Turn:
-                // ダンジョンのターン(敵のスポーンなど)
                 var dungeon_generator = Dungeon_Manager.Instance.dungeon_generator;
                 dungeon_generator.Turn_Tick();
                 Set_Game_State(eGame_State.Player_Turn);

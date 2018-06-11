@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UniRx;
 
@@ -21,9 +20,9 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     Map_Layer_2D map_layer;
     /// <summary>
-    /// アクターのマネージャークラス
+    /// エネミーのマネージャークラス
     /// </summary>
-    Actor_Manager actor_manager;
+    Enemy_Manager enemy_manager;
 
     /// <summary>
     /// 床オブジェクト
@@ -45,15 +44,7 @@ public class Dungeon_Generator : MonoBehaviour {
     /// 罠オブジェクト
     /// </summary>
     public GameObject trap_object;
-    /// <summary>
-    /// エネミーオブジェクト
-    /// </summary>
-    public GameObject enemy_object;
 
-    /// <summary>
-    /// １フロアに存在している敵の数を数える
-    /// </summary>
-    int enemy_counter;
     /// <summary>
     /// ターンを数える
     /// </summary>
@@ -62,10 +53,7 @@ public class Dungeon_Generator : MonoBehaviour {
     /// 部屋番号を数える
     /// </summary>
     int room_counter = 0;
-    /// <summary>
-    /// 乱数を格納。(スポーンの時に使用)
-    /// </summary>
-    int spawn_random_enemy;
+
     /// <summary>
     /// 区画リスト
     /// </summary>
@@ -74,29 +62,25 @@ public class Dungeon_Generator : MonoBehaviour {
     /// <summary>
     /// 格納用変数。これに入れた値をentrance_positionsに格納していく
     /// </summary>
-    Vector2 entrance_position;
+    Vector2Int entrance_position;
     /// <summary>
     /// 入口の座標リスト
     /// </summary>
-    List<Vector2> entrance_positions = new List<Vector2>();
+    List<Vector2Int> entrance_positions = new List<Vector2Int>();
     /// <summary>
     /// 部屋ごとの入口の座標。要素数 == ルームナンバー
     /// </summary>
-    List<Vector2> room_entrance = new List<Vector2>();
-    /// <summary>
-    /// 部屋ごとの詳細
-    /// </summary>
-    Room_Detail room_detail;
+    List<Vector2Int> room_entrance = new List<Vector2Int>();
 
     void Awake() {
         division_list = new List<Dungeon_Division>();
-        enemy = Actor_Manager.Instance.enemy_script;
         map_layer = Dungeon_Manager.Instance.map_layer_2D;
     }
 
     void Start() {
-        player = Actor_Manager.Instance.player_script;
-        actor_manager = Actor_Manager.Instance;
+        room_entrance = new List<Vector2Int>();
+        enemy_manager = Enemy_Manager.Instance;
+        player = Player_Manager.Instance.player_script;
     }
 
     /// <summary>
@@ -109,7 +93,7 @@ public class Dungeon_Generator : MonoBehaviour {
         // ダンジョンの縦幅
         int dungeon_height = 0;
         // 敵の出現数をリセット
-        enemy_counter = 1;
+        Enemy_Manager.Instance.Enemy_Counter = 1;
 
         // レベルに合った大きさのダンジョンの生成する
         switch (level) {
@@ -176,12 +160,12 @@ public class Dungeon_Generator : MonoBehaviour {
                 }
                 // プレイヤーであればプレイヤーを配置
                 else if (map_layer.Get(x, y) == Define_Value.PLAYER_LAYER_NUMBER) {
-                    Vector2 player_position = new Vector2(x, y);
+                    Vector2Int player_position = new Vector2Int(x, y);
                     map_layer.Set(x, y, Define_Value.PLAYER_LAYER_NUMBER);
                     // TODO:足元のものを取って来たい
                     player.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
                     player.Set_Position(player_position);
-                    var player_status = Actor_Manager.Instance.player_status;
+                    var player_status = Player_Manager.Instance.player_status;
                     player_status.Where_Floor(x, y);
                 }
                 // 階段であれば階段用の画像を配置
@@ -195,8 +179,8 @@ public class Dungeon_Generator : MonoBehaviour {
                 }
                 // エネミーであればエネミーを生成
                 else if (map_layer.Get(x, y) == Define_Value.ENEMY_LAYER_NUMBER) {
-                    Create_Enemy(x, y);
-                    ++enemy_counter;
+
+                    enemy_manager.Create_Enemy(x, y);
                 }
                 // 罠であれば罠用の画像を配置
                 else if (map_layer.Get(x, y) == Define_Value.TRAP_LAYER_NUMBER) {
@@ -477,9 +461,9 @@ public class Dungeon_Generator : MonoBehaviour {
                 division_A.Create_Road(x1, y + Define_Value.TILE_SCALE, x1 + Define_Value.TILE_SCALE, division_A.Room.Top - Define_Value.TILE_SCALE);
 
                 // 入口の座標を保持
-                entrance_position = new Vector2(x2, division_B.Room.Bottom);
+                entrance_position = new Vector2Int(x2, division_B.Room.Bottom);
                 entrance_positions.Add(entrance_position);
-                entrance_position = new Vector2(x1, division_A.Room.Top - Define_Value.ROOM_FLAME);
+                entrance_position = new Vector2Int(x1, division_A.Room.Top - Define_Value.ROOM_FLAME);
                 entrance_positions.Add(entrance_position);
             }
             // B 
@@ -493,9 +477,9 @@ public class Dungeon_Generator : MonoBehaviour {
                 division_B.Create_Road(x2, y, x2 + Define_Value.TILE_SCALE, division_B.Room.Top - Define_Value.TILE_SCALE);
 
                 // 入口の座標を保持
-                entrance_position = new Vector2(x1, division_A.Room.Bottom);
+                entrance_position = new Vector2Int(x1, division_A.Room.Bottom);
                 entrance_positions.Add(entrance_position);
-                entrance_position = new Vector2(x2, division_B.Room.Top - Define_Value.ROOM_FLAME);
+                entrance_position = new Vector2Int(x2, division_B.Room.Top - Define_Value.ROOM_FLAME);
                 entrance_positions.Add(entrance_position);
             }
 
@@ -535,9 +519,9 @@ public class Dungeon_Generator : MonoBehaviour {
                 division_A.Create_Road(x + Define_Value.TILE_SCALE, y1, division_A.Room.Left - Define_Value.TILE_SCALE, y1 + Define_Value.TILE_SCALE);
 
                 // 入口の座標を保持
-                entrance_position = new Vector2(division_B.Room.Right, y2);
+                entrance_position = new Vector2Int(division_B.Room.Right, y2);
                 entrance_positions.Add(entrance_position);
-                entrance_position = new Vector2(division_A.Room.Left - Define_Value.ROOM_FLAME, y1);
+                entrance_position = new Vector2Int(division_A.Room.Left - Define_Value.ROOM_FLAME, y1);
                 entrance_positions.Add(entrance_position);
             }
             // A - B (Aが左側)
@@ -549,9 +533,9 @@ public class Dungeon_Generator : MonoBehaviour {
                 division_B.Create_Road(x, y2, division_B.Room.Left - Define_Value.TILE_SCALE, y2 + Define_Value.TILE_SCALE);
 
                 // 入口の座標を保持
-                entrance_position = new Vector2(division_A.Room.Right, y1);
+                entrance_position = new Vector2Int(division_A.Room.Right, y1);
                 entrance_positions.Add(entrance_position);
-                entrance_position = new Vector2(division_B.Room.Left - Define_Value.ROOM_FLAME, y2);
+                entrance_position = new Vector2Int(division_B.Room.Left - Define_Value.ROOM_FLAME, y2);
                 entrance_positions.Add(entrance_position);
             }
 
@@ -587,16 +571,16 @@ public class Dungeon_Generator : MonoBehaviour {
         // 区画番号 == 部屋番号なので、すべての区画(部屋)を回す
         for (int i = 0; i < division_list.Count; ++i) {
             // リストに貯めるので新しいインスタンスを生成
-            room_detail = new Room_Detail();
+            room_entrance = new List<Vector2Int>();
             // 全ての入口の数分回す
             for (int j = 0; j < entrance_positions.Count; ++j) {
                 if (Is_Witch_Room(i,j)) {  
                 // リストに貯めるので新しいインスタンスを生成
-                    var entrance_positions_ = new List<Vector2>(entrance_positions);
-                    room_detail.entrance.Add(entrance_positions_[j]);
+                    var entrance_positions_ = new List<Vector2Int>(entrance_positions);
+                    room_entrance.Add(entrance_positions_[j]);
                 }
             }
-            Dungeon_Manager.Instance.room_list.Add(room_detail);
+            Dungeon_Manager.Instance.room_list.Add(room_entrance);
         }
         // 格納しておいた座標を入口とする
         for (int i = 0; i < entrance_positions.Count; ++i) {
@@ -684,66 +668,6 @@ public class Dungeon_Generator : MonoBehaviour {
     }
 
     /// <summary>
-    /// ダンジョンに出現する敵の中からスポーンさせるエネミーを乱数で決める
-    /// </summary>
-    /// <returns>スポーンさせるエネミーのID</returns>
-    void Random_Enemy_Type() {
-        List<Enemy_Status> appear_enemy_list = Actor_Manager.Instance.enemy_script.enemy_type;
-        ReactiveProperty<int> now_floor = Dungeon_Manager.Instance.floor;
-        int[] lottery_enemy = new int[appear_enemy_list.Count];
-
-        // 現在の階層から出現階層を調べ、満たしているものを抽出する
-        for (int i = 0; i < appear_enemy_list.Count; ++i) {
-            if (appear_enemy_list[i].first_floor <= now_floor.Value &&
-                appear_enemy_list[i].last_floor >= now_floor.Value) {
-
-                lottery_enemy[i] = appear_enemy_list[i].ID;
-            }
-        }
-        // その階層に出現する敵を乱数で選出
-        spawn_random_enemy = Random.Range(lottery_enemy.Min(), lottery_enemy.Max() + 1);
-    }
-
-    /// <summary>
-    /// エネミーを創る
-    /// </summary>
-    /// <param name="x">座標(座標のレイヤー番号を見るのに使用)</param>
-    /// <param name="y">座標(座標のレイヤー番号を見るのに使用)</param>
-    void Create_Enemy(int x, int y) {
-        // リストにするので１つずつインスタンスを作る
-        enemy_object = new GameObject("Enemy");
-
-        enemy_object.tag = "Enemy";
-        enemy_object.AddComponent<Enemy_Status>();
-        // どの敵をスポーンさせるか乱数で決める
-        Random_Enemy_Type();
-        // スポーンするエネミーのステータスを設定する
-        enemy_object.GetComponent<Enemy_Status>().Set_Parameter(enemy_object, spawn_random_enemy);
-
-        enemy_object.AddComponent<Enemy>();
-        // GetComponentがかさむので１時変数に
-        var enemy_script = enemy_object.GetComponent<Enemy>();
-        enemy_script.my_number = enemy_counter;
-        enemy_script.Set_Initialize_Position(x, y);
-
-        //TODO:足元のものを取って来たい
-        enemy_script.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
-        // 今いる部屋番号を取得
-        enemy_object.GetComponent<Enemy_Status>().Where_Floor(x, y);
-
-        enemy_object.AddComponent<Enemy_Move>();
-        var enemy_move = enemy_object.GetComponent<Enemy_Move>();
-        // 移動に必要なものを初期化
-        enemy_move.Initialize();
-        // 移動先を決めておく
-        enemy_move.Stack_List();
-
-        enemy_object.AddComponent<Enemy_Sprite_Changer>();
-        // ダンジョンに出現しているエネミーを格納するものに追加
-        actor_manager.enemys.Add(enemy_object);
-    }
-
-    /// <summary>
     /// ダンジョンのターンを進める
     /// </summary>
     public void Turn_Tick() {
@@ -765,7 +689,7 @@ public class Dungeon_Generator : MonoBehaviour {
                         position_y = Random.Range(division_list[i].Room.Top, division_list[i].Room.Bottom);
                     } while (player.transform.position.x == position_x && player.transform.position.y == position_y); 
                     // スポーンさせる場所が分かったので、その場所に産む
-                    Create_Enemy((int)position_x, (int)position_y);
+                    enemy_manager.Create_Enemy((int)position_x, (int)position_y);
                 }
             }
         }

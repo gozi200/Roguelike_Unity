@@ -8,17 +8,9 @@ using UniRx;
 /// </summary>
 public class Action_On_Stair : MonoBehaviour {
     /// <summary>
-    /// プレイヤーの本体
-    /// </summary>
-    GameObject player;
-    /// <summary>
     /// プレイヤースクリプト
     /// </summary>
     Player player_script;
-    /// <summary>
-    /// プレイヤーの行動を管理するクラス
-    /// </summary>
-    Player_Action player_action;
     /// <summary>
     /// 階段を進むか否かのコマンドを表示
     /// </summary>
@@ -29,13 +21,9 @@ public class Action_On_Stair : MonoBehaviour {
     /// </summary>
     public ReactiveProperty<bool> said_stair_command;
 
-
     void Start() {
-        player = Actor_Manager.Instance.player;
-        player_script = Actor_Manager.Instance.player_script;
-        player_action = Actor_Manager.Instance.player_action;
-
-        stair_command_UI = GameObject.Find("Stair_Command_UI");
+        player_script = Player_Manager.Instance.player_script;
+        stair_command_UI = GameObject.Find("Stair_Command");
         said_stair_command = new ReactiveProperty<bool>(false);
 
         // trueで階段で進むか否かのコマンドを表示 falseで閉じる
@@ -54,7 +42,7 @@ public class Action_On_Stair : MonoBehaviour {
     /// </summary>
     public void Action_Stair() {
         // 選ぶまで動けなくする
-        player_script.move_value = 0;
+        player_script.Move_Value = 0;
         said_stair_command.Value = true;
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +10,10 @@ public class Player_Attack : MonoBehaviour{
     /// </summary>
     GameObject player;
     /// <summary>
+    /// プレイヤーのスクリプト
+    /// </summary>
+    Player player_script;
+    /// <summary>
     /// プレイヤーの行動を管理するクラス
     /// </summary>
     Player_Action player_action;
@@ -18,10 +21,6 @@ public class Player_Attack : MonoBehaviour{
     /// プレイヤーのステータス関係を管理するクラス
     /// </summary>
     Player_Status player_status;
-    /// <summary>
-    /// エネミーの本体のクラス
-    /// </summary>
-    Enemy enemy;
     /// <summary>
     /// マップを2次元配列で管理するクラス
     /// </summary>
@@ -32,10 +31,10 @@ public class Player_Attack : MonoBehaviour{
     Damage_Calculation damage_calculation;
 
     void Start() {
-        player = Actor_Manager.Instance.player;
-        player_action = Actor_Manager.Instance.player_action;
-        player_status = Actor_Manager.Instance.player_status;
-        enemy = Actor_Manager.Instance.enemy_script;
+        player = Player_Manager.Instance.player;
+        player_script = Player_Manager.Instance.player_script;
+        player_action = Player_Manager.Instance.player_action;
+        player_status = Player_Manager.Instance.player_status;
         map_layer = Dungeon_Manager.Instance.map_layer_2D;
         damage_calculation = new Damage_Calculation();
     }
@@ -44,10 +43,9 @@ public class Player_Attack : MonoBehaviour{
     /// プレイヤーの攻撃処理
     /// </summary>
     public void Action_Attack() {
-        var player_script = player.GetComponent<Player>();
         // プレイヤーの座標
-        var player_x = (int)player.transform.position.x;
-        var player_y = (int)player.transform.position.y;
+        var player_x = (int)player_script.position.x;
+        var player_y = (int)player_script.position.y;
         // タイルの大きさ
         int tile_scale = Define_Value.TILE_SCALE;
         // 調整用変数 ４方向は斜めがいらないので0
@@ -129,26 +127,32 @@ public class Player_Attack : MonoBehaviour{
     /// </summary>
     /// <param name="on_first">1マス先を取るのに使用</param>
     void Attack_Process(int adjust_value1, int adjust_value2) {
-        var actor_manager = Actor_Manager.Instance;
-        var enemy_status = Actor_Manager.Instance.enemy_status;
+        var enemy_manager = new Enemy_Manager();
 
         // 隣接してるエネミーを調べる
-        GameObject side_enemy = actor_manager.Find_Enemy(player.transform.position.x + adjust_value1,
-                                                         player.transform.position.y + adjust_value2);
+        GameObject side_enemy = enemy_manager.Find_Enemy(player_script.position.x + adjust_value1,
+                                                         player_script.position.y + adjust_value2);
         // 隣接してるエネミーのステータスを取ってくる
-        var target_enemy = side_enemy.GetComponent<Enemy_Status>();
+        var enemy_status = side_enemy.GetComponent<Enemy_Controller>().enemy_status;
 
-        target_enemy.hit_point -= damage_calculation.Damage(player_status.attack,
-                                                                 target_enemy.defence);
+        enemy_status.hit_point -= damage_calculation.Damage(player_status.attack,
+                                                            enemy_status.defence);
+        // ダメージのログを流す
+        Log_Scroll.Player_Attack_Log(player_status, side_enemy, damage_calculation.Damage(player_status.attack,
+                                                                                          enemy_status.defence));
 
         // 攻撃した敵が死んでいたら経験値を取得
-        if (target_enemy.hit_point <= 0) {
-            player_status.Add_Experience_Point(target_enemy.experience_point);
+        if (enemy_status.hit_point <= 0) {
+            //　レベルアップより先に経験値を取得
+            Log_Scroll.Get_Experience_Point(player_status, side_enemy, enemy_status.experience_point);
+
+            // 実際に経験値を取得し、次レベルに必要な経験値量に達しているかを見る
+            player_status.Add_Experience_Point(enemy_status.experience_point);
 
             // ダンジョンに出現中の敵のリストを取得
-            List<GameObject> enemy_list = actor_manager.enemys;
+            List<GameObject> enemy_list = Enemy_Manager.Instance.enemies;
             // プレイヤーに隣接しているものを抽出
-            enemy_status.Dead_Enemy(enemy_list.IndexOf(side_enemy));
+            enemy_manager.Dead_Enemy(enemy_list.IndexOf(side_enemy));
         }
         // 移動状態に戻す
         player_action.Set_Action(ePlayer_State.Move);

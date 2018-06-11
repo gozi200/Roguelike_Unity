@@ -11,6 +11,10 @@ public class Decide_Dungeon : MonoBehaviour {
     /// </summary>
     GameManager game_manager;
     /// <summary>
+    /// プレイヤーのマネージャークラス
+    /// </summary>
+    Player_Manager player_manager;
+    /// <summary>
     /// プレイヤーアクション
     /// </summary>
     Player_Action player_action;
@@ -35,16 +39,16 @@ public class Decide_Dungeon : MonoBehaviour {
     void Start() {
         game_manager = GameManager.Instance;
         dungeon_manager = Dungeon_Manager.Instance;
-        player_action = Actor_Manager.Instance.player_action;
+        player_action = Player_Manager.Instance.player_action;
         dungeon_data = new Dungeon_Data();
-        enemy_status = Actor_Manager.Instance.enemy_status;
+        enemy_status = new Enemy_Status();
     }
 
     /// <summary>
     /// 草原への移動が選択されたときに呼ばれる
     /// </summary>
     public void Move_Grass() {
-        var player = Actor_Manager.Instance.player_script;
+        var player = Player_Manager.Instance.player_script;
 
         // 移動先のダンジョンの情報をcsvファイルからロード
         dungeon_data.Load_Dungeon(eDungeon_Type.Beginning_Grass);
@@ -65,14 +69,14 @@ public class Decide_Dungeon : MonoBehaviour {
         // ダンジョン移動後はプレイヤーのターンから
         player_action.Set_Action(ePlayer_State.Move);
         // 選択中は０なので1に戻して歩けるように
-        player.move_value = 1;
+        player.Move_Value = Define_Value.MOVE_VAULE;
     }
 
     /// <summary>
     /// 洞窟への移動が選択されたときに呼ばれる
     /// </summary>
     public void Move_Cave() {
-        var player = Actor_Manager.Instance.player_script;
+        var player = Player_Manager.Instance.player_script;
 
         dungeon_data.Load_Dungeon(eDungeon_Type.Dim_Cave);
         enemy_status.Create_Enemy();
@@ -83,19 +87,19 @@ public class Decide_Dungeon : MonoBehaviour {
         base_manager.dungeon_command.Value = false;
         Reset();
         player_action.Set_Action(ePlayer_State.Move);
-        player.move_value = 1;
+        player.Move_Value = 1;
     }
 
     /// <summary>
     /// コマンド選択中の処理
     /// </summary>
     public void In_Decide() {
-        var player = Actor_Manager.Instance.player_script;
+        var player = Player_Manager.Instance.player_script;
         var base_manager_object = GameObject.Find("Base_Manager");
         var base_manager = base_manager_object.GetComponent<Base_Manager>();
 
         // 歩けなくする
-        player.move_value = 0;
+        player.Move_Value = 0;
         base_manager.dungeon_command.Value = true;
     }
 

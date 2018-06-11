@@ -111,7 +111,7 @@ public static class Define_Value {
     #region アクターの関する定数
 
     /// <summary>
-    /// 1階で動ける移動距離
+    /// 1回で動ける移動距離
     /// </summary>
     public const int MOVE_VAULE = 1;
 
@@ -124,10 +124,22 @@ public static class Define_Value {
     /// </summary>
     public const int PLAYER_NUMBER = 10;
     /// <summary>
-    /// キャラクターID
+    /// プレイヤーキャラクター沖田のID
     /// </summary>
     public const int OKITA = 0;
+    /// <summary>
+    /// プレイヤーキャラクターマシュのID
+    /// </summary>
     public const int MASH = 1;
+
+    /// <summary>
+    /// レベルの最大値(仮)
+    /// </summary>
+    public const int MAX_LV = 999;
+    /// <summary>
+    /// 経験値の最大値(仮)
+    /// </summary>
+    public const int MAX_EXP = 999999999;
 
     #endregion
 

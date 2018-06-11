@@ -24,7 +24,7 @@ public class HP_Bar : MonoBehaviour {
     /// 表示座標を指定する
     /// </summary>
     void Handle_Bar() {
-        var player_status = Actor_Manager.Instance.player_status;
+        var player_status = Player_Manager.Instance.player_status;
         health.fillAmount = Map((float)player_status.hit_point.Value, 0, (float)player_status.max_hit_point.Value, 0, 1);
     }
 

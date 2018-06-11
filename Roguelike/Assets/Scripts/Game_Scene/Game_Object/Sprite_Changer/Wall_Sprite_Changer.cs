@@ -6,7 +6,7 @@ using UniRx;
 /// <summary>
 /// 場所に合った画像を壁に貼る
 /// </summary>
-public class Wall_Sprite_Changer : Sprite_Changer {
+public class Wall_Sprite_Changer : MonoBehaviour {
     /// <summary>
     /// 壁に貼る画像を格納
     /// </summary>
@@ -30,7 +30,7 @@ public class Wall_Sprite_Changer : Sprite_Changer {
     /// 画像をセット
     /// </summary>
     /// <param name="type">spritesの要素数</param>
-    protected override void Set_Sprite(int type) {
+    void Set_Sprite(int type) {
         SpriteRenderer sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
         sprite_renderer.sprite = wall_sprites[type];
     }

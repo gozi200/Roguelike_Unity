@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//DEBUG
 /// <summary>
 /// ダンジョンを生成しなおす。ボタンクリックでダンジョンを再生成。デバッグに使用
 /// </summary>
 public class DEBUG_SCRIPT_MAKE_DUNGEON : MonoBehaviour {
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.R)) 
+        if (Input.GetKeyDown(KeyCode.G)) 
             Remake();
     }
 

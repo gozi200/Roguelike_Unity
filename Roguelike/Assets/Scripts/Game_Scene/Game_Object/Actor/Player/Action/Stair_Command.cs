@@ -20,9 +20,9 @@ public class Stair_Command : MonoBehaviour {
     Action_On_Stair action_stair;
 
     void Start() {
-        player_script = Actor_Manager.Instance.player_script;
-        player_action = Actor_Manager.Instance.player_action;
-        action_stair = Actor_Manager.Instance.action_stair;
+        player_script = Player_Manager.Instance.player_script;
+        player_action = Player_Manager.Instance.player_action;
+        action_stair = Player_Manager.Instance.action_stair;
     }
 
     /// <summary>
@@ -31,9 +31,10 @@ public class Stair_Command : MonoBehaviour {
     public void Decide_Progress() {
         var dungeon_manager = Dungeon_Manager.Instance;
         var dungeon_data = new Dungeon_Data();
+        dungeon_data.Load_Dungeon(Dungeon_Manager.Instance.dungeon_type);
 
         dungeon_manager.Next_Level(dungeon_data.level);
-        player_script.move_value = Define_Value.MOVE_VAULE;
+        player_script.Move_Value = Define_Value.MOVE_VAULE;
         player_action.Set_Action(ePlayer_State.Move);
         action_stair.said_stair_command.Value = false;
     }
@@ -42,7 +43,7 @@ public class Stair_Command : MonoBehaviour {
     /// そのままボタンを押したときの処理
     /// </summary>
     public void Not_Decide_Progress() {
-        player_script.move_value = Define_Value.MOVE_VAULE;
+        player_script.Move_Value = Define_Value.MOVE_VAULE;
         action_stair.said_stair_command.Value = false;
         player_action.Set_Action(ePlayer_State.Move);
     }

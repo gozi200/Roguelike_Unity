@@ -146,19 +146,6 @@ public class Player_Status : Actor_Status {
     public int turn_count;
 
     #endregion
-
-    /// <summary>
-    /// レベルの最大値(仮)
-    /// </summary>
-    const int MAX_LV = 999;
-    /// <summary>
-    /// 経験値の最大値(仮)
-    /// </summary>
-    const int MAX_EXP = 999999999;
-    /// <summary>
-    /// プレイアブルキャラクターの数
-    /// </summary>
-    const int SERVANT_NUMBER = 10;
     /// <summary>
     /// レベルアップに必要な経験値量を格納する配列
     /// </summary>
@@ -187,14 +174,14 @@ public class Player_Status : Actor_Status {
 	,4600000 // 22
 	,6700000 // 23
 	,8000000 // 24 ひとまずはここまで
-	,MAX_EXP // 25
+	,Define_Value.MAX_EXP // 25
         };
 
     // DEBUG--------------------------------
     Key_Observer key;
     //------------------------------------------
 
-    void Start() {
+    public void Initialize() {
         level = new ReactiveProperty<int>();
         hit_point = new ReactiveProperty<int>();
         max_hit_point = new ReactiveProperty<int>();
@@ -222,7 +209,7 @@ public class Player_Status : Actor_Status {
         var player_status = reader.Load_csv("csv/Actor/Player/Player_csv", Define_Value.UNNECESSARY_COLUMN);
 
         ID                   = int.Parse(player_status[use_chara][0]);  // 番号
-        name                 = player_status[use_chara][1];             // 名前
+        name                 = player_status          [use_chara][1];   // 名前
         class_type           = int.Parse(player_status[use_chara][2]);  // クラス
         saint_graph          = int.Parse(player_status[use_chara][3]);  // 再臨状態
         level.Value          = int.Parse(player_status[use_chara][4]);  // レベル
@@ -258,44 +245,63 @@ public class Player_Status : Actor_Status {
     /// Playerのターン経過の処理(自動回復、はらへり) プレイヤーの行動が終了したときに呼ばれる
     /// </summary>
     public void Add_Turn() {
+        ++turn_count;
         var game_manager = GameManager.Instance;
 
-        ++turn_count;
-
         //TODO:ひとまず
-        if(hit_point.Value < max_hit_point.Value) {
+        if(hit_point.Value < max_hit_point.Value &&
+           hunger_point.Value > 0) {
             ++hit_point.Value;
         }
 
-        // 空腹であるか
+        // 空腹であればHPを1減らす
         if (hunger_point.Value <= 0) {
             --hit_point.Value;
-
-            //if (Is_Dead()) {
-            // ログに"餓死したと流す"
-            //}
         }
-        // 3ターンに一度空腹ポイントを１減らす
+
+        // 3ターンに1度空腹ポイントを1減らす
         else if (0 == turn_count % 3) {
             --hunger_point.Value;
-            // 満腹値20で"お腹がすいてきた"     のログを表示
-            // 満腹度 0で"お腹がすいて死にそうだ"のログを表示
+
+            // 一定量を下回ったらログで空腹を知らせる
+            if(hunger_point.Value == 50) {
+                Log_Scroll.Generic_Log("おなかがへってきた");
+            }
+            if (hunger_point.Value == 20) {
+                Log_Scroll.Generic_Log("おなかがへりすぎて目が回ってきた");
+            }
+            // 2になったらログで知らせる
+            if(hunger_point.Value == 2) {
+                Log_Scroll.Generic_Log("ダメだ、もうたおれそうだ！");
+            }
+            // 1になったらログで知らせる
+            if(hunger_point.Value == 1) {
+                Log_Scroll.Generic_Log("なにかたべないと！");
+            }
         }
 
+        if (Enemy_Manager.Instance.enemies.Count > 0) {
+            game_manager.Set_Game_State(eGame_State.Enemy_Trun);
+        }
+        else if (Dungeon_Manager.Instance.Is_Exist) {
+            game_manager.Set_Game_State(eGame_State.Dungeon_Turn);
+        }
         //TODO:ほんとはパートナーの番に
-        game_manager.Set_Game_State(eGame_State.Enemy_Trun);
+        else {
+            //TODO:パートナーターン
+        }
     }
 
-    /// <summary>
-    /// 経験値を加算 敵を倒したときに呼ばれる プレイヤー、パートナーどちらが倒しても呼ばれる
-    /// </summary>
-    /// <param name="exp">加算する経験値量</param>
-     public void Add_Experience_Point(int exp) {
+/// <summary>
+/// 経験値を加算 敵を倒したときに呼ばれる プレイヤー、パートナーどちらが倒しても呼ばれる
+/// </summary>
+/// <param name="exp">加算する経験値量</param>
+public void Add_Experience_Point(int exp) {
         experience_point += exp;
 
         // 上限を越しても設定した最大値を超えないようにする
-        if (experience_point > MAX_EXP) {
-            experience_point = MAX_EXP;
+        if (experience_point > Define_Value.MAX_EXP) {
+            experience_point = Define_Value.MAX_EXP;
         }
 
         // レベルアップに必要な経験値量を超えたか確かめる 
@@ -326,7 +332,7 @@ public class Player_Status : Actor_Status {
     int GetExp_Level() {
         int level;
 
-        for (level = 0; level < MAX_LV; ++level) {
+        for (level = 0; level < Define_Value.MAX_LV; ++level) {
             if (exp_data_base[level] > experience_point) {
                 break;
             }
@@ -341,7 +347,7 @@ public class Player_Status : Actor_Status {
     /// <returns>死亡していたらtrue</returns>
     public override bool Is_Dead(int now_HP) {
         if (now_HP <= 0) {
-            var player_status = Actor_Manager.Instance.player_status;
+            var player_status = Player_Manager.Instance.player_status;
             player_status.hit_point.Value = 0;
             return true;
         }
@@ -351,18 +357,17 @@ public class Player_Status : Actor_Status {
     /// <summary>
     /// 自分がどこの部屋にいるのかを探す 
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
+    /// <param name="x">自分のx座標</param>
+    /// <param name="y">自分のy座標</param>
     public override void Where_Floor(int x, int y) { 
         var dungeon_generator = Dungeon_Manager.Instance.dungeon_generator;
-        var enemy = Actor_Manager.Instance.enemy_script;
 
         for (int i = 0; i < dungeon_generator.division_list.Count; ++i) {
             if (x > dungeon_generator.division_list[i].Room.Left - Define_Value.ROOM_FLAME &&
                 x < dungeon_generator.division_list[i].Room.Right &&
                 y < dungeon_generator.division_list[i].Room.Bottom &&
                 y > dungeon_generator.division_list[i].Room.Top - Define_Value.ROOM_FLAME) {
-                now_room = i;
+                Now_Room = i;
             }
         }
     }

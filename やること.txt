@@ -1,0 +1,4 @@
+抽象化
+sprite関係のクラス
+Actor_Status関係のクラス
+

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,13 +11,10 @@ using UniRx;
 /// </summary>
 public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// <summary>
-    /// アクターのマネージャー
+    /// アクターのマネージャクラス
     /// </summary>
-    Actor_Manager actor_manager;
-    /// <summary>
-    /// 部屋の情報を設定するクラス
-    /// </summary>
-    public Room_Detail room_detail;
+    Enemy_Manager enemy_manager;
+
     /// <summary>
     /// ダンジョン作成クラス
     /// </summary>
@@ -36,7 +34,7 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     public ReactiveProperty<int> max_floor;
 
     /// <summary>
-    /// 生成するダンジョンの種類
+    /// 生成、進入しているダンジョンの種類。
     /// </summary>
     public eDungeon_Type dungeon_type;
     /// <summary>
@@ -49,9 +47,15 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     public ReactiveProperty<eWall_State> wall_state;
 
     /// <summary>
-    /// 部屋ごとに情報を格納する
+    /// ダンジョン生存フラグ
     /// </summary>
-    public List<Room_Detail> room_list;
+    bool is_exist;
+    public bool Is_Exist { set; get; }
+
+    /// <summary>
+    /// 部屋ごとの入口の座標を格納する
+    /// </summary>
+    public List<List<Vector2Int>> room_list;
 
     void Awake() {
         dungeon_generator = GameObject.Find("Dungeon_Generator").GetComponent<Dungeon_Generator>();
@@ -59,10 +63,9 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     }
 
     void Start() {
-        room_list = new List<Room_Detail>();
+        room_list = new List<List<Vector2Int>>();
 
-        room_detail = new Room_Detail();
-        actor_manager = Actor_Manager.Instance;
+        enemy_manager = Enemy_Manager.Instance;
         floor = new ReactiveProperty<int>(Define_Value.INITIAL_FLOOR);
         max_floor = new ReactiveProperty<int>();
         tile_state = new ReactiveProperty<eTile_State>(eTile_State.Grass);
@@ -81,6 +84,8 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
         }
         else if (floor.Value >= max_floor.Value) {
             SceneManager.LoadScene("Result");
+            Enemy_Manager.Instance.enemies.Clear();
+            Enemy_Manager.Instance.enemies = null;
         }
     }
 
@@ -94,9 +99,9 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
         GameObject[] items = GameObject.FindGameObjectsWithTag("Item");
         GameObject[] walls = GameObject.FindGameObjectsWithTag("Wall");
-        GameObject[] enemys = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        List<GameObject> enemy_list = actor_manager.enemys;
+        List<GameObject> enemy_list = enemy_manager.enemies;
 
         // ダンジョンを生成しなおすのに、一度オブジェクトを消す
         foreach (GameObject trap in traps) {
@@ -108,7 +113,7 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
         foreach (GameObject tile in tiles) {
             Destroy(tile);
         }
-        foreach (GameObject enemy in enemys) {
+        foreach (GameObject enemy in enemies) {
             Destroy(enemy);
         }
         foreach (GameObject item in items) {

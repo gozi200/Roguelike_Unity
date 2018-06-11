@@ -5,15 +5,16 @@ using UnityEngine;
 /// <summary>
 /// エネミーの行動を設定する
 /// </summary>
-public class Enemy_Action : MonoBehaviour {
+public class Enemy_Action {
     /// <summary>
     /// ゲームマネジャー
     /// </summary>
     GameManager game_manager;
+
     /// <summary>
-    /// アクターのマネージャー
+    /// アクターのマネージャクラス
     /// </summary>
-    Actor_Manager actor_manager;
+    Enemy_Manager enemy_manager;
     /// <summary>
     /// プレイヤー本体のクラス
     /// </summary>
@@ -27,9 +28,10 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     Enemy_Status enemy_status;
     /// <summary>
-    /// アクター共通で使える行動制御を管理するクラス
+    /// エネミーの移動を制御するクラス
     /// </summary>
-    Actor_Action actor_action;
+    Enemy_Move enemy_move;
+
     /// <summary>
     /// プレイヤーのステータス関係のクラス
     /// </summary>
@@ -48,32 +50,23 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     Vector3 enemy_position;
 
-    /// <summary>
-    /// 移動が終了したかを判断
-    /// </summary>
-    bool move_end;
-
-    void Start() {
+    public void Initialize() {
         game_manager = GameManager.Instance;
-        actor_manager = Actor_Manager.Instance;
-        player = Actor_Manager.Instance.player_script;
-        enemy = Actor_Manager.Instance.enemy_script;
-        enemy_status = Actor_Manager.Instance.enemy_status;
-        player_status = Actor_Manager.Instance.player_status;
+        enemy_manager = Enemy_Manager.Instance;
+        player = Player_Manager.Instance.player_script;
+        player_status = Player_Manager.Instance.player_status;
+        enemy_status = new Enemy_Status();
         map_layer = Dungeon_Manager.Instance.map_layer_2D;
-        actor_action = Actor_Manager.Instance.actor_action;
         damage_calculation = Game.Instance.damage_calculation;
-
-        enemy.direction = eDirection.Down;
     }
 
     /// <summary>
     /// エネミーの行動を制御
     /// </summary>
     public void Action() {
-        for (int i = 0; i < actor_manager.enemys.Count; ++i) {
+        for (int i = 0; i < enemy_manager.enemies.Count; ++i) {
             // 全部Getしていたら重いのでこれを使う
-            var enemy_status = actor_manager.enemys[i].GetComponent<Enemy_Status>();
+            var enemy_status = enemy_manager.enemies[i].GetComponent<Enemy_Controller>().enemy_status;
 
             // AIによって入れる処理を変える
             switch (enemy_status.AI_pattern) {
@@ -83,8 +76,8 @@ public class Enemy_Action : MonoBehaviour {
                         break;
                     }
                     else {
-                        actor_manager.enemys[i].GetComponent<Enemy_Move>().Move_Action();
-                        Set_Enemy_State(actor_manager.enemys[i].GetComponent<Enemy>().mode, actor_manager.enemys[i].GetComponent<Enemy>().feet);
+                        enemy_manager.enemies[i].GetComponent<Enemy_Controller>().enemy_move.Move_Action(i);
+                        Set_Enemy_State(enemy_manager.enemies[i].GetComponent<Enemy>().mode, enemy_manager.enemies[i].GetComponent<Enemy>().Feet);
                         break;
                     }
             }
@@ -98,10 +91,10 @@ public class Enemy_Action : MonoBehaviour {
     /// </summary>
     /// <returns>プレイヤーがいた場合はtrue</returns>
     bool Search_Player(int index) {
-        var enemy = Actor_Manager.Instance.enemys[index].GetComponent<Enemy>();
+        var enemy = Enemy_Manager.Instance.enemies[index].GetComponent<Enemy>();
         // 長くなるので１時変数に格納
-        float enemy_x = actor_manager.enemys[index].transform.position.x;
-        float enemy_y = actor_manager.enemys[index].transform.position.y;
+        int enemy_x = enemy_manager.enemies[index].GetComponent<Enemy>().position.x;
+        int enemy_y = enemy_manager.enemies[index].GetComponent<Enemy>().position.y;
         // 移動量
         int move_value = Define_Value.MOVE_VAULE;
 
@@ -112,8 +105,8 @@ public class Enemy_Action : MonoBehaviour {
         }
         // 右上
         else if (map_layer.Get(enemy_x + Define_Value.TILE_SCALE, enemy_y + Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
-            if (actor_action.Slant_Check(map_layer.Get(enemy_x + move_value, enemy_y),
-                                         map_layer.Get(enemy_x, enemy_y + move_value))) {
+            if (Actor_Action.Slant_Check(map_layer.Get(enemy_x + move_value, enemy_y),
+                            map_layer.Get(enemy_x, enemy_y + move_value))) {
                 return false;
             }
             enemy.direction = eDirection.Upright;
@@ -127,8 +120,8 @@ public class Enemy_Action : MonoBehaviour {
         }
         // 右下
         else if (map_layer.Get(enemy_x + Define_Value.TILE_SCALE, enemy_y - Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
-            if (actor_action.Slant_Check(map_layer.Get(enemy_x + move_value, enemy_y),
-                                         map_layer.Get(enemy_x, enemy_y - move_value))) {
+            if (Actor_Action.Slant_Check(map_layer.Get(enemy_x + move_value, enemy_y),
+                            map_layer.Get(enemy_x, enemy_y - move_value))) {
                 return false;
             }
             enemy.direction = eDirection.Downright;
@@ -141,8 +134,8 @@ public class Enemy_Action : MonoBehaviour {
         }
         // 左下
         else if (map_layer.Get(enemy_x - Define_Value.TILE_SCALE, enemy_y - Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
-            if (actor_action.Slant_Check(map_layer.Get(enemy_x - move_value, enemy_y),
-                                         map_layer.Get(enemy_x, enemy_y - move_value))) {
+            if (Actor_Action.Slant_Check(map_layer.Get(enemy_x - move_value, enemy_y),
+                            map_layer.Get(enemy_x, enemy_y - move_value))) {
                 return false;
             }
             enemy.direction = eDirection.Downleft;
@@ -155,8 +148,8 @@ public class Enemy_Action : MonoBehaviour {
         }
         // 左上
         else if (map_layer.Get(enemy_x - Define_Value.TILE_SCALE, enemy_y + Define_Value.TILE_SCALE) == Define_Value.PLAYER_LAYER_NUMBER) {
-            if (actor_action.Slant_Check(map_layer.Get(enemy_x - move_value, enemy_y),
-                                         map_layer.Get(enemy_x, enemy_y + move_value))) {
+            if (Actor_Action.Slant_Check(map_layer.Get(enemy_x - move_value, enemy_y),
+                            map_layer.Get(enemy_x, enemy_y + move_value))) {
                 return false;
             }
             enemy.direction = eDirection.Upleft;
@@ -179,7 +172,7 @@ public class Enemy_Action : MonoBehaviour {
                 // 通路から部屋への進入
                 if (mode == eEnemy_Mode.Move_Road_Mode) {
                     mode = eEnemy_Mode.Move_Floor_Mode;
-                    actor_manager.enemy_move.Stack_List();
+                    enemy_move.Stack_List();
                 }
                 // 部屋から通路への進入
                 else if (mode == eEnemy_Mode.Move_Floor_Mode) {
@@ -187,22 +180,5 @@ public class Enemy_Action : MonoBehaviour {
                 }
                 break;
         }
-    }
-
-    /// <summary>
-    /// レイヤー番号を入れ替える
-    /// </summary>
-    /// <param name="index">要素番号。何番目の敵なのか</param>
-    public void Set_Tile(int index) {
-        // 要素数に使うので0からの値に合わせる
-        index -= 1;
-        var enemy_position = actor_manager.enemys[index].transform.position;
-        enemy.Set_Feet(map_layer.Get(enemy_position.x, enemy_position.y));
-
-        Debug.Log("Enemyfeet: = " + gameObject.GetComponent<Enemy>().feet);
-
-        map_layer.Tile_Swap(actor_manager.enemys[index].GetComponent<Enemy>().transform.position,
-                            Define_Value.ENEMY_LAYER_NUMBER);
-        move_end = true;
     }
 }

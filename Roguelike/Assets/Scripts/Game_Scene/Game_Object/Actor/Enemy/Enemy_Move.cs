@@ -1,32 +1,48 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using UniRx;
 
 /// <summary>
 /// エネミーの行動を制御するクラス
 /// </summary>
-public class Enemy_Move : MonoBehaviour {
+public class Enemy_Move {
+    /// <summary>
+    /// エネミーのマネージャクラス
+    /// </summary>
+    Enemy_Manager enemy_manager;
     /// <summary>
     /// 区画リスト
     /// </summary>
     List<Dungeon_Division> division_list;
     /// <summary>
-    /// アタッチしているオブジェクトが現在いる部屋の番号
+    /// 自分がアタッチされているオブジェクト
     /// </summary>
-    int now_room_number;
-    /// <summary>
-    /// アタッチされているエネミーの番号
-    /// </summary>
-    int object_number;
+    GameObject enemy_object;
+
     /// <summary>
     /// 入口(出口)の座標を知っておく
     /// </summary>
-    Vector3 goal_position = new Vector3();
+    Vector2Int goal_position = new Vector2Int();
     /// <summary>
     /// 目標地点の１つ前の座標を格納
     /// </summary>
     List<Point2> goal_before_one;
+
+    /// <summary>
+    /// アタッチしているオブジェクトが現在いる部屋の番号
+    /// </summary>
+    int now_room_number;
+    public int Now_Room_Number {
+        get { return now_room_number; }
+    }
+
+    /// <summary>
+    /// アタッチされているエネミーの番号
+    /// </summary>
+    int enemy_number;
+    /// <summary>
+    /// 移動が終了したかを判断
+    /// </summary>
+    bool move_end;
 
     /// <summary>
     /// 座標を扱う構造体を格納
@@ -49,10 +65,28 @@ public class Enemy_Move : MonoBehaviour {
     /// <summary>
     /// 初期化
     /// </summary>
-    public void Initialize() {
-        now_room_number = gameObject.GetComponent<Enemy_Status>().now_room;
-        object_number = gameObject.GetComponent<Enemy>().my_number;
+    public void Initialize(GameObject enemy_object, int enemy_number) {
+        enemy_manager = Enemy_Manager.Instance;
+        Set_Enemy_Object(enemy_object);
+        Set_Enemy_Number(enemy_number);
+        now_room_number = enemy_object.GetComponent<Enemy_Controller>().enemy_status.Now_Room;
         division_list = Dungeon_Manager.Instance.dungeon_generator.division_list;
+    }
+
+    /// <summary>
+    /// 自分がアタッチされている敵をセットする
+    /// </summary>
+    /// <param name="set_enemy_object">自分がアタッチされているオブジェクト</param>
+    void Set_Enemy_Object(GameObject set_enemy_object) {
+        enemy_object = set_enemy_object;
+    }
+
+    /// <summary>
+    /// 動かす敵の番号を知っておく
+    /// </summary>
+    /// <param name="set_enemy_number">何番目の敵か</param>
+    public void Set_Enemy_Number(int set_enemy_number) {
+        enemy_number = set_enemy_number;
     }
 
     /// <summary>
@@ -60,9 +94,10 @@ public class Enemy_Move : MonoBehaviour {
     /// </summary>
     class A_Node {
         /// <summary>
-        /// ノードの状態
+        /// 親ノード
         /// </summary>
-        eNode_Status status = eNode_Status.None;
+        A_Node parent = null;
+
         /// <summary>
         /// 実コスト
         /// </summary>
@@ -71,11 +106,6 @@ public class Enemy_Move : MonoBehaviour {
         /// ヒューリスティックコスト
         /// </summary>
         int heuristic = 0;
-        /// <summary>
-        /// 親ノード
-        /// </summary>
-        A_Node parent = null;
-        /// <summary>
         /// x座標
         /// </summary>
         int x = 0;
@@ -101,6 +131,12 @@ public class Enemy_Move : MonoBehaviour {
         public int Cost {
             get { return cost; }
         }
+
+        /// <summary>
+        /// <summary>
+        /// ノードの状態
+        /// </summary>
+        eNode_Status status = eNode_Status.None;
 
         /// <summary>
         /// コンストラクタ
@@ -155,10 +191,10 @@ public class Enemy_Move : MonoBehaviour {
         /// </summary>
         /// <param name="parent_">親ノード</param>
         /// <param name="cost_">次開けるもののコスト</param>
-        public void Open(A_Node parent_, int cost_) {
+        public void Open(A_Node set_parent, int set_cost) {
             status = eNode_Status.Open;
-            cost = cost_;
-            parent = parent_;
+            cost = set_cost;
+            parent = set_parent;
         }
         /// <summary>
         /// ステータスをClosedにする
@@ -170,11 +206,12 @@ public class Enemy_Move : MonoBehaviour {
         /// <summary>
         /// パスを取得する
         /// </summary>
-        /// <param name="pList">移動先の座標を格納するリスト</param>
-        public void GetPath(List<Point2> pList) {
-            pList.Add(new Point2(X, Y));
+        /// <param name="point_list">移動先の座標を格納するリスト</param>
+        public void GetPath(List<Point2> point_list) {
+            // これはA_NodeのX,Y
+            point_list.Add(new Point2(X, Y));
             if (parent != null) {
-                parent.GetPath(pList);
+                parent.GetPath(point_list);
             }
         }
     }
@@ -212,10 +249,6 @@ public class Enemy_Move : MonoBehaviour {
         /// 目標地点のy座標
         /// </summary>
         int goal_y = 0;
-        /// <summary>
-        /// 目標地点の１つ前のx座標
-        /// </summary>
-        //List<Point2> goal_before_one_;
 
         /// <summary>
         /// コンストラクタ
@@ -245,10 +278,10 @@ public class Enemy_Move : MonoBehaviour {
             List<Dungeon_Division> division_list = Dungeon_Manager.Instance.dungeon_generator.division_list;
 
             // フレーム(出入り口)部分も含めるため１を足し引きして調整する
-            int width =  (division_list[room_number].Room.Right + Define_Value.ROOM_FLAME) - 
-                         (division_list[room_number].Room.Left - Define_Value.ROOM_FLAME);
-            int height = (division_list[room_number].Room.Bottom + Define_Value.ROOM_FLAME) - 
-                         (division_list[room_number].Room.Top - Define_Value.ROOM_FLAME);
+            int width =  (division_list[room_number].Room.Right + Define_Value.ROOM_FLAME) -
+                         (division_list[room_number].Room.Left);
+            int height = (division_list[room_number].Room.Bottom) -
+                         (division_list[room_number].Room.Top  - Define_Value.ROOM_FLAME);
             layer.Initialise(width, height);
         }
 
@@ -259,25 +292,23 @@ public class Enemy_Move : MonoBehaviour {
         /// <param name="y">そのノードのy座標</param>
         /// <returns></returns>
         public A_Node Get_Node(int x, int y) {
-            // 目的地の１つ目手の座標を探す
+            // 目的地の１つ手前の座標を探す
             foreach (var before_one in goal_before_one) {
-                if ((x == before_one.x || x == before_one.x) ||
-                    (y == before_one.x || y == before_one.x)) {
-                    // ななめ移動を禁止
+                if (x == goal_x || y == goal_y) {
                     allowdiag = false;
                 }
             }
 
             int idx = layer.To_Index(x, y);
             if (pool.ContainsKey(idx)) {
-                // 既に存在しているのでプーリングから取得.
+                // 既に存在しているのでプーリングから取得
                 return pool[idx];
             }
 
-            // ないので新規作成.
+            // ないので新規作成
             var node = new A_Node(x, y);
             pool[idx] = node;
-            // ヒューリスティック・コストを計算する.
+            // ヒューリスティック・コストを計算する
             node.Calc_Heuristic(allowdiag, goal_x, goal_y);
             return node;
         }
@@ -346,8 +377,8 @@ public class Enemy_Move : MonoBehaviour {
             cost += Define_Value.TILE_SCALE;
             if (allowdiag) {
                 // 8方向を開く
-                for (int j = 0; j <= 4; j++) {
-                    for (int i = 0; i <= 4; i++) {
+                for (int j = 0; j <= 4; ++j) {
+                    for (int i = 0; i <= 4; ++i) {
                         int x = xbase + i - Define_Value.TILE_SCALE; // -1～1
                         int y = ybase + j - Define_Value.TILE_SCALE; // -1～1
                         Open_Node(x, y, cost, parent);
@@ -374,8 +405,8 @@ public class Enemy_Move : MonoBehaviour {
             // 最小スコア
             int min = 9999;
             // 最小実コスト
-            int minCost = 9999;
-            A_Node minNode = null;
+            int min_cost = 9999;
+            A_Node min_node = null;
 
             foreach (A_Node node in open_list) {
                 int score = node.GetScore();
@@ -383,30 +414,26 @@ public class Enemy_Move : MonoBehaviour {
                     // スコアが大きい
                     continue;
                 }
-                if (score == min && node.Cost >= minCost) {
+                if (score == min && node.Cost >= min_cost) {
                     // スコアが同じときは実コストも比較する
                     continue;
                 }
                 // 最小値更新.
                 min = score;
-                minCost = node.Cost;
-                minNode = node;
+                min_cost = node.Cost;
+                min_node = node;
             }
-            return minNode;
+            return min_node;
         }
     }
 
     /// <summary>
     /// エネミーの状態合わせた移動処理を行う
     /// </summary>
-    public void Move_Action() {
-        var actor_manager = Actor_Manager.Instance;
-        // エネミーの移動先が格納してあるリスト // 要素数に合わせて-1
-        List<Point2> point_list = actor_manager.enemys[object_number -1].GetComponent<Enemy_Move>().point_list;
-
-        switch (Actor_Manager.Instance.enemy_script.mode) {
+    public void Move_Action(int index) {
+        switch (enemy_manager.enemies[index].GetComponent<Enemy>().mode) {
             case eEnemy_Mode.Move_Floor_Mode:
-                Move(point_list);
+                Move();
                 break;
             case eEnemy_Mode.Move_Road_Mode:
                 Road_Move();
@@ -422,26 +449,26 @@ public class Enemy_Move : MonoBehaviour {
     /// </summary>
     public void Stack_List() {
         // 現在の座標を取得
-        Point2 start = GetNow_Position(gameObject);
+        Point2 start = Get_Now_Position(enemy_object.GetComponent<Enemy>());
         // 指定の部屋の入口(出口)を探す
-        Point2 goal = GetGoal_Position(now_room_number);
+        Point2 goal = Get_Goal_Position(now_room_number);
         // 入口(出口)の１つ前の座標を取得
         goal_before_one = new List<Point2>();
         Get_Goal_Before_One(goal);
-        // DEBUG----------------------------------
+
         if (goal_before_one.Count == 0) {
             Debug.Log("入り口前取れてない");
         }
-        // ----------------------------------------
+
         // 今いる座標
-        var start_position = new Vector2 {
+        var start_position = new Vector2Int {
             x = start.x,
             y = start.y
         };
         // 今いる部屋の中の座標に置き換える
         start_position = In_Room_Coodinates(start_position);
         // 目的地の座標
-        goal_position = new Vector2 {
+        goal_position = new Vector2Int {
             x = goal.x,
             y = goal.y 
         };
@@ -488,30 +515,29 @@ public class Enemy_Move : MonoBehaviour {
     /// 通路にいるときの移動
     /// </summary>
     void Road_Move() {
-        var actor_action = Actor_Manager.Instance.actor_action;
         var map_layer = Dungeon_Manager.Instance.map_layer_2D;
-        var enemy_direction = Actor_Manager.Instance.enemy_script.direction;
-        var enemy_position = new Vector2();
+        var enemy_direction = enemy_object.GetComponent<Enemy>().direction;
+        var enemy_position = new Vector2Int();
         // エネミーのx座標
-        var enemy_x = gameObject.transform.position.x;
+        var enemy_x = enemy_object.transform.position.x;
         // エネミーのy座標
-        var enemy_y = gameObject.transform.position.y;
+        var enemy_y = enemy_object.transform.position.y;
 
         switch (enemy_direction) {
             // 上方向への移動
             case eDirection.Up:
-                if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                             map_layer.Get(enemy_x, enemy_y + Define_Value.MOVE_VAULE))) {
                     enemy_position.y += Define_Value.MOVE_VAULE;
                 }
                 else {
-                    if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                    if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                                 map_layer.Get(enemy_x - Define_Value.MOVE_VAULE, enemy_y))) {
                         enemy_direction = eDirection.Right;
                         enemy_position.x -= Define_Value.MOVE_VAULE;
 
                     }
-                    else if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                    else if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                                      map_layer.Get(enemy_x + Define_Value.MOVE_VAULE, enemy_y))) {
                         enemy_direction = eDirection.Left;
                         enemy_position.x += Define_Value.MOVE_VAULE;
@@ -520,18 +546,18 @@ public class Enemy_Move : MonoBehaviour {
                 break;
             // 右方向への移動
             case eDirection.Right:
-                if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                             map_layer.Get(enemy_x + Define_Value.MOVE_VAULE, enemy_y))) {
                     enemy_position.x += Define_Value.MOVE_VAULE;
                 }
                 else {
-                    if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                    if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                                 map_layer.Get(enemy_x, enemy_y - Define_Value.MOVE_VAULE))) {
                         enemy_direction = eDirection.Right;
                         enemy_position.y -= Define_Value.MOVE_VAULE;
 
                     }
-                    else if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                    else if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                                      map_layer.Get(enemy_x, enemy_y + Define_Value.MOVE_VAULE))) {
                         enemy_direction = eDirection.Left;
                         enemy_position.y += Define_Value.MOVE_VAULE;
@@ -540,18 +566,18 @@ public class Enemy_Move : MonoBehaviour {
                 break;
             // 下方向への移動
             case eDirection.Down:
-                if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                             map_layer.Get(enemy_x, enemy_y - Define_Value.MOVE_VAULE))) {
                     enemy_position.y -= Define_Value.MOVE_VAULE;
                 }
                 else {
-                    if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                    if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                                 map_layer.Get(enemy_x - Define_Value.MOVE_VAULE, enemy_y))) {
                         enemy_direction = eDirection.Right;
                         enemy_position.x -= Define_Value.MOVE_VAULE;
 
                     }
-                    else if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                    else if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                                      map_layer.Get(enemy_x + Define_Value.MOVE_VAULE, enemy_y))) {
                         enemy_direction = eDirection.Left;
                         enemy_position.x += Define_Value.MOVE_VAULE;
@@ -560,18 +586,18 @@ public class Enemy_Move : MonoBehaviour {
                 break;
             // 左方向への移動
             case eDirection.Left:
-                if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                             map_layer.Get(enemy_x, enemy_y + Define_Value.MOVE_VAULE))) {
                     enemy_position.y += Define_Value.MOVE_VAULE;
                 }
                 else {
-                    if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                    if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                                 map_layer.Get(enemy_x, enemy_y + Define_Value.MOVE_VAULE))) {
                         enemy_direction = eDirection.Right;
                         enemy_position.y += Define_Value.MOVE_VAULE;
 
                     }
-                    else if (actor_action.Move_Check(map_layer.Get(enemy_x, enemy_y),
+                    else if (Actor_Action.Move_Check(map_layer.Get(enemy_x, enemy_y),
                                                      map_layer.Get(enemy_x, enemy_y - Define_Value.MOVE_VAULE))) {
                         enemy_direction = eDirection.Left;
                         enemy_position.y -= Define_Value.MOVE_VAULE;
@@ -592,34 +618,43 @@ public class Enemy_Move : MonoBehaviour {
     /// エネミーを実際に動かす
     /// </summary>
     /// <param name="point_list">移動先をためているリスト</param>
-    public void Move(List<Point2> point_list) {
+    public void Move() {
         bool is_update = true;
+        Vector2Int enemy_position = enemy_object.GetComponent<Enemy>().position;
         var map_layer = Dungeon_Manager.Instance.map_layer_2D;
-        var enemy = gameObject.GetComponent<Enemy>();
+        var enemy = enemy_object.GetComponent<Enemy>();
 
         foreach (var p in point_list) {
             if (!is_update) {
                 break;
             }
+
             // 移動後の座標。部屋のではなく、フロアのものに直して代入
-            var after_position = new Vector2 {
+            var after_position = new Vector2Int {
                 x = p.x + division_list[now_room_number].Room.Left,
                 y = p.y + division_list[now_room_number].Room.Top
             };
 
             // 床の座標を元のものに戻す
-            map_layer.Tile_Swap(gameObject.transform.position, enemy.feet);
+            map_layer.Tile_Swap(enemy_object.transform.position, enemy.Feet);
 
-            Vector2 before_position = gameObject.transform.position;
+            // 元の座標を覚える
+            Vector2Int before_position = enemy_position;
             if (before_position != after_position) {
                 is_update = false;
             }
             else { continue; }
-            gameObject.transform.position = after_position;
-            Actor_Manager.Instance.enemy_action.Set_Tile(gameObject.GetComponent<Enemy>().my_number);
+
+            // 移動後の座標に動かす
+            enemy_object.transform.position = new Vector3(after_position.x, after_position.y);
+            // 本体クラスの座標も動かす
+            enemy.Set_Position(after_position);
+            Enemy_Action enemy_action = new Enemy_Action();
+            Set_Tile(enemy_object.GetComponent<Enemy>().My_Number);
         }
 
-        if (gameObject.transform.position == goal_position) {
+        // ゴールにたどり着いたらリストを破棄
+        if (enemy_position == goal_position) {
             point_list.Clear();
         }
     }
@@ -629,10 +664,10 @@ public class Enemy_Move : MonoBehaviour {
     /// </summary>
     /// <param name="actor">動かすもの</param>
     /// <returns>現在の座標</returns>
-    Point2 GetNow_Position(GameObject actor) {
+    Point2 Get_Now_Position(Enemy enemy) {
         Point2 self_position;
-        self_position.x = (int)actor.transform.position.x;
-        self_position.y = (int)actor.transform.position.y;
+        self_position.x = enemy.position.x;
+        self_position.y = enemy.position.y;
 
         return self_position;
     }
@@ -641,10 +676,10 @@ public class Enemy_Move : MonoBehaviour {
     /// 目標地点の座標を返す
     /// </summary>
     /// <returns>目標地点の座標</returns>
-    Point2 GetGoal_Position(int now_room) {
+    Point2 Get_Goal_Position(int now_room) {
         Point2 goal_position;
-        List<Room_Detail> room_list = Dungeon_Manager.Instance.room_list;
-        List<Vector2> entrance_position = room_list[now_room].entrance;
+        List<List<Vector2Int>> room_list_ = Dungeon_Manager.Instance.room_list;
+        List<Vector2Int> entrance_position = room_list_[now_room];
         // 入口の中から１つを選ぶ
         int random = Random.Range(0, entrance_position.Count);
 
@@ -665,7 +700,7 @@ public class Enemy_Move : MonoBehaviour {
 
         // 上方向に通路が伸びている場合 以下、順に時計回りに検索 // TODO:敵やプレイヤーがいた場合は分からない
         if (map_layer.Get(goal_position.x, goal_position.y - Define_Value.TILE_SCALE) == Define_Value.TILE_LAYER_NUMBER) {
-            // 入口の右側に当たる場所の座標を代入
+            // 入口の前の右側に当たる場所の座標を代入
             goal_before.x = goal_position.x + Define_Value.TILE_SCALE;
             goal_before.y = goal_position.y - Define_Value.TILE_SCALE;
             // 移動可能地帯でなかったらいらない
@@ -674,7 +709,7 @@ public class Enemy_Move : MonoBehaviour {
                 goal_before = In_Room_Coodinates(goal_before);
                 goal_before_one.Add(goal_before);
             }
-            // 入口の左側に当たる場所の座標を代入
+            // 入口の前の左側に当たる場所の座標を代入
             goal_before.x = goal_position.x - Define_Value.TILE_SCALE;
             goal_before.y = goal_position.y - Define_Value.TILE_SCALE;
             // 移動可能地帯でなかったらいらない
@@ -738,7 +773,7 @@ public class Enemy_Move : MonoBehaviour {
     /// </summary>
     /// <param name="position">フロア全体での座標</param>
     /// <returns>その部屋での座標</returns>
-    Vector2 In_Room_Coodinates(Vector2 position) {
+    Vector2Int In_Room_Coodinates(Vector2Int position) {
         position.x -= division_list[now_room_number].Room.Left;
         position.y -= division_list[now_room_number].Room.Top;
 
@@ -754,5 +789,22 @@ public class Enemy_Move : MonoBehaviour {
         position.y -= division_list[now_room_number].Room.Top;
 
         return position;
+    }
+
+    /// <summary>
+    /// レイヤー番号を入れ替える
+    /// </summary>
+    /// <param name="index">要素番号。何番目の敵なのか</param>
+    public void Set_Tile(int index) {
+        var enemy_manager = Enemy_Manager.Instance;
+        var dungeon_manager = Dungeon_Manager.Instance;
+        // 要素数に使うので0からの値に合わせる
+        index -= 1;
+        var enemy_position = enemy_manager.enemies[index].GetComponent<Enemy>().position;
+        enemy_object.GetComponent<Enemy>().Set_Feet(dungeon_manager.map_layer_2D.Get(enemy_position.x, enemy_position.y));
+
+        dungeon_manager.map_layer_2D.Tile_Swap(enemy_manager.enemies[index].GetComponent<Enemy>().position,
+                            Define_Value.ENEMY_LAYER_NUMBER);
+        move_end = true;
     }
 }

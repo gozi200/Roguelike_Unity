@@ -6,7 +6,7 @@ using UniRx;
 /// <summary>
 /// 地形に合わせた画像を床に貼る
 /// </summary>
-public class Tile_Sprite_Changer : Sprite_Changer {
+public class Tile_Sprite_Changer : MonoBehaviour {
     /// <summary>
     /// 床に貼る画像を格納
     /// </summary>
@@ -30,7 +30,7 @@ public class Tile_Sprite_Changer : Sprite_Changer {
     /// 画像をセット
     /// </summary>
     /// <param name="type">spritesの要素数</param>
-    protected override void Set_Sprite(int type) {
+    void Set_Sprite(int type) {
         var sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
         sprite_renderer.sprite = tile_sprite[type];
     }
