@@ -39,8 +39,8 @@ public class Decide_Dungeon : MonoBehaviour {
     void Start() {
         game_manager = GameManager.Instance;
         dungeon_manager = Dungeon_Manager.Instance;
+        dungeon_data = Dungeon_Manager.Instance.dungeon_data;
         player_action = Player_Manager.Instance.player_action;
-        dungeon_data = new Dungeon_Data();
         enemy_status = new Enemy_Status();
     }
 

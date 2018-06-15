@@ -2,28 +2,38 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using UnityEngine.U2D;
 
 /// <summary>
 /// 場所に合った画像を壁に貼る
 /// </summary>
 public class Wall_Sprite_Changer : MonoBehaviour {
     /// <summary>
-    /// 壁に貼る画像を格納
+    /// 進入中のダンジョンの詳細
+    /// </summary>
+    Dungeon_Data dungeon_data;
+    /// <summary>
+    /// 床画像をまとめたもの
     /// </summary>
     [SerializeField]
-    Sprite[] wall_sprites = new Sprite[(int)eWall_State.Finish];
+    SpriteAtlas Wall_atlas;
+    /// <summary>
+    /// いくつのものをまとめたかを格納
+    /// </summary>
+    int sprite_count;
+    /// <summary>
+    /// まとめた画像の１つずつを格納
+    /// </summary>
+    Sprite[] sprite_array;
 
-	void Start () {
-        var dungeon_manager = Dungeon_Manager.Instance;
+    void Start () {
+        dungeon_data = Dungeon_Manager.Instance.dungeon_data;
 
-        // 木の壁
-        dungeon_manager.wall_state.Where(tile_type => tile_type == eWall_State.Tree).Subscribe(tile_type =>
-            Set_Sprite((int)tile_type)
-        ).AddTo(this);
-        // 石の壁
-        dungeon_manager.wall_state.Where(tile_type => tile_type == eWall_State.Stone).Subscribe(tile_type =>
-            Set_Sprite((int)tile_type)
-        ).AddTo(this);
+        Wall_atlas = Resources.Load<SpriteAtlas>("Dungeon/Wall_Atlas");
+        sprite_count = Wall_atlas.spriteCount;
+        sprite_array = new Sprite[sprite_count];
+        Wall_atlas.GetSprites(sprite_array);
+        Set_Sprite(dungeon_data.ID - 1); // TODO:マジックナンバー
     }
 
     /// <summary>
@@ -32,6 +42,6 @@ public class Wall_Sprite_Changer : MonoBehaviour {
     /// <param name="type">spritesの要素数</param>
     void Set_Sprite(int type) {
         SpriteRenderer sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
-        sprite_renderer.sprite = wall_sprites[type];
+        sprite_renderer.sprite = sprite_array[type];
     }
 }

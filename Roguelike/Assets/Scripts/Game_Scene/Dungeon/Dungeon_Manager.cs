@@ -23,6 +23,10 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
     /// マップを２次元配列で管理するクラス
     /// </summary>
     public Map_Layer_2D map_layer_2D;
+    /// <summary>
+    /// 進入中のダンジョンの詳細
+    /// </summary>
+    public Dungeon_Data dungeon_data;
 
     /// <summary>
     /// 表示する階層
@@ -64,6 +68,8 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
 
     void Start() {
         room_list = new List<List<Vector2Int>>();
+
+        dungeon_data = new Dungeon_Data();
 
         enemy_manager = Enemy_Manager.Instance;
         floor = new ReactiveProperty<int>(Define_Value.INITIAL_FLOOR);
