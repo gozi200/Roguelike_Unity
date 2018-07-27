@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Enemy_Atlas
+  m_EditorData:
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 0
+    platformSettings: []
+    packingParameters:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    packedHash:
+      serializedVersion: 2
+      Hash: f10a67c1f05ead98126b3c3dee738f3d
+    variantMultiplier: 1
+    bindAsDefault: 1
+    finalFormat: 4
+    hashString: f10a67c1f05ead98126b3c3dee738f3d
+    totalSpriteSurfaceArea: 303762
+    packables:
+    - {fileID: 102900000, guid: 394ec084e221f314a88714b3cd5ed56f, type: 3}
+    packedSpriteRenderDataKeys:
+    - 31588fa6faad5dd4cb1739ba4785d60c: 21300000
+    - 44f8ef19de9edb34dad3a2eda9ca1505: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 31588fa6faad5dd4cb1739ba4785d60c, type: 3}
+  - {fileID: 21300000, guid: 44f8ef19de9edb34dad3a2eda9ca1505, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Wyvern
+  - Golem
+  m_Tag: Enemy_Atlas
+  m_IsVariant: 0

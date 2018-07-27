@@ -23,7 +23,7 @@ public class Enemy_Sprite_Changer : MonoBehaviour {
     Sprite[] sprite_array;
 
     void Start() {
-        enemy_atlas = Resources.Load<SpriteAtlas>("Enemy_Atlas");
+        enemy_atlas = Resources.Load<SpriteAtlas>("Enemy\\Enemy_Atlas");
         sprite_count = enemy_atlas.spriteCount;
         sprite_array = new Sprite[sprite_count];
         enemy_atlas.GetSprites(sprite_array);

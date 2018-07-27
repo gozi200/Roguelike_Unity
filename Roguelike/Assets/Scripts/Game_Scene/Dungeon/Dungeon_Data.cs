@@ -8,7 +8,7 @@ using UnityEngine;
 public class Dungeon_Data {
     #region csvから読み込み変数
 
-    // TOOD:publicは使わない
+    // TODO:publicは使わない
     /// <summary>
     /// 番号
     /// </summary>
