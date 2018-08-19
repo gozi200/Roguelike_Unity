@@ -3,7 +3,7 @@ using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class Standing_Character_Sprite_Changer : MonoBehaviour {
-    //TODO:キャラ毎に分ける？　今は１種類しかいないから問題は無し
+    //TODO:キャラ毎に分ける？ 今は１種類しかいないから問題は無し
     /// <summary>
     /// 立ち絵画像をまとめたもの
     /// </summary>

@@ -13,7 +13,7 @@ public class csv_Reader {
     /// <param name="skip_line_number">読み飛ばす行数(上から)</param>
     /// <returns>行ごとに読み取ったList</returns>
     public List<string[]> Load_csv(string file_path, int skip_line_number = 0) {
-        TextAsset csv = (TextAsset)Resources.Load(file_path)/* as TextAsset*/;
+        TextAsset csv = Resources.Load(file_path) as TextAsset;
         StringReader reader = new StringReader(csv.text);
 
         // 読み取った物を行ごとに格納する

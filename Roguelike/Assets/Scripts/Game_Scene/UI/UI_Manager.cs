@@ -118,7 +118,7 @@ public class UI_Manager : MonoBehaviour {
             scroll_view.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 0.0f
             );
 
-            // 4秒経過でログを非表示
+            // 3.5秒経過でログを非表示
             Observable.Timer(TimeSpan.FromMilliseconds(3500))
             .Subscribe(_ => {
                 is_said_scroll_view.Value = false;
