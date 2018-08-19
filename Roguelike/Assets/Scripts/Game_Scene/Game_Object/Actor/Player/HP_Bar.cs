@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -21,23 +19,11 @@ public class HP_Bar : MonoBehaviour {
     }
 
     /// <summary>
-    /// 表示座標を指定する
+    /// HPの増減に合わせてバーを伸縮させる
     /// </summary>
     void Handle_Bar() {
         var player_status = Player_Manager.Instance.player_status;
-        health.fillAmount = Map((float)player_status.hit_point.Value, 0, (float)player_status.max_hit_point.Value, 0, 1);
-    }
-
-    /// <summary>
-    /// 座標を設定する
-    /// </summary>
-    /// <param name="value">現在の体力</param>
-    /// <param name="inMin">体力の最小値</param>
-    /// <param name="inMax">最大体力の値</param>
-    /// <param name="outMin">表示域</param>
-    /// <param name="outMax">表示域</param>
-    /// <returns></returns>
-    float Map(float value, float inMin, float inMax, float outMin, float outMax) {
-        return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+        // 現在の体力が最大体力の何割かを求める
+        health.fillAmount = (float)player_status.Hit_Point.Value / (float)player_status.Max_Hit_Point.Value;
     }
 }

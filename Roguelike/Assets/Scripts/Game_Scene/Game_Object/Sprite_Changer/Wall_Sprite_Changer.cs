@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UniRx;
 
 /// <summary>
@@ -17,11 +15,11 @@ public class Wall_Sprite_Changer : MonoBehaviour {
         var dungeon_manager = Dungeon_Manager.Instance;
 
         // 木の壁
-        dungeon_manager.wall_state.Where(tile_type => tile_type == eWall_State.Tree).Subscribe(tile_type =>
+        dungeon_manager.Wall_State.Where(tile_type => tile_type == eWall_State.Tree).Subscribe(tile_type =>
             Set_Sprite((int)tile_type)
         ).AddTo(this);
         // 石の壁
-        dungeon_manager.wall_state.Where(tile_type => tile_type == eWall_State.Stone).Subscribe(tile_type =>
+        dungeon_manager.Wall_State.Where(tile_type => tile_type == eWall_State.Stone).Subscribe(tile_type =>
             Set_Sprite((int)tile_type)
         ).AddTo(this);
     }

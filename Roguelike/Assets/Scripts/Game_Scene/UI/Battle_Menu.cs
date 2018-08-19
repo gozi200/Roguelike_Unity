@@ -15,14 +15,14 @@ public class Battle_Menu : MonoBehaviour {
     /// <summary>
     /// プレイヤースクリプト
     /// </summary>
-    Player player;
+    Player_Action player_action;
     /// <summary>
     /// キーの入力を流すクラス
     /// </summary>
     Key_Observer key_observer;
 
 	void Start () {
-        player = Player_Manager.Instance.player_script;
+        player_action = Player_Manager.Instance.player_action;
         key_observer = Game.Instance.key_observer;
         battle_menu_UI = GameObject.Find("Battle_Menu");
 
@@ -32,7 +32,7 @@ public class Battle_Menu : MonoBehaviour {
         key_observer.On_Key_Down_AsObservable()
             .Where(key_code => key_code == KeyCode.Tab)
             .Subscribe(_ => {
-                player.player_state = ePlayer_State.Battle_Menu;
+                player_action.Player_State = ePlayer_State.Battle_Menu;
                 is_battle_menu.Value = true;
             }).AddTo(this);
 
@@ -48,10 +48,9 @@ public class Battle_Menu : MonoBehaviour {
     }
 
     void Update() {
-        // TODO:テスト中 思い通りには動くが、Escapeには重複して処理を入れるためこのままではダメ
         if (Input.GetKeyDown(KeyCode.Escape)) {
             is_battle_menu.Value = false;
-            player.player_state = ePlayer_State.Move;
+            player_action.Player_State = ePlayer_State.Move;
         }
     }
 }

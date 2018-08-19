@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UniRx;
+﻿using UnityEngine;
 
 /// <summary>
 /// プレイヤー本体のクラス
@@ -13,21 +9,42 @@ public class Player : Actor {
     /// </summary>
     public ePlayer_Mode player_mode;
     /// <summary>
-    /// 自分の状態を認識する
+    /// 自分がダンジョン内でどこを移動しているのかを知る
     /// </summary>
-    public ePlayer_State player_state;
+    ePlayer_Where_Move where_move;
+    public ePlayer_Where_Move Where_Move { set { where_move = value; } get { return where_move; } }
     /// <summary>
     /// 自分の向いている方向を認識する
     /// </summary>
-    public eDirection direction;
+    public override eDirection Direction { set { direction = value; } get { return direction; } }
+
+    /// <summary>
+    /// 現在の座標の足元にあるもの
+    /// </summary>
+    public override int Feet { set { feet = value; } get { return feet; } }
+    /// <summary>
+    /// 死亡判定 trueで死亡
+    /// </summary>
+    public override bool Exist { set { exist = value; } get { return exist; } }
+    /// <summary>
+    /// 自分の番号
+    /// </summary>
+    public override int My_Number { set { my_number = value; } get { return my_number; } }
+    /// <summary>
+    /// 自分のいる座標
+    /// </summary>
+    public override Vector2Int Position { set { position = value; } get { return position; } }
+    
     /// <summary>
     /// ２次元配列上の移動距離
     /// </summary>
     int move_value;
-    public int Move_Value { get; set; }
+    public int Move_Value { set { move_value = value; } get { return move_value; } }
 
     void Start() {
-        player_state = ePlayer_State.Move;
+        // スポーンは部屋の中なのでRoomで初期化
+        where_move = ePlayer_Where_Move.Room_Move;
+
         gameObject.transform.localScale = new Vector2(0.4f, 0.4f);
     }
 
@@ -37,7 +54,7 @@ public class Player : Actor {
     /// <param name="width">スポーン座標(x座標)</param>
     /// <param name="height">スポーン座標(y座標)</param>
     public override void Set_Initialize_Position(int width, int height) {
-        position.x = width;
+        position.x = width; 
         position.y = height;
         gameObject.transform.position = new Vector2(position.x,position.y);
     }
@@ -55,7 +72,7 @@ public class Player : Actor {
     /// <summary>
     /// 現在の座標を取得
     /// </summary>
-    /// <returns></returns>
+    /// <returns>現在の座標</returns>
     public override Vector2Int GetPosition() {
         return position;
     }

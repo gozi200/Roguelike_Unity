@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
-/// エネミーの行動やステータスを一括で管理するクラス
+/// エネミーの行動やステータスを一括で管理
 /// </summary>
 public class Enemy_Controller : MonoBehaviour {
     /// <summary>
@@ -21,9 +19,10 @@ public class Enemy_Controller : MonoBehaviour {
     /// <summary>
     /// エネミーのステータス関係を管理するクラス
     /// </summary>
+    [SerializeField]
     public Enemy_Status enemy_status;
     /// <summary>
-    /// エネミーの行動を制御
+    /// エネミーの移動を制御
     /// </summary>
     public Enemy_Move enemy_move;
 

@@ -34,8 +34,8 @@ public class Stair_Command : MonoBehaviour {
         dungeon_data.Load_Dungeon(Dungeon_Manager.Instance.dungeon_type);
 
         dungeon_manager.Next_Level(dungeon_data.level);
-        player_script.Move_Value = Define_Value.MOVE_VAULE;
-        player_action.Set_Action(ePlayer_State.Move);
+        player_script.Move_Value = Define_Value.MOVE_VALUE;
+        player_action.Player_State = ePlayer_State.Move;
         action_stair.said_stair_command.Value = false;
     }
 
@@ -43,8 +43,8 @@ public class Stair_Command : MonoBehaviour {
     /// そのままボタンを押したときの処理
     /// </summary>
     public void Not_Decide_Progress() {
-        player_script.Move_Value = Define_Value.MOVE_VAULE;
+        player_script.Move_Value = Define_Value.MOVE_VALUE;
         action_stair.said_stair_command.Value = false;
-        player_action.Set_Action(ePlayer_State.Move);
+        player_action.Player_State = ePlayer_State.Move;
     }
 }

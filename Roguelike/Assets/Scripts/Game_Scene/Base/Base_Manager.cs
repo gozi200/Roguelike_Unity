@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using UniRx;
 
 /// <summary>
@@ -32,7 +29,7 @@ public class Base_Manager : MonoBehaviour {
     /// <summary>
     /// ダンジョン選択コマンドの表示非表示
     /// </summary>
-    public ReactiveProperty<bool> dungeon_command;
+    public ReactiveProperty<bool> is_said_dungeon_command;
     /// <summary>
     /// ダンジョン選択コマンド
     /// </summary>
@@ -45,8 +42,6 @@ public class Base_Manager : MonoBehaviour {
     string map_matrix;
 
     void Start() {
-        dungeon_command = new ReactiveProperty<bool>(false);
-
         #region マップデータ
 
         map_matrix = ":" +
@@ -60,13 +55,12 @@ public class Base_Manager : MonoBehaviour {
 
         #endregion
 
+        is_said_dungeon_command = new ReactiveProperty<bool>(false);
         // trueで階段で進むか否かのコマンドを表示 falseで閉じる
-        dungeon_command.Where(flag => !!flag)
-            .Subscribe(flag =>
+        is_said_dungeon_command.Where(flag => !!flag).Subscribe(flag =>
             dungeon_command_UI.SetActive(flag)
             ).AddTo(this);
-        dungeon_command.Where(flag => !flag)
-            .Subscribe(flag =>
+        is_said_dungeon_command.Where(flag => !flag).Subscribe(flag =>
             dungeon_command_UI.SetActive(flag)
             ).AddTo(this);
     }
@@ -98,11 +92,11 @@ public class Base_Manager : MonoBehaviour {
                 }
                 else if (obj == 1) {
                     Instantiate(grass_tile, new Vector2(x + 1, y + 1), Quaternion.identity);
-                    map_layer.Set(x + 1, y + 1, Define_Value.TILE_LAYER_NUMBER);
+                    map_layer.Set(x + 1, y + 1, Define_Value.ROOM_LAYER_NUMBER);
                 }
                 else if (obj == 2) {
                     Instantiate(stone_tile, new Vector2(x + 1, y + 1), Quaternion.identity);
-                    map_layer.Set(x + 1, y + 1, Define_Value.TILE_LAYER_NUMBER); 
+                    map_layer.Set(x + 1, y + 1, Define_Value.ROOM_LAYER_NUMBER); 
                 }
                 else if (obj == 3) {
                     Instantiate(right_gate, new Vector2(x + 1, y + 1), Quaternion.identity);
@@ -115,7 +109,7 @@ public class Base_Manager : MonoBehaviour {
 
                     map_layer.Set(x + 1, y + 1, Define_Value.PLAYER_LAYER_NUMBER);
                     //TODO:足元のものを取って来たい
-                    player.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
+                    player.Set_Feet(Define_Value.ROOM_LAYER_NUMBER);
                     // ここでプレイヤーに命を与える
                     player.Exist = true;
                 }

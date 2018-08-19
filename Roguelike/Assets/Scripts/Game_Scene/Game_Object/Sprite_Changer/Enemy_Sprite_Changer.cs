@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UniRx;
+﻿using UnityEngine;
 using UnityEngine.U2D;
 
 /// <summary>
@@ -12,7 +9,7 @@ public class Enemy_Sprite_Changer : MonoBehaviour {
     /// 敵画像をまとめたもの
     /// </summary>
     [SerializeField]
-    SpriteAtlas enemy_atlas;
+    SpriteAtlas enemy_sprites;
     /// <summary>
     /// いくつのものをまとめたかを格納
     /// </summary>
@@ -23,14 +20,13 @@ public class Enemy_Sprite_Changer : MonoBehaviour {
     Sprite[] sprite_array;
 
     void Start() {
-        enemy_atlas = Resources.Load<SpriteAtlas>("Enemy_Atlas");
-        sprite_count = enemy_atlas.spriteCount;
+        enemy_sprites = Resources.Load<SpriteAtlas>("Enemy/Enemys");
+        sprite_count = enemy_sprites.spriteCount;
         sprite_array = new Sprite[sprite_count];
-        enemy_atlas.GetSprites(sprite_array);
+        enemy_sprites.GetSprites(sprite_array);
         var enemy_status = gameObject.GetComponent<Enemy_Controller>().enemy_status;
-        var actor_manager = Actor_Manager.Instance;
 
-        Set_Sprite(enemy_status.ID);
+        Set_Sprite(enemy_status.my_status.ID);
     }
 
     /// <summary>

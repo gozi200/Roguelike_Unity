@@ -2,15 +2,11 @@
 using UnityEngine;
 
 /// <summary>
-/// プレイヤーの攻撃処理を管理するクラス
+/// プレイヤーの攻撃処理を管理
 /// </summary>
-public class Player_Attack : MonoBehaviour{
+public class Player_Attack : MonoBehaviour { //TODO:MonoBehaviourいる？
     /// <summary>
-    /// プレイヤーの本体
-    /// </summary>
-    GameObject player;
-    /// <summary>
-    /// プレイヤーのスクリプト
+    /// プレイヤー本体のクラス
     /// </summary>
     Player player_script;
     /// <summary>
@@ -22,21 +18,15 @@ public class Player_Attack : MonoBehaviour{
     /// </summary>
     Player_Status player_status;
     /// <summary>
-    /// マップを2次元配列で管理するクラス
+    /// マップを2次元で管理するクラス
     /// </summary>
     Map_Layer_2D map_layer;
-    /// <summary>
-    /// 攻撃で発生するダメージを扱うクラス
-    /// </summary>
-    Damage_Calculation damage_calculation;
 
     void Start() {
-        player = Player_Manager.Instance.player;
         player_script = Player_Manager.Instance.player_script;
         player_action = Player_Manager.Instance.player_action;
         player_status = Player_Manager.Instance.player_status;
         map_layer = Dungeon_Manager.Instance.map_layer_2D;
-        damage_calculation = new Damage_Calculation();
     }
 
     /// <summary>
@@ -44,8 +34,8 @@ public class Player_Attack : MonoBehaviour{
     /// </summary>
     public void Action_Attack() {
         // プレイヤーの座標
-        var player_x = (int)player_script.position.x;
-        var player_y = (int)player_script.position.y;
+        var player_x = (int)player_script.Position.x;
+        var player_y = (int)player_script.Position.y;
         // タイルの大きさ
         int tile_scale = Define_Value.TILE_SCALE;
         // 調整用変数 ４方向は斜めがいらないので0
@@ -53,71 +43,80 @@ public class Player_Attack : MonoBehaviour{
         // 調整用変数 １マス先
         int adjust_value_add = Define_Value.TILE_SCALE;
 
-        switch (player_script.direction) {
+        switch (player_script.Direction) {
             case eDirection.Up:
-                // 自分の向いている方向の１マス先に敵がいるか判断 上から順に時計回りに検索
-                if (map_layer.Get(player_x, player_y + tile_scale) !=
-                    Define_Value.ENEMY_LAYER_NUMBER) {
-                    player_action.Set_Action(ePlayer_State.Move);
-                    return;
+                // 自分の向いている方向の１マス先に敵がいるか判断
+                if (!(map_layer.Is_Enemy(player_x, player_y + tile_scale))) {
+                    // 誰もいなかったら素振り後移動状態へ戻す
+                    player_action.Player_State = ePlayer_State.Move;
+                    break;
                 }
+                // 攻撃処理を行う
                 Attack_Process(adjust_value_zero, adjust_value_add);
                 break;
+                // 右上
             case eDirection.Upright:
-                if (map_layer.Get(player_x + tile_scale, player_y + tile_scale) !=
-                    Define_Value.ENEMY_LAYER_NUMBER) {
-                    player_action.Set_Action(ePlayer_State.Move);
+                if (!(map_layer.Is_Enemy(player_x + tile_scale, player_y + tile_scale))) {
+                    player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
-                Attack_Process(adjust_value_add, adjust_value_add);
+                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction)) {
+                    Attack_Process(adjust_value_add, adjust_value_add);
+                }
                 break;
+                // 右
             case eDirection.Right:
-                if (map_layer.Get(player_x + tile_scale, player_y) !=
-                    Define_Value.ENEMY_LAYER_NUMBER) {
-                    player_action.Set_Action(ePlayer_State.Move);
+                if (!(map_layer.Is_Enemy(player_x + tile_scale, player_y))) {
+                    player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
                 Attack_Process(adjust_value_add, adjust_value_zero);
                 break;
+                // 右下
             case eDirection.Downright:
-                if (map_layer.Get(player_x + tile_scale, player_y - tile_scale) !=
-                    Define_Value.ENEMY_LAYER_NUMBER) {
-                    player_action.Set_Action(ePlayer_State.Move);
+                if (!(map_layer.Is_Enemy(player_x + tile_scale, player_y - tile_scale))) {
+                    player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
-                Attack_Process(adjust_value_add, -adjust_value_add);
+                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction)) {
+                    Attack_Process(adjust_value_add, -adjust_value_add);
+                }
                 break;
+                // 下
             case eDirection.Down:
-                if (map_layer.Get(player_x, player_y - tile_scale) !=
-                    Define_Value.ENEMY_LAYER_NUMBER) {
-                    player_action.Set_Action(ePlayer_State.Move);
+                if (!(map_layer.Is_Enemy(player_x, player_y - tile_scale))) {
+                    player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
                 Attack_Process(adjust_value_zero, -adjust_value_add);
                 break;
+                　// 左下
             case eDirection.Downleft:
-                if (map_layer.Get(player_x - tile_scale, player_y - tile_scale) !=
-                    Define_Value.ENEMY_LAYER_NUMBER) {
-                    player_action.Set_Action(ePlayer_State.Move);
+                if (!(map_layer.Is_Enemy(player_x - tile_scale, player_y - tile_scale))) {
+                    player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
-                Attack_Process(-adjust_value_add, -adjust_value_add);
+                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction)) {
+                    Attack_Process(-adjust_value_add, -adjust_value_add);
+                }
                 break;
+                // 左
             case eDirection.Left:
-                if (map_layer.Get(player_x - tile_scale, player_y) !=
-                    Define_Value.ENEMY_LAYER_NUMBER) {
-                    player_action.Set_Action(ePlayer_State.Move);
+                if (!(map_layer.Is_Enemy(player_x - tile_scale, player_y))) {
+                    player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
                 Attack_Process(-adjust_value_add, adjust_value_zero);
                 break;
+                // 左上
             case eDirection.Upleft:
-                if (map_layer.Get(player_x - tile_scale, player_y + tile_scale) !=
-                    Define_Value.ENEMY_LAYER_NUMBER) {
-                    player_action.Set_Action(ePlayer_State.Move);
+                if (!(map_layer.Is_Enemy(player_x - tile_scale, player_y + tile_scale))) {
+                    player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
-                Attack_Process(-adjust_value_add, adjust_value_add);
+                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction)) {
+                    Attack_Process(-adjust_value_add, adjust_value_add);
+                }
                 break;
         }
     }
@@ -125,36 +124,40 @@ public class Player_Attack : MonoBehaviour{
     /// <summary>
     /// 実際に攻撃を行い、ゲームを進める
     /// </summary>
-    /// <param name="on_first">1マス先を取るのに使用</param>
+    /// <param name="adjust_value1">これを足し引きして周囲８マスを見る</param>
+    /// <param name="adjust_value2">これを足し引きして周囲８マスを見る</param>
     void Attack_Process(int adjust_value1, int adjust_value2) {
-        var enemy_manager = new Enemy_Manager();
+        var enemy_manager = Enemy_Manager.Instance;
 
         // 隣接してるエネミーを調べる
-        GameObject side_enemy = enemy_manager.Find_Enemy(player_script.position.x + adjust_value1,
-                                                         player_script.position.y + adjust_value2);
+        GameObject side_enemy = enemy_manager.Find_Enemy(player_script.Position.x + adjust_value1,
+                                                         player_script.Position.y + adjust_value2);
         // 隣接してるエネミーのステータスを取ってくる
         var enemy_status = side_enemy.GetComponent<Enemy_Controller>().enemy_status;
+        var individual_status = side_enemy.GetComponent<Enemy_Controller>().enemy_status.my_status;
 
-        enemy_status.hit_point -= damage_calculation.Damage(player_status.attack,
-                                                            enemy_status.defence);
+        enemy_status.Hit_Point -= Damage_Calculation.Damage(player_status.Attack,
+                                                            individual_status.Defence);
         // ダメージのログを流す
-        Log_Scroll.Player_Attack_Log(player_status, side_enemy, damage_calculation.Damage(player_status.attack,
-                                                                                          enemy_status.defence));
+        Message_Window_Manager.Player_Attack_Log(player_status, side_enemy,
+                                     Damage_Calculation.Damage(player_status.Attack,
+                                                               individual_status.Defence));
 
         // 攻撃した敵が死んでいたら経験値を取得
-        if (enemy_status.hit_point <= 0) {
-            //　レベルアップより先に経験値を取得
-            Log_Scroll.Get_Experience_Point(player_status, side_enemy, enemy_status.experience_point);
+        if (enemy_status.Is_Dead(enemy_status.Hit_Point)) {
+            // レベルアップより先に経験値を取得
+            Message_Window_Manager.Get_Experience_Point(player_status, side_enemy, individual_status.Experience_Point);
 
             // 実際に経験値を取得し、次レベルに必要な経験値量に達しているかを見る
-            player_status.Add_Experience_Point(enemy_status.experience_point);
+            player_status.Add_Experience_Point(individual_status.Experience_Point);
 
             // ダンジョンに出現中の敵のリストを取得
             List<GameObject> enemy_list = Enemy_Manager.Instance.enemies;
             // プレイヤーに隣接しているものを抽出
             enemy_manager.Dead_Enemy(enemy_list.IndexOf(side_enemy));
         }
+
         // 移動状態に戻す
-        player_action.Set_Action(ePlayer_State.Move);
+        player_action.Player_State = ePlayer_State.Move;
     }
 }

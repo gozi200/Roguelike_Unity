@@ -1,31 +1,37 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System.Linq;
 
-public class Enemy_Manager : Unique_Component<Enemy_Manager> {
+/// <summary>
+/// エネミーのマネージャクラス
+/// </summary>
+public class Enemy_Manager : MonoBehaviour {
     /// <summary>
     /// エネミーオブジェクト
     /// </summary>
     GameObject enemy_object;
     /// <summary>
-    /// エネミーステータス
+    /// エネミーのステータス関係のクラス
     /// </summary>
     Enemy_Status enemy_status;
     /// <summary>
     /// エネミーの行動を決めるクラス
     /// </summary>
     public Enemy_Action enemy_action;
+    /// <summary>
+    /// jsonから読み取ったエネミーのステータスを保持
+    /// </summary>
+    public Enemy_Data_Base enemy_data_base;
 
     /// <summary>
     /// フロア内に存在しているエネミーを格納する
     /// </summary>
     public List<GameObject> enemies;
     /// <summary>
-    /// 種類ごとにエネミーを格納する
+    /// ダンジョンに出現するエネミーを種類ごとに格納
     /// </summary>
-    public List<Enemy_Status> enemy_type;
+    public List<Enemy_Status_Base> appear_enemy_type;
 
     /// <summary>
     /// 乱数を格納。(スポーンの時に使用)
@@ -36,9 +42,21 @@ public class Enemy_Manager : Unique_Component<Enemy_Manager> {
     /// １フロアに存在している敵の数を数える
     /// </summary>
     int enemy_counter;
-    public int Enemy_Counter {
-        set { enemy_counter = value; }
-        get { return enemy_counter; }
+    public int Enemy_Counter { set { enemy_counter = value; } get { return enemy_counter; } }
+
+    /// <summary>
+    ///  自身のインスタンスを生成 //TODO:オブジェクトを作らないシングルトン生成クラスを作る
+    /// </summary>
+    public static Enemy_Manager Instance;
+    void Awake() {
+        // 作られていなかったら自身のデータを入れる
+        if (Instance == null) {
+            Instance = this;
+        }
+        // ２個以上作られないようにする
+        else {
+            Destroy(gameObject);
+        }
     }
 
     void Start() {
@@ -50,7 +68,7 @@ public class Enemy_Manager : Unique_Component<Enemy_Manager> {
         enemy_action.Initialize();
 
         enemies = new List<GameObject>();
-        enemy_type = new List<Enemy_Status>();
+        appear_enemy_type = enemy_data_base.Get_Enemy_List();
     }
 
     /// <summary>
@@ -75,18 +93,31 @@ public class Enemy_Manager : Unique_Component<Enemy_Manager> {
     /// <param name="index">エネミーリストの要素数</param>
     public void Dead_Enemy(int index) {
         Map_Layer_2D map_layer = Dungeon_Manager.Instance.map_layer_2D;
-        var enemy_manager = Enemy_Manager.Instance;
+        var enemy = enemies[index].GetComponent<Enemy>();
 
-        // 死んだら消して、床のレイヤー番号を元のものに戻す
-        if (enemy_status.Is_Dead(enemy_status.hit_point)) {
-            // 足元のレイヤーを元に戻す
-            map_layer.Tile_Swap(enemy_manager.enemies[index].transform.position,
-                                enemy_manager.enemies[index].GetComponent<Enemy>().Feet);
-            // ゲームオブジェクトの解放
-            Destroy(enemy_manager.enemies[index]);
-            // リストの要素の解放
-            enemy_manager.enemies.RemoveAt(index);
+        // 足元のレイヤーを元に戻す
+        map_layer.Tile_Swap(enemy.Position,enemy.Feet);
+        // ゲームオブジェクトの破棄
+        Destroy(enemies[index]);
+
+        // 死んでしまったのリストを前詰めにする
+        for(int i = index; i < enemies.Count; ++i) {
+            // 範囲外を選択しないようにする
+            if(i == enemies.Count - 1) {
+                break;
+            }
+            // 要素番号に合わせるための+1
+            enemies[i] = enemies[i + 1];
+
+            // 要素番号と合わせるための+1
+            enemies[i].GetComponent<Enemy>().My_Number = i + 1;
         }
+
+        // 死んだ分は減らす
+        Enemy_Counter -= 1;
+
+        // 前詰めでケツ２つが同一になっているので、最後のリストを解放
+        enemies.RemoveAt(enemies.Count - 1);
     }
 
     /// <summary>
@@ -94,16 +125,17 @@ public class Enemy_Manager : Unique_Component<Enemy_Manager> {
     /// </summary>
     /// <returns>スポーンさせるエネミーのID</returns>
     void Random_Enemy_Type() {
-        List<Enemy_Status> appear_enemy_list = Enemy_Manager.Instance.enemy_type;
-        ReactiveProperty<int> now_floor = Dungeon_Manager.Instance.floor;
+        List<Enemy_Status_Base> appear_enemy_list = appear_enemy_type;
+        ReactiveProperty<int> now_floor = Dungeon_Manager.Instance.Floor;
         int[] lottery_enemy = new int[appear_enemy_list.Count];
 
         // 現在の階層から出現階層を調べ、満たしているものを抽出する
         for (int i = 0; i < appear_enemy_list.Count; ++i) {
-            if (appear_enemy_list[i].first_floor <= now_floor.Value &&
-                appear_enemy_list[i].last_floor >= now_floor.Value) {
+            var my_status = appear_enemy_list[i];
+            if (my_status.First_Floor <= now_floor.Value &&
+                my_status.Last_Floor  >= now_floor.Value) {
 
-                lottery_enemy[i] = appear_enemy_list[i].ID;
+                lottery_enemy[i] = my_status.ID;
             }
         }
         // その階層に出現する敵を乱数で選出
@@ -121,40 +153,40 @@ public class Enemy_Manager : Unique_Component<Enemy_Manager> {
             tag = "Enemy"
         };
 
+        // 本体のスクリプト追加
+        enemy_object.AddComponent<Enemy>();
+        // エネミーの動きやステータスを管理するクラスを追加
+        enemy_object.AddComponent<Enemy_Controller>();
+        // 敵の種類に合わせた画像を張るクラスを追加
+        enemy_object.AddComponent<Enemy_Sprite_Changer>();
+
+        // 一時変数
+        var enemy_script = enemy_object.GetComponent<Enemy>();
+        var enemy_contoroller = enemy_object.GetComponent<Enemy_Controller>();
+        
+        enemy_contoroller.Initialize();
         // どの敵をスポーンさせるか乱数で決める
         Random_Enemy_Type();
 
-        // 本体のスクリプト追加
-        enemy_object.AddComponent<Enemy>();
-        // GetComponentがかさむので１時変数に
-        var enemy_script = enemy_object.GetComponent<Enemy>();
-
-        // エネミーの動きやステータスを管理するクラスを追加
-        enemy_object.AddComponent<Enemy_Controller>();
-        var enemy_contoroller = enemy_object.GetComponent<Enemy_Controller>();
-        enemy_contoroller.Initialize();
-
         // スポーンするエネミーのステータスを設定する
-        enemy_object.GetComponent<Enemy_Controller>().enemy_status.Set_Parameter(enemy_object, spawn_random_enemy);
-        enemy_script.My_Number = Enemy_Manager.Instance.Enemy_Counter;
+        enemy_object.GetComponent<Enemy_Controller>().enemy_status.Set_Parameter(spawn_random_enemy);
+
+        enemy_script.My_Number = Enemy_Counter;
         enemy_script.Set_Initialize_Position(x, y);
         // スポーン時の向きは乱数で決める
-        enemy_script.direction = (eDirection)Random.Range(0.0f, (int)eDirection.Finish);
+        enemy_script.Direction = (eDirection)Random.Range(0.0f, (int)eDirection.Finish);
         //TODO:足元のものを取って来たい
-        enemy_script.Set_Feet(Define_Value.TILE_LAYER_NUMBER);
+        enemy_script.Set_Feet(Define_Value.ROOM_LAYER_NUMBER);
         // 今いる部屋番号を取得
-        enemy_object.GetComponent<Enemy_Controller>().enemy_status.Where_Floor(x, y);
+        enemy_object.GetComponent<Enemy_Controller>().enemy_status.Where_Room(x, y);
 
         // 移動に必要なものを初期化
         enemy_contoroller.enemy_move.Initialize(enemy_object, Enemy_Counter);
         // 移動先を決めておく
-        enemy_contoroller.enemy_move.Stack_List();
+        enemy_contoroller.enemy_move.Stack_Route_Until_Entrance();
 
-        // 敵の種類に合わせた画像を張るクラスを追加
-        enemy_object.AddComponent<Enemy_Sprite_Changer>();
         // ダンジョンに出現しているエネミーを格納するものに追加
         enemies.Add(enemy_object);
-        Debug.Log("enemiesの数" + enemies.Count);
         // フロア内のエネミーを数えるカウンタを増やす
         ++Enemy_Counter;
     }

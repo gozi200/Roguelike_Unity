@@ -21,10 +21,6 @@ public class Player_Action : MonoBehaviour {
     /// </summary>
     Action_On_Stair action_stair;
     /// <summary>
-    /// アクター共通で使えるステータス関係のクラス
-    /// </summary>
-    Actor_Status actor_status;
-    /// <summary>
     /// キーの入力を流すクラス
     /// </summary>
     Key_Observer key_observer;
@@ -33,13 +29,22 @@ public class Player_Action : MonoBehaviour {
     /// </summary>
     Map_Layer_2D layer;
 
+    /// <summary>
+    /// プレイヤーの状態
+    /// </summary>
+    ePlayer_State player_state;
+    public ePlayer_State Player_State { set { before_state = player_state; player_state = value; } get { return player_state; } }
+    /// <summary>
+    /// プレイヤーの直前の状態。イベントシーンの時など、前のものに戻したいときに使用
+    /// </summary>
+    ePlayer_State before_state;
+    public ePlayer_State Before_State { get { return before_state; } }
+
     public void Start() {
         player = Player_Manager.Instance.player_script;
         player_move = Player_Manager.Instance.player_move;
         player_attack = Player_Manager.Instance.player_attack;
         action_stair = Player_Manager.Instance.action_stair;
-        actor_status = Actor_Manager.Instance.actor_status;
-
         layer = Dungeon_Manager.Instance.map_layer_2D;
         key_observer = Game.Instance.key_observer;
     }
@@ -48,20 +53,14 @@ public class Player_Action : MonoBehaviour {
     /// 現在の状態に合った行動をする 毎ループ呼び出す ここでゲームオーバー判定を行う
     /// </summary>
     public void Run_Action() {
+        Debug.Log(player.Feet);
+
         // プレイヤーのステータス関係のクラス 死亡判定に使用
         Player_Status player_status = Player_Manager.Instance.player_status;
 
-        Debug.Log(player.player_state);
-        Debug.Log(player.player_mode);
-        Debug.Log(player.direction);
-        Debug.Log("player_feet = " + player.Feet);
-
-        switch (player.player_state) {
+        switch (player_state) {
             case ePlayer_State.Move:
                 player_move.Action_Move();
-                break;
-            case ePlayer_State.Attack:
-                player_attack.Action_Attack();
                 break;
             case ePlayer_State.On_Stair:
                 action_stair.Action_Stair();
@@ -69,6 +68,9 @@ public class Player_Action : MonoBehaviour {
             case ePlayer_State.Decide_Command:
                 var decide_dungeon= new Decide_Dungeon();
                 decide_dungeon.In_Decide();
+                break;
+            case ePlayer_State.Non_Active:
+                Can_Not_Move();
                 break;
             case ePlayer_State.Battle_Menu:
                 Action_Battle_Menu();
@@ -79,25 +81,25 @@ public class Player_Action : MonoBehaviour {
                 break;
         }
 
+        // 部屋の入口に到達したときにどこ部屋に来たのかを調べる TODO:同じ部屋内でも探してしまう
         if (player.Feet == Define_Value.ENTRANCE_LAYER_NUMBER) {
-            player_status.Where_Floor((int)player.position.x, (int)player.position.y);
+            player_status.Where_Room((int)player.Position.x, (int)player.Position.y);
         }
 
         // プレイヤーが生きていたら死亡判定をする
         if (player.Exist == true) {
             // 体力が 0 以下ならゲームオーバー処理に切り替える
-            if (player.player_state != ePlayer_State.Game_Over && player_status.Is_Dead(player_status.hit_point.Value)) {
-                Set_Action(ePlayer_State.Game_Over);
+            if (player_state != ePlayer_State.Game_Over && player_status.Is_Dead(player_status.Hit_Point.Value)) {
+                player_state = ePlayer_State.Game_Over;
             }
         }
     }
 
     /// <summary>
-    /// 新しく入力されたアクションに切り替える
+    /// 移動不可にする
     /// </summary>
-    /// <param name="set_action">新しく切り替える状態</param>
-    public void Set_Action(ePlayer_State set_action) {
-        player.player_state = set_action;
+    public void Can_Not_Move() {
+        player.Move_Value = 0;
     }
 
     /// <summary>
@@ -140,7 +142,7 @@ public class Player_Action : MonoBehaviour {
         }
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
-            Set_Action(ePlayer_State.Move);
+            player_state = ePlayer_State.Move;
         }
     }
 }

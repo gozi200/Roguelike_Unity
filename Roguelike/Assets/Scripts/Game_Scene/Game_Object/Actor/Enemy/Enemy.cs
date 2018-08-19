@@ -1,17 +1,35 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 /// <summary>
 /// エネミー本体のクラス
 /// </summary>
 public class Enemy : Actor {
     /// <summary>
+    /// 現在の座標の足元にあるもの
+    /// </summary>
+    public override int Feet { set { feet = value; } get { return feet; } }
+    /// <summary>
+    /// 死亡判定 trueで死亡
+    /// </summary>
+    public override bool Exist { set { exist = value; } get { return exist; } }
+    /// <summary>
     /// 自分の番号
     /// </summary>
-    int my_number;
-    public int My_Number{ get; set; }
+    public override int My_Number { set { my_number = value; } get { return my_number; } }
+    /// <summary>
+    /// 自分のいる座標
+    /// </summary>
+    public override Vector2Int Position { set { position = value; } get { return position; } }
+    /// <summary>
+    /// 自分の向いている方向を認識する
+    /// </summary>
+    public override eDirection Direction { set { direction = value; } get { return direction; } }
+
+    /// <summary>
+    /// 自分が迷子になっているか。
+    /// </summary>
+    bool is_lost_myself;
+    public bool Is_Lost_Myself { set { is_lost_myself = value; } get { return is_lost_myself; } }
 
     /// <summary>
     /// 表示する画像を編集する
@@ -22,15 +40,12 @@ public class Enemy : Actor {
     /// エネミーのモードを判断する
     /// </summary>
     public eEnemy_Mode mode;
-    /// <summary>
-    /// エネミーの向いている方向を判断する
-    /// </summary>
-    public eDirection direction;
 
     void Start() {
         Exist = true;
+        Is_Lost_Myself = false;
         // 部屋の中でしかスポーンしない
-        mode = eEnemy_Mode.Move_Floor_Mode;
+        mode = eEnemy_Mode.Move_Room_Mode;
     
         gameObject.AddComponent<SpriteRenderer>();
         sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
@@ -55,8 +70,8 @@ public class Enemy : Actor {
     /// </summary>
     /// <param name="new_position">変更後の座標</param>
     public override void Set_Position(Vector2Int new_position) {
-        this.position.x = new_position.x;
-        this.position.y = new_position.y;
+        position.x = new_position.x;
+        position.y = new_position.y;
         gameObject.transform.position = new Vector2(position.x, position.y);
     }
 

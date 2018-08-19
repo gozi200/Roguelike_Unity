@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb3c39d84e9eb24f81f742aa02757bd, type: 3}
+  m_Name: Golem
+  m_EditorClassIdentifier: 
+  class_type: 7
+  id: 1
+  name: "\u30B4\u30FC\u30EC\u30E0"
+  max_HP: 5
+  attack: 8
+  defence: 8
+  critical: 5
+  skill: 1
+  finish_move: 1
+  first_floor: 2
+  last_floor: 3
+  experience_point: 4
+  AI_pattern: 1

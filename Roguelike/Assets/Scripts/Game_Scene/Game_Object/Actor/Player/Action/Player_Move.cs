@@ -1,17 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 /// <summary>
-/// プレイヤーの移動処理を制御するクラス
+/// プレイヤーの移動処理を制御
 /// </summary>
 public class Player_Move : MonoBehaviour {
     /// <summary>
     /// プレイヤー本体のクラス
     /// </summary>
     Player player;
+    /// <summary>
+    /// プレイヤーの行動を管理するクラス
+    /// </summary>
+    Player_Action player_action;
     /// <summary>
     /// プレイヤーのステータス関係を管理するクラス
     /// </summary>
@@ -41,6 +41,7 @@ public class Player_Move : MonoBehaviour {
 
     void Start() {
         player = Player_Manager.Instance.player_script;
+        player_action = Player_Manager.Instance.player_action;
         key_observer = Game.Instance.key_observer;
         enemy_action = new Enemy_Action();
         player_status = Player_Manager.Instance.player_status;
@@ -53,6 +54,8 @@ public class Player_Move : MonoBehaviour {
     /// 移動状態の時にできる動き
     /// </summary>
     public void Action_Move() {
+        //Debug.Log(player_action.Player_State);
+
         // 移動はまだ完了していない
         move_end = false;
 
@@ -90,11 +93,53 @@ public class Player_Move : MonoBehaviour {
         }
         // 移動していればターンのカウントを進める
         else if (move_end) {
-            // 移動後に階段に到達しているか調べる
-            Check_Stair();
-            // ダンジョン移動マスに踏んでいるか調べる
-            Check_Move_Dungeon();
+            // 何を踏んでいる(どこにいる)のかを調べて、それに応じた処理をする
+            Check_Feet(player.Feet);
+            // ターンを進める
             player_status.Add_Turn();
+        }
+    }
+
+    /// <summary>
+    /// Move_Action中にできる行動がなされたときにStateに変更をかける
+    /// </summary>
+    void Move_Check_Command() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            player_action.Player_State = ePlayer_State.Attack;
+            var player_attack = Player_Manager.Instance.player_attack;
+            player_attack.Action_Attack();
+            player_status.Add_Turn();
+        }
+    }
+
+    /// <summary>
+    /// どこを進んでいるかを調べる。部屋の中か通路かで分ける
+    /// </summary>
+    void Check_Feet(int feet) {
+        switch (feet) {
+            case Define_Value.STAIR_LAYER_NUMBER:
+                player_action.Player_State = ePlayer_State.On_Stair;
+                break;
+            case Define_Value.MOVE_DUNGEON_TILE:
+                player_action.Player_State = ePlayer_State.Decide_Command;
+                break;
+            case Define_Value.ENTRANCE_LAYER_NUMBER:
+                Change_Move_State();
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 入口に着いたら進行場所を変える
+    /// </summary>
+    void Change_Move_State() {
+        if(player.Where_Move == ePlayer_Where_Move.Room_Move) {
+            player.Where_Move = ePlayer_Where_Move.Road_Move;
+        }
+        else {
+            player.Where_Move = ePlayer_Where_Move.Room_Move;
+            // 通路からの部屋に入った時に何番目の部屋に入ったのかを調べる
+            player_status.Where_Room(player.Position.x, player.Position.y);
         }
     }
 
@@ -107,19 +152,6 @@ public class Player_Move : MonoBehaviour {
 
         // 移動を完了する
         move_end = true;
-
-        // 敵がいたら敵のターンへ
-        if (Enemy_Manager.Instance.enemies.Count > 0) {
-            game_manager.Set_Game_State(eGame_State.Enemy_Trun);
-        }
-        // ダンジョンが存在していたらダンジョンのターンへ
-        else if (Dungeon_Manager.Instance.Is_Exist) {
-            game_manager.Set_Game_State(eGame_State.Dungeon_Turn);
-        }
-        // それ以外はパートナーのターンへ
-        else {
-            //TODO:パートナーターン
-        }
     }
 
     /// <summary>
@@ -134,107 +166,95 @@ public class Player_Move : MonoBehaviour {
         int player_y = player_position.y;
 
         // 移動量
-        int move_value = Define_Value.MOVE_VAULE;
+        int move_value = Define_Value.MOVE_VALUE;
         // 移動しないときは0
         int not_move = 0;
 
         // Wキーが押されたとき
         if (Input.GetKeyDown(KeyCode.W)) {
-            player.direction = eDirection.Up;
+            player.Direction = eDirection.Up;
             // 進行方向が移動可能かを判断
-            if (Actor_Action.Move_Check(map_layer.Get(player_x, player_y),
-                                        map_layer.Get(player_x, player_y + move_value))) {
-                return;
+            if (Actor_Action.Move_Check(map_layer.Get_Layer_Number(player_x, player_y),
+                                        map_layer.Get_Layer_Number(player_x, player_y + move_value))) {
+                Move_Process(not_move, move_value);
             }
-            Move_Process(not_move, move_value);
         }
         // Eキーが押されたとき
         else if (Input.GetKeyDown(KeyCode.E)) {
-            player.direction = eDirection.Upright;
+            player.Direction = eDirection.Upright;
             // 進行方向が移動可能かを判断
-            if (Actor_Action.Move_Check(map_layer.Get(player_x, player_y),
-                                        map_layer.Get(player_x + move_value, player_y + move_value))) {
+            if (!Actor_Action.Move_Check(map_layer.Get_Layer_Number(player_x, player_y),
+                                         map_layer.Get_Layer_Number(player_x + move_value, player_y + move_value))) {
                 return;
             }
             // 右方向か上方向に壁があるとき(移動不可になる)
-            if (Actor_Action.Slant_Check(map_layer.Get(player_x + move_value, player_y),
-                                              map_layer.Get(player_x, player_y + move_value))) {
-                return;
-            }
+            if(Actor_Action.Slant_Action_Check(player as Actor, player.Direction)) {
             Move_Process(move_value, move_value);
+            }
         }
         // Dキーが押されたとき
         else if (Input.GetKeyDown(KeyCode.D)) {
-            player.direction = eDirection.Right;
+            player.Direction = eDirection.Right;
             // 進行方向が移動可能かを判断
-            if (Actor_Action.Move_Check(map_layer.Get(player_x, player_y),
-                                        map_layer.Get(player_x + move_value, player_y))) {
-                return;
+            if (Actor_Action.Move_Check(map_layer.Get_Layer_Number(player_x, player_y),
+                                        map_layer.Get_Layer_Number(player_x + move_value, player_y))) {
+                Move_Process(move_value, not_move);
             }
-            Move_Process(move_value, not_move);
         }
         // Cキーが押されたとき
         else if (Input.GetKeyDown(KeyCode.C)) {
-            player.direction = eDirection.Downright;
+            player.Direction = eDirection.Downright;
             // 進行方向が移動可能かを判断
-            if (Actor_Action.Move_Check(map_layer.Get(player_x, player_y),
-                                        map_layer.Get(player_x + move_value, player_y - move_value))) {
+            if (!Actor_Action.Move_Check(map_layer.Get_Layer_Number(player_x, player_y),
+                                         map_layer.Get_Layer_Number(player_x + move_value, player_y - move_value))) {
                 return;
             }
             // 右方向か下方向に壁があるかを判断(移動不可になる)
-            if (Actor_Action.Slant_Check(map_layer.Get(player_x + move_value, player_y),
-                                              map_layer.Get(player_x, player_y - move_value))) {
-                return;
+            if (Actor_Action.Slant_Action_Check(player as Actor, player.Direction)) {
+                Move_Process(move_value, -move_value);
             }
-            Move_Process(move_value, -move_value);
         }
         // Xキーが押されたとき
         else if (Input.GetKeyDown(KeyCode.X)) {
-            player.direction = eDirection.Down;
+            player.Direction = eDirection.Down;
             // 進行方向が移動可能かを判断
-            if (Actor_Action.Move_Check(map_layer.Get(player_x, player_y),
-                                        map_layer.Get(player_x, player_y - move_value))) {
-                return;
+            if (Actor_Action.Move_Check(map_layer.Get_Layer_Number(player_x, player_y),
+                                        map_layer.Get_Layer_Number(player_x, player_y - move_value))) {
+                Move_Process(not_move, -move_value);
             }
-            Move_Process(not_move, -move_value);
         }
         // Zキーが押されたとき
         else if (Input.GetKeyDown(KeyCode.Z)) {
-            player.direction = eDirection.Downleft;
-            if (Actor_Action.Move_Check(map_layer.Get(player_x, player_y),
-                                        map_layer.Get(player_x - move_value, player_y - move_value))) {
+            player.Direction = eDirection.Downleft;
+            if (!Actor_Action.Move_Check(map_layer.Get_Layer_Number(player_x, player_y),
+                                         map_layer.Get_Layer_Number(player_x - move_value, player_y - move_value))) {
                 return;
             }
             // 左方向か下方向に壁があるとき(移動不可になる)
-            if (Actor_Action.Slant_Check(map_layer.Get(player_x - move_value, player_y),
-                                              map_layer.Get(player_x, player_y - move_value))) {
-                return;
+            if (Actor_Action.Slant_Action_Check(player as Actor, player.Direction)) {
+                Move_Process(-move_value, -move_value);
             }
-            Move_Process(-move_value, -move_value);
         }
         // Aキーが押されたとき
         else if (Input.GetKeyDown(KeyCode.A)) {
-            player.direction = eDirection.Left;
+            player.Direction = eDirection.Left;
             // 進行方向が移動可能かを判断
-            if (Actor_Action.Move_Check(map_layer.Get(player_x, player_y),
-                                        map_layer.Get(player_x - move_value, player_y))) {
-                return;
+            if (Actor_Action.Move_Check(map_layer.Get_Layer_Number(player_x, player_y),
+                                        map_layer.Get_Layer_Number(player_x - move_value, player_y))) {
+                Move_Process(-move_value, not_move);
             }
-            Move_Process(-move_value, not_move);
         }
         // Qキーが押されたとき
         else if (Input.GetKeyDown(KeyCode.Q)) {
-            player.direction = eDirection.Upleft;
-            if (Actor_Action.Move_Check(map_layer.Get(player_x, player_y),
-                                        map_layer.Get(player_x - move_value, player_y + move_value))) {
+            player.Direction = eDirection.Upleft;
+            if (!Actor_Action.Move_Check(map_layer.Get_Layer_Number(player_x, player_y),
+                                         map_layer.Get_Layer_Number(player_x - move_value, player_y + move_value))) {
                 return;
             }
             // 左方向か上方向に壁があるとき(移動不可になる)
-            if (Actor_Action.Slant_Check(map_layer.Get(player_x - move_value, player_y),
-                                              map_layer.Get(player_x, player_y + move_value))) {
-                return;
+            if (Actor_Action.Slant_Action_Check(player as Actor, player.Direction)) {
+                Move_Process(-move_value, move_value);
             }
-            Move_Process(-move_value, move_value);
         }
     }
 
@@ -244,63 +264,35 @@ public class Player_Move : MonoBehaviour {
     void Change_Direction() {
         // 上方向を向く
         if (Input.GetKeyDown(KeyCode.W)) {
-            player.direction = eDirection.Up;
+            player.Direction = eDirection.Up;
         }
         // 右上方向を向く
         else if (Input.GetKeyDown(KeyCode.E)) {
-            player.direction = eDirection.Upright;
+            player.Direction = eDirection.Upright;
         }
         // 右方向を向く
         else if (Input.GetKeyDown(KeyCode.D)) {
-            player.direction = eDirection.Right;
+            player.Direction = eDirection.Right;
         }
         // 右下方向を向く
         else if (Input.GetKeyDown(KeyCode.C)) {
-            player.direction = eDirection.Downright;
+            player.Direction = eDirection.Downright;
         }
         // 下方向を向く
         else if (Input.GetKeyDown(KeyCode.X)) {
-            player.direction = eDirection.Down;
+            player.Direction = eDirection.Down;
         }
         // 左下方向を向く
         else if (Input.GetKeyDown(KeyCode.Z)) {
-            player.direction = eDirection.Downleft;
+            player.Direction = eDirection.Downleft;
         }
         // 左方向を向く
         else if (Input.GetKeyDown(KeyCode.A)) {
-            player.direction = eDirection.Left;
+            player.Direction = eDirection.Left;
         }
         // 左上方向を向く
         else if (Input.GetKeyDown(KeyCode.Q)) {
-            player.direction = eDirection.Upleft;
-        }
-    }
-
-    /// <summary>
-    /// Move_Action中にできる行動がなされたときにStateに変更をかける
-    /// </summary>
-    void Move_Check_Command() {
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            player.player_state = ePlayer_State.Attack;
-            player_status.Add_Turn();
-        }
-    }
-
-    /// <summary>
-    /// プレイヤーが階段に乗っているかを調べる
-    /// </summary>
-    void Check_Stair() {
-        if (player.Feet == Define_Value.STAIR_LAYER_NUMBER) {
-            player.player_state = ePlayer_State.On_Stair;
-        }
-    }
-
-    /// <summary>
-    /// ダンジョン移動用のマスを踏んでいるか調べる
-    /// </summary>
-    void Check_Move_Dungeon() {
-        if (player.Feet == Define_Value.MOVE_DUNGEON_TILE) {
-            player.player_state = ePlayer_State.Decide_Command;
+            player.Direction = eDirection.Upleft;
         }
     }
 
@@ -310,12 +302,26 @@ public class Player_Move : MonoBehaviour {
     /// <param name="move_value_x">プレイヤーの移動量</param>
     /// <param name="move_value_y">プレイヤーの移動量</param>
     void Move_Process(int move_value_x, int move_value_y) {
-        map_layer.Tile_Swap(player.position, player.Feet);
+        var room_list = Dungeon_Manager.Instance.room_list;
+
+        // 移動前に今いる座標を元のレイヤーナンバーに戻す
+        map_layer.Tile_Swap(player.Position, player.Feet);
+
+        // 実際に座標を変える(移動)
         player_position.x += move_value_x;
         player_position.y += move_value_y;
         player.Set_Position(player_position);
-        player.Set_Feet(map_layer.Get(player_position.x, player_position.y));
-        map_layer.Tile_Swap(player.position, Define_Value.PLAYER_LAYER_NUMBER);
+
+        // 移動後の座標のレイヤーナンバーを取得する
+        player.Set_Feet(map_layer.Get_Layer_Number(player_position.x, player_position.y));
+
+        // フロアのレイヤーの今いる座標に自分のレイヤー番号を敷く
+        map_layer.Tile_Swap(player.Position, Define_Value.PLAYER_LAYER_NUMBER);
+        //// ルームごとのレイヤーも同様
+        //room_list[.Now_Room].Tile_Swap(before_position, enemy.Feet);
+
+
+        // 移動完了
         move_end = true;
     }
 
@@ -324,54 +330,40 @@ public class Player_Move : MonoBehaviour {
     /// </summary>
     void Search_Enemy() { // TODO: ２体以上いるときに１体しか向けない
         var player = Player_Manager.Instance.player_script;
-        var pla_pos = player.position;
-        int move_value = Define_Value.MOVE_VAULE;
+        var player_position = player.Position;
         int tile_scale = Define_Value.TILE_SCALE;
-        int enemy_layer = Define_Value.ENEMY_LAYER_NUMBER;
 
         // 上方向から時計回りに検索
-        if (map_layer.Get(pla_pos.x, pla_pos.y + tile_scale) == enemy_layer) {
-            player.direction = eDirection.Up;
+        if (map_layer.Is_Enemy(player_position.x, player_position.y + tile_scale)) {
+            player.Direction = eDirection.Up;
         }
         // 右上
-        else if (map_layer.Get(pla_pos.x + tile_scale, pla_pos.y + tile_scale) == enemy_layer) {
-            if (Actor_Action.Slant_Check(map_layer.Get(pla_pos.x + move_value, pla_pos.y),
-                                         map_layer.Get(pla_pos.x, pla_pos.y + move_value))) {
-            }
-            player.direction = eDirection.Upright;
+        else if (map_layer.Is_Enemy(player_position.x + tile_scale, player_position.y + tile_scale)) {
+            player.Direction = eDirection.Upright;
         }
         // 右
-        else if (map_layer.Get(pla_pos.x + tile_scale, pla_pos.y) == enemy_layer) {
-            player.direction = eDirection.Right;
+        else if (map_layer.Is_Enemy(player_position.x + tile_scale, player_position.y)) {
+            player.Direction = eDirection.Right;
         }
         // 右下
-        else if (map_layer.Get(pla_pos.x + tile_scale, pla_pos.y - tile_scale) == enemy_layer) {
-            if (Actor_Action.Slant_Check(map_layer.Get(pla_pos.x + move_value, pla_pos.y),
-                                         map_layer.Get(pla_pos.x, pla_pos.y - move_value))) {
-            }
-            player.direction = eDirection.Downright;
+        else if (map_layer.Is_Enemy(player_position.x + tile_scale, player_position.y - tile_scale)) {
+            player.Direction = eDirection.Downright;
         }
         // 下
-        else if (map_layer.Get(pla_pos.x, pla_pos.y - tile_scale) == Define_Value.ENEMY_LAYER_NUMBER) {
-            player.direction = eDirection.Down;
+        else if (map_layer.Is_Enemy(player_position.x, player_position.y - tile_scale)) {
+            player.Direction = eDirection.Down;
         }
         // 左下
-        else if (map_layer.Get(pla_pos.x - tile_scale, pla_pos.y - tile_scale) == enemy_layer) {
-            if (Actor_Action.Slant_Check(map_layer.Get(pla_pos.x - move_value, pla_pos.y),
-                                         map_layer.Get(pla_pos.x, pla_pos.y - move_value))) {
-            }
-            player.direction = eDirection.Downleft;
+        else if (map_layer.Is_Enemy(player_position.x - tile_scale, player_position.y - tile_scale)) {
+            player.Direction = eDirection.Downleft;
         }
         // 左
-        else if (map_layer.Get(pla_pos.x - tile_scale, pla_pos.y) == Define_Value.ENEMY_LAYER_NUMBER) {
-            player.direction = eDirection.Left;
+        else if (map_layer.Is_Enemy(player_position.x - tile_scale, player_position.y)) {
+            player.Direction = eDirection.Left;
         }
         // 左上
-        else if (map_layer.Get(pla_pos.x - tile_scale, pla_pos.y + tile_scale) == enemy_layer) {
-            if (Actor_Action.Slant_Check(map_layer.Get(pla_pos.x - move_value, pla_pos.y),
-                                         map_layer.Get(pla_pos.x, pla_pos.y + move_value))) {
-            }
-            player.direction = eDirection.Upleft;
+        else if (map_layer.Is_Enemy(player_position.x - tile_scale, player_position.y + tile_scale)) {
+            player.Direction = eDirection.Upleft;
         }
     }
 }

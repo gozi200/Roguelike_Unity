@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// ユニーククラスの基底クラス シングルトンにするときはそれをここで生成する
@@ -27,7 +25,7 @@ public class Unique_Component<T> : MonoBehaviour where T : MonoBehaviour {
         }
     }
 
-    // Startは1フレ後なので、作られたときに初期化する
+    //TODO:Startは1フレ後なので、作られたときに初期化する
     public void Initialized() {
         
     }

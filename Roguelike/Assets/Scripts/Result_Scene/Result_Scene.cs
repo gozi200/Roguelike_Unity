@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -9,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class Result_Scene : MonoBehaviour {
     void Update() {
         if (Input.GetKeyDown(KeyCode.Return)) {
-            SceneManager.LoadScene("Game");
+            SceneManager.LoadScene("Title");
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
 /// <summary>
@@ -7,48 +7,39 @@ using UnityEngine;
 /// </summary>
 public static class Actor_Action {
     /// <summary>
+    /// 斜めチェック用
+    /// </summary>
+    static Dictionary<eDirection, Tuple<Vector2Int, Vector2Int>> slant_direction;
+
+    static Actor_Action() {
+        slant_direction = new Dictionary<eDirection, Tuple<Vector2Int, Vector2Int>>();
+
+        slant_direction[eDirection.Upright]   = new Tuple<Vector2Int, Vector2Int>(new Vector2Int( 1, 0), new Vector2Int(0,  1));
+        slant_direction[eDirection.Downright] = new Tuple<Vector2Int, Vector2Int>(new Vector2Int( 1, 0), new Vector2Int(0, -1));
+        slant_direction[eDirection.Downleft]  = new Tuple<Vector2Int, Vector2Int>(new Vector2Int(-1, 0), new Vector2Int(0, -1));
+        slant_direction[eDirection.Upleft]    = new Tuple<Vector2Int, Vector2Int>(new Vector2Int(-1, 0), new Vector2Int(0,  1));
+    }
+
+    /// <summary>
     /// 移動可能かを判断
     /// </summary>
     /// <param name="my_layer">自分のレイヤーナンバー</param>
     /// <param name="new_position">移動先の座標</param>
-    /// <returns>移動不可能であればtrue</returns>
+    /// <returns>移動可能であればtrue</returns>
     public static bool Move_Check(int my_layer, int new_position) {
-        // 自分のレイヤー番号と移動先のレイヤー番号を比べる
-        if (my_layer > new_position) {
-            return false;
-        }
-        return true;
+        return my_layer > new_position;
     }
 
     /// <summary>
-    /// ななめ移動時に移動不可になる場所に壁があるかを調べる。 
+    /// 斜め方向に攻撃、移動が可能かどうか。向いている方向+-45度の位置のいずれかに壁があったら移動不可
     /// </summary>
-    /// <param name="check_layer1">壁1</param>
-    /// <param name="check_layer2">壁2</param>
-    /// <returns>移動不可能であればtrue</returns>
-     public static bool Slant_Check(int check_layer1, int check_layer2) {
-         // ななめ移動時に移動不可となる場合の壁の位置を調べる
-         if (check_layer1 >= Define_Value.WALL_LAYER_NUMBER ||
-             check_layer2 >= Define_Value.WALL_LAYER_NUMBER) {
-             return true;
-         }
-         return false;
-     }
-
-    // ↑↓どっち使う？　↓を使うなら第一引数をアクターの持っているfeetに変えなきゃダメ
-    /*
-    /// <summary>
-    /// ななめ移動ができない場合を調べる
-    /// </summary>
-    /// <param name="now_feet">自分が踏んでいる床の情報</param>
-    /// <param name="after_feet">移動先の場所</param>
-    /// <returns></returns>
-    public bool Slant_Check(int before_feet, int after_feet) {
-        if (before_feet == Define_Value.ENTRANCE_LAYER_NUMBER ||
-            after_feet == Define_Value.ENTRANCE_LAYER_NUMBER) {
-            return true;
-        }
-        return false;
+    /// <param name="actor">判断するアクター</param>
+    /// <param name="direction">アクターの向いてる方向</param>
+    /// <returns>斜め方向への攻撃、移動が可能であればtrue</returns>
+    public static bool Slant_Action_Check(Actor actor, eDirection direction) {
+        var map_layer = Dungeon_Manager.Instance.map_layer_2D;
+        var check_wall1 = slant_direction[direction].Item1 + actor.Position;
+        var check_wall2 = slant_direction[direction].Item2 + actor.Position;
+        return !(map_layer.Is_Wall(check_wall1) || map_layer.Is_Wall(check_wall2));
     }
-    */
 }

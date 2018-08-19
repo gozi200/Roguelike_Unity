@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/*---------------------------
+﻿/*---------------------------
 enumを定義しておくスクリプト
 ---------------------------*/
 
@@ -23,15 +18,15 @@ public enum eGame_State {
 /// キャラクターの現在の向きを割り当てる
 /// </summary>
 public enum eDirection {
-    Down      // 下向き(正面)
-  , Downleft  // 左下
-  , Left      // 左
-  , Upleft    // 左上
-  , Up        // 上
-  , Upright   // 右上
-  , Right     // 右
-  , Downright // 右下
-  , Finish    // 乱数生成に使用
+    Up
+  , Upright
+  , Right
+  , Downright
+  , Down
+  , Downleft
+  , Left
+  , Upleft
+  , Finish // 乱数生成に使用
 };
 
 /// <summary>
@@ -43,18 +38,12 @@ public enum ePlayer_State {
   , Battle_Menu    // バトルメニューを開く
   , On_Stair       // 階段に乗っているとき
   , Decide_Command // コマンド選択中(ダンジョン選択や、店で話しているとき等)
+  , Non_Active     // アナウンスや、会話シーンなど移動が不可の時
   , Game_Over      // ゲームオーバー
   , Action_Max     // Player_Actionで宣言されているActionの最大値
 };
 
-/// <summary>
-/// Move状態に入っているときのプレイヤーの行動を割り当てる
-/// </summary>
-public enum ePlayer_Move {
-
-}
-
-/// <summary>
+/// <summary
 /// プレイヤーの現在のモード
 /// </summary>
 public enum ePlayer_Mode {
@@ -63,12 +52,28 @@ public enum ePlayer_Mode {
 };
 
 /// <summary>
+/// 今現在どこにいるか
+/// </summary>
+public enum eNow_Place {
+    Safety_Zone
+  , Dungeon
+}
+
+/// <summary>
+/// プレイヤーがどこを移動しているか
+/// </summary>
+public enum ePlayer_Where_Move {
+    Room_Move // 部屋の中を移動している状態
+  , Road_Move // 通路を移動している状態
+}
+
+/// <summary>
 /// 敵の現在のモード
 /// </summary>
 public enum eEnemy_Mode {
-    Move_Floor_Mode // 部屋移動モード
-  , Move_Road_Mode  // 通路移動モード
-  , Encounter_Mode  // エンカウントモード
+    Move_Room_Mode // 部屋移動モード
+  , Move_Road_Mode // 通路移動モード
+  , Encounter_Mode // エンカウントモード
 }
 
 /// <summary>
@@ -84,42 +89,43 @@ public enum eBattle_Menu {
 /// 使用するコマンドカード
 /// </summary>
 public enum eCommand_Card {
-    Arts_Card   // アーツカード
-  , Quick_Card  // クイックカード
-  , Buster_Card // バスターカード
+    Arts_Card
+  , Quick_Card
+  , Buster_Card
 }
 
 /// <summary>
 /// エネミーの行動パターン
 /// </summary>
 public enum eEnemy_AI_Pattern {
-    Pattern_01 // パターン01
-  , Pattern_02 // パターン02
+    Pattern_01
+  , Pattern_02
 }
 
 /// <summary>
 /// ダンジョンの難易度
 /// </summary>
 public enum eDungeon_Level {
-    Easy  // イージーモード
-  , Nomal // ノーマルモード
-  , Hard  // ハードモード
+    Easy
+  , Nomal
+  , Hard
 }
 
 /// <summary>
 /// ダンジョンの種類
 /// </summary>
 public enum eDungeon_Type {
-    Beginning_Grass // 仮名
-  , Dim_Cave        // 仮名
+    Beginning_Grass // 始まりの草原(仮)
+  , Dim_Cave        // うすぐら洞窟(仮)
+  , Test_Dungoen    // テストダンジョン(途中で地形が変化する者のテスト)
 }
 
 /// <summary>
 /// 床の状態(これに合わせて画像を変更する)
 /// </summary>
 public enum eTile_State {
-    Grass  // 草原
-  , Stone  // 石
+    Grass
+  , Stone
   , Finish // 種類数の取得に使用
 }
 
@@ -127,27 +133,54 @@ public enum eTile_State {
 /// 壁の状態(これに合わせて画像を変更する)
 /// </summary>
 public enum eWall_State {
-    Tree   // 木
-  , Stone  // 石
+    Tree
+  , Stone
   , Finish // 種類数の取得に使用
 }
 
 /// <summary>
-/// IDでエネミーを扱う
+/// クラス
 /// </summary>
-public enum eEnemy_ID {
-    None   // 初期化に使用
-  , Wyvern // ワイバーン
-  , Golem  // ゴーレム
+public enum eClass_Type {
+    Saber
+  , Archer
+  , Lancer
+  , Rider
+  , Caster
+  , Assasin
+  , Ruler
+  , Berserker
+  , Avenger
+  , Shielder
 }
 
 /// <summary>
-/// ノードの状態
+/// 敵のIDと合わせた列挙
+/// </summary>
+public enum eEnemy_ID {
+    Wyvern
+  , Wyvern_Doread
+  , Wyvern_Origin
+  , Golem
+}
+
+
+/// <summary>
+/// ノードの状態 エネミーの移動AIに使用
 /// </summary>
 enum eNode_Status {
-    None,   // 触れてないノード
-    Open,   // 開らいたのノード
-    Closed, // 閉じたノード
-
-
+    None   // 触れてないノード
+  , Open   // 開いたのノード
+  , Closed // 閉じたノード
 }
+
+/// <summary>
+/// 立ち絵キャラクターの表情。これに合わせて表示する画像を変える
+/// </summary>
+public enum eMash_Expression {
+        Angry   // 怒り
+      , Smile1  // 笑顔1
+      , Neutral // 普通
+      , Smile2  // 笑顔2
+      , Finish  // 初期化用
+    }

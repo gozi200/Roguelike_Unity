@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -25,14 +23,14 @@ public class Decide_Command : MonoBehaviour {
     /// <summary>
     /// コンフィグ画面を表示
     /// </summary>
-    public void Decide_Config()　{
-     //TODO: コンフィグはまだない
+    public void Decide_Config() {
+        //TODO: コンフィグはまだない
     }
 
     /// <summary>
     /// ゲームを終了する
     /// </summary>
     public void Decide_Exit() {
-        UnityEditor.EditorApplication.isPlaying = false;
-    } 
+        Application.Quit();
+    }
 }

@@ -17,11 +17,11 @@ public class Tile_Sprite_Changer : MonoBehaviour {
         var dungeon_manager = Dungeon_Manager.Instance;
 
         // 草原の床
-        dungeon_manager.tile_state.Where(tile_type => tile_type == eTile_State.Grass).Subscribe(tile_type =>
+        dungeon_manager.Tile_State.Where(tile_type => tile_type == eTile_State.Grass).Subscribe(tile_type =>
             Set_Sprite((int)tile_type)
         ).AddTo(this);
         // 石の床
-        dungeon_manager.tile_state.Where(tile_type => tile_type == eTile_State.Stone).Subscribe(tile_type =>
+        dungeon_manager.Tile_State.Where(tile_type => tile_type == eTile_State.Stone).Subscribe(tile_type =>
             Set_Sprite((int)tile_type)
         ).AddTo(this);
     }

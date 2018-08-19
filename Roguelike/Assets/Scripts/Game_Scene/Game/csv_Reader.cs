@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
 /// <summary>
-/// csvファイルを読み取る
+/// csvファイルを読み取る TODO:今は使ってない
 /// </summary>
 public class csv_Reader {
     /// <summary>
@@ -14,7 +13,7 @@ public class csv_Reader {
     /// <param name="skip_line_number">読み飛ばす行数(上から)</param>
     /// <returns>行ごとに読み取ったList</returns>
     public List<string[]> Load_csv(string file_path, int skip_line_number = 0) {
-        TextAsset csv = Resources.Load(file_path) as TextAsset;
+        TextAsset csv = (TextAsset)Resources.Load(file_path)/* as TextAsset*/;
         StringReader reader = new StringReader(csv.text);
 
         // 読み取った物を行ごとに格納する
