@@ -24,7 +24,7 @@ public class Enemy_Status_Base : ScriptableObject {
     /// 名前
     /// </summary>
     [SerializeField]
-    string name;
+    new string name;
     public string Name { set { name = value; } get { return name; } }
     /// <summary>
     /// 最大HP

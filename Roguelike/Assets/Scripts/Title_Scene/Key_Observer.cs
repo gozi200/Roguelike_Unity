@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UniRx;
+using System;
 
 /// <summary>
 ///  キー入力を受け付けるクラス
 /// </summary>
 public class Key_Observer {
+    // 発行、購読を行えるように
     Subject<KeyCode> on_key_down_sbject = new Subject<KeyCode>();
 
     /// <summary>
@@ -21,9 +21,9 @@ public class Key_Observer {
     }
 
     /// <summary>
-    /// on_key_don_subjectを返す
+    /// 押されたキーを返す
     /// </summary>
-    /// <returns></returns>
+    /// <returns>押されたキー</returns>
     public IObservable<KeyCode> On_Key_Down_AsObservable() {
         return on_key_down_sbject;
     }

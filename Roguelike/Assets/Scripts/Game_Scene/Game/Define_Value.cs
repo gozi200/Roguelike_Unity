@@ -125,6 +125,17 @@ public static class Define_Value {
     /// </summary>
     public const int MOVE_VALUE = 1;
 
+    /// <summary>
+    /// 1キャラに必要な画像の枚数
+    /// </summary>
+    //TODO:今は方向の差異だけなので8だけ 状態異常なども追加
+    public const int ACTOR_SPRITE_NUMBER = 8;
+
+    /// <summary>
+    /// 方向の数(上、右上、右、右下、下、左下、左、左上の8つ)
+    /// </summary>
+    public const int DIRECTION_NUMBER = 8;
+
     #endregion
 
     #region プレイヤーに関する定数
@@ -132,7 +143,8 @@ public static class Define_Value {
     /// <summary>
     /// プレイアブルキャラクターの人数
     /// </summary>
-    public const int PLAYER_NUMBER = 10;
+    //TODO:まだ起きた沖田だけなので１
+    public const int PLAYER_NUMBER = 1;
     /// <summary>
     /// プレイヤーキャラクター沖田のID
     /// </summary>
@@ -218,9 +230,9 @@ public static class Define_Value {
     #region その他
 
     /// <summary>
-    /// csvの不要な行
+    /// csvの不要な行 プレイヤー、エネミーなどのステータス読み込みの時に使用
     /// </summary>
-    public const int UNNECESSARY_COLUMN = 3;
+    public const int UNNECESSARY_COLUMN_3 = 3;
 
     /// <summary>
     /// プレイヤーを中心にカメラが映す横の範囲。数値はマス分(つまり左右5マス分)

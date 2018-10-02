@@ -6,7 +6,12 @@ using System.Linq;
 /// <summary>
 /// エネミーのマネージャクラス
 /// </summary>
-public class Enemy_Manager : MonoBehaviour {
+public class Enemy_Manager : Static_Unique_Component<Enemy_Manager> {
+    /// <summary>
+    /// 生成したエネミーオブジェクトを格納するオブジェクト
+    /// </summary>
+    [SerializeField]
+    GameObject enemy_object_container;
     /// <summary>
     /// エネミーオブジェクト
     /// </summary>
@@ -14,7 +19,7 @@ public class Enemy_Manager : MonoBehaviour {
     /// <summary>
     /// エネミーのステータス関係のクラス
     /// </summary>
-    Enemy_Status enemy_status;
+    public Enemy_Status enemy_status;
     /// <summary>
     /// エネミーの行動を決めるクラス
     /// </summary>
@@ -43,21 +48,6 @@ public class Enemy_Manager : MonoBehaviour {
     /// </summary>
     int enemy_counter;
     public int Enemy_Counter { set { enemy_counter = value; } get { return enemy_counter; } }
-
-    /// <summary>
-    ///  自身のインスタンスを生成 //TODO:オブジェクトを作らないシングルトン生成クラスを作る
-    /// </summary>
-    public static Enemy_Manager Instance;
-    void Awake() {
-        // 作られていなかったら自身のデータを入れる
-        if (Instance == null) {
-            Instance = this;
-        }
-        // ２個以上作られないようにする
-        else {
-            Destroy(gameObject);
-        }
-    }
 
     void Start() {
         enemy_counter = 0;
@@ -153,6 +143,8 @@ public class Enemy_Manager : MonoBehaviour {
             tag = "Enemy"
         };
 
+        enemy_object.transform.parent = enemy_object_container.transform;
+
         // 本体のスクリプト追加
         enemy_object.AddComponent<Enemy>();
         // エネミーの動きやステータスを管理するクラスを追加
@@ -174,14 +166,14 @@ public class Enemy_Manager : MonoBehaviour {
         enemy_script.My_Number = Enemy_Counter;
         enemy_script.Set_Initialize_Position(x, y);
         // スポーン時の向きは乱数で決める
-        enemy_script.Direction = (eDirection)Random.Range(0.0f, (int)eDirection.Finish);
+        enemy_script.Direction.Value = (eDirection)Random.Range(0.0f, (int)eDirection.Finish);
         //TODO:足元のものを取って来たい
         enemy_script.Set_Feet(Define_Value.ROOM_LAYER_NUMBER);
         // 今いる部屋番号を取得
         enemy_object.GetComponent<Enemy_Controller>().enemy_status.Where_Room(x, y);
 
         // 移動に必要なものを初期化
-        enemy_contoroller.enemy_move.Initialize(enemy_object, Enemy_Counter);
+        enemy_contoroller.enemy_move.Initialize(enemy_object);
         // 移動先を決めておく
         enemy_contoroller.enemy_move.Stack_Route_Until_Entrance();
 

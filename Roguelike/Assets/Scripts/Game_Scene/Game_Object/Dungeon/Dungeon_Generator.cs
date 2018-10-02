@@ -17,6 +17,10 @@ public class Dungeon_Generator : MonoBehaviour {
     /// エネミーのマネージャークラス
     /// </summary>
     Enemy_Manager enemy_manager;
+    /// <summary>
+    /// ミニマップを管理するクラス
+    /// </summary>
+    Mini_Map mini_map;
 
     /// <summary>
     /// 床オブジェクト
@@ -43,6 +47,12 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     [SerializeField]
     GameObject trap_object;
+
+    /// <summary>
+    /// ダンジョンのオブジェクトを格納用のオブジェクト
+    /// </summary>
+    [SerializeField]
+    GameObject dungeon_object_container;
 
     /// <summary>
     /// ターンを数える
@@ -85,6 +95,7 @@ public class Dungeon_Generator : MonoBehaviour {
         room_entrance = new List<Vector2Int>();
         enemy_manager = Enemy_Manager.Instance;
         player = Player_Manager.Instance.player_script;
+        mini_map = UI_Manager.Instance.mini_map;
     }
 
     /// <summary>
@@ -124,7 +135,7 @@ public class Dungeon_Generator : MonoBehaviour {
         // すべてを壁にする
         map_layer.Fill(Define_Value.WALL_LAYER_NUMBER);
 
-        // 最初の区画を作る。カメラが画面外を移さないように余分に作る //TODO: 作らないでも壁の画像を１枚貼ってもいいか
+        // 最初の区画を作る。カメラが画面外を移さないように余分に作る //TODO: 作らないでも余分の壁の画像を１枚貼ってもいいか
         Create_Division(Define_Value.CAMERA_IMAGE_WIDTH, Define_Value.CAMERA_IMAGE_HEIGHT, 
                         dungeon_width - Define_Value.CAMERA_IMAGE_WIDTH, dungeon_height - Define_Value.CAMERA_IMAGE_HEIGHT);
 
@@ -155,22 +166,23 @@ public class Dungeon_Generator : MonoBehaviour {
         // 階段を配置。 階段は１つのみなので、↑とは別口で
         Create_Stair();
 
-        Vector3 instance_position = Vector3.zero;
+        var instance_position = Vector3.zero;
         // タイルを配置
         for (int x = 0; x < map_layer.Width; ++x) {
             for (int y = 0; y < map_layer.Height; ++y) {
                 // 壁以外であれば床用の画像を配置
                 if (!map_layer.Is_Wall(x, y)) {
-                    GameObject instance_tile = Instantiate(tile_object, instance_position, Quaternion.identity);
+                    var obj = Instantiate(tile_object, instance_position, Quaternion.identity);
+                    obj.transform.parent = dungeon_object_container.transform;
                 }
 
                 // 壁であれば壁用の画像を配置
                 if (map_layer.Is_Wall(x, y)) {
-                    GameObject instance_wall = Instantiate(wall_object, instance_position, Quaternion.identity);
+                    var obj = Instantiate(wall_object, instance_position, Quaternion.identity);
+                    obj.transform.parent = dungeon_object_container.transform;
                 }
                 // プレイヤーであればプレイヤーを配置
                 else if (map_layer.Is_Player(x, y)) {
-                    Debug.Log("プレイヤーのスポーン成功");
                     Vector2Int player_position = new Vector2Int(x, y);
                     map_layer.Set(x, y, Define_Value.PLAYER_LAYER_NUMBER);
                     // TODO:足元のものを取って来たい
@@ -181,12 +193,15 @@ public class Dungeon_Generator : MonoBehaviour {
                 }
                 // 階段であれば階段用の画像を配置
                 else if (map_layer.Get_Layer_Number(x, y) == Define_Value.STAIR_LAYER_NUMBER) {
-                    GameObject instance_stair = Instantiate(stair_object, instance_position, Quaternion.identity);
+                    var obj = Instantiate(stair_object, instance_position, Quaternion.identity);
+                    obj.transform.parent = dungeon_object_container.transform;
+
                 }
                 // アイテムであればアイテム用の画像を配置
                 //TODO: アイテムはレイヤーではなく、落ちてる落ちてないでのboolか何かにするか
                 else if (map_layer.Get_Layer_Number(x, y) == Define_Value.ITEM_LAYER_NUMBER) {
-                    GameObject instance_item = Instantiate(item_object, instance_position, Quaternion.identity);
+                    var obj = Instantiate(item_object, instance_position, Quaternion.identity);
+                    obj.transform.parent = dungeon_object_container.transform;
                 }
                 // エネミーであればエネミーを生成
                 else if (map_layer.Is_Enemy(x, y)) {
@@ -194,13 +209,17 @@ public class Dungeon_Generator : MonoBehaviour {
                 }
                 // 罠であれば罠用の画像を配置
                 else if (map_layer.Get_Layer_Number(x, y) == Define_Value.TRAP_LAYER_NUMBER) {
-                    GameObject instance_cell = Instantiate(trap_object, instance_position, Quaternion.identity);
+                    var obj =Instantiate(trap_object, instance_position, Quaternion.identity);
+                    obj.transform.parent = dungeon_object_container.transform;
                 }
                 instance_position.y += tile_object.GetComponent<SpriteRenderer>().bounds.size.y;
             }
             instance_position.y = 0.0f;
             instance_position.x += tile_object.GetComponent<SpriteRenderer>().bounds.size.x;
         }
+
+        // 配置が完了したらその通りにミニマップに反映
+        mini_map.Arrange_Mini_Map();
     }
 
     /// <summary>
@@ -312,7 +331,6 @@ public class Dungeon_Generator : MonoBehaviour {
                 int x = Random.Range(division_list[i].Room.Left, division_list[i].Room.Right);
                 int y = Random.Range(division_list[i].Room.Top,  division_list[i].Room.Bottom);
                 map_layer.Fill_Tile(x, y, Define_Value.PLAYER_LAYER_NUMBER);
-                Debug.Log("プレイヤーのスポーン成功");
             }
         }
     }
@@ -749,26 +767,26 @@ public class Dungeon_Generator : MonoBehaviour {
     /// </summary>
     public void Turn_Tick() {
         ++turn_count;
-        //// 20ターンごとに敵をスポーンさせる
-        //if ((turn_count % Define_Value.SPAWN_INTERVAL) == 0) {
-        //    // ランダム部屋号
-        //    var random_div = Random.Range(0, division_list.Count);
-        //    for (int i = 0; i < division_list.Count; i++) {
-        //        // 部屋号を探す
-        //        if (i == random_div) {
-        //            int x, y;
-        //            float position_x = 0, position_y = 0;
-        //
-        //            do { // プレイヤーと同じ場所だったらやり直し
-        //                x = Random.Range(division_list[i].Room.Left, division_list[i].Room.Right);
-        //                y = Random.Range(division_list[i].Room.Top, division_list[i].Room.Bottom);
-        //                position_x = Random.Range(division_list[i].Room.Left, division_list[i].Room.Right);
-        //                position_y = Random.Range(division_list[i].Room.Top, division_list[i].Room.Bottom);
-        //            } while (transform.position.x == position_x && player.transform.position.y == position_y); 
-        //            // スポーンさせる場所が分かったので、その場所に産む
-        //            enemy_manager.Create_Enemy((int)position_x, (int)position_y);
-        //        }
-        //    }
-        //}
+        // 20ターンごとに敵をスポーンさせる
+        if ((turn_count % Define_Value.SPAWN_INTERVAL) == 0) {
+            // ランダム部屋号
+            var random_div = Random.Range(0, division_list.Count);
+            for (int i = 0; i < division_list.Count; i++) {
+                // 部屋号を探す
+                if (i == random_div) {
+                    int x, y;
+                    float position_x = 0, position_y = 0;
+        
+                    do { // プレイヤーと同じ場所だったらやり直し
+                        x = Random.Range(division_list[i].Room.Left, division_list[i].Room.Right);
+                        y = Random.Range(division_list[i].Room.Top, division_list[i].Room.Bottom);
+                        position_x = Random.Range(division_list[i].Room.Left, division_list[i].Room.Right);
+                        position_y = Random.Range(division_list[i].Room.Top, division_list[i].Room.Bottom);
+                    } while (transform.position.x == position_x && player.transform.position.y == position_y);
+
+                    enemy_manager.Create_Enemy((int)position_x, (int)position_y);
+                }
+            }
+        }
     }
 }

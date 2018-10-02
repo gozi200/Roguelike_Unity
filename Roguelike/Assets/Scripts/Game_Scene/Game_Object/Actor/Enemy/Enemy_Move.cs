@@ -40,10 +40,6 @@ public class Enemy_Move {
     /// Moveメソッドで移動先の決定に使用
     /// </summary>
     int counter = 1;
-    /// <summary>
-    /// アタッチされているエネミーの番号
-    /// </summary>
-    int enemy_number;
 
     /// <summary>
     /// 座標を扱う構造体を格納
@@ -53,10 +49,9 @@ public class Enemy_Move {
     /// <summary>
     /// 初期化
     /// </summary>
-    public void Initialize(GameObject enemy_object, int enemy_number) {
+    public void Initialize(GameObject enemy_object) {
         enemy_manager = Enemy_Manager.Instance;
         Set_Enemy_Object(enemy_object);
-        Set_Enemy_Number(enemy_number);
         enemy_status = enemy_object.GetComponent<Enemy_Controller>().enemy_status;
         division_list = Dungeon_Manager.Instance.dungeon_generator.division_list;
     }
@@ -67,14 +62,6 @@ public class Enemy_Move {
     /// <param name="set_enemy_object">自分がアタッチされているオブジェクト</param>
     void Set_Enemy_Object(GameObject set_enemy_object) {
         enemy_object = set_enemy_object;
-    }
-
-    /// <summary>
-    /// 動かす敵の番号を知っておく
-    /// </summary>
-    /// <param name="set_enemy_number">何番目の敵か</param>
-    public void Set_Enemy_Number(int set_enemy_number) {
-        enemy_number = set_enemy_number;
     }
 
     /// <summary>
@@ -526,7 +513,6 @@ public class Enemy_Move {
 
             // 出口を見つけられなかったら迷子になる
             if (node == null) {
-                Debug.Log("袋小路だよ");
                 enemy_object.GetComponent<Enemy>().Is_Lost_Myself = true;
                 break;
             }
@@ -548,18 +534,18 @@ public class Enemy_Move {
     /// </summary>
     /// <param name="enemy">方向転換するエネミー</param>
     void Reverse_Direction(Enemy enemy) {
-        switch (enemy.Direction) {
+        switch (enemy.Direction.Value) {
             case eDirection.Up:
-                enemy.Direction = eDirection.Down;
+                enemy.Direction.Value = eDirection.Down;
                 break;
             case eDirection.Right:
-                enemy.Direction = eDirection.Left;
+                enemy.Direction.Value = eDirection.Left;
                 break;
             case eDirection.Down:
-                enemy.Direction = eDirection.Up;
+                enemy.Direction.Value = eDirection.Up;
                 break;
             case eDirection.Left:
-                enemy.Direction = eDirection.Right;
+                enemy.Direction.Value = eDirection.Right;
                 break;
         }
     }
@@ -570,7 +556,7 @@ public class Enemy_Move {
     void Road_Move() {
         var map_layer = Dungeon_Manager.Instance.map_layer_2D;
         var enemy = enemy_object.GetComponent<Enemy>();
-        var enemy_direction = enemy.Direction;
+        var enemy_direction = enemy.Direction.Value;
 
         var after_position = enemy.Position;
         // 見やすくするために短く
@@ -739,7 +725,6 @@ public class Enemy_Move {
         else if (enemy.mode == eEnemy_Mode.Move_Room_Mode) {
             Room_Move_Process(now_position, after_position, enemy);
         }
-
     }
 
     /// <summary>
@@ -850,35 +835,35 @@ public class Enemy_Move {
     void Direction_Change(int before_x, int before_y, int after_x, int after_y, Enemy enemy) {
         // 上
         if (after_x == before_x && after_y == before_y + 1) {
-            enemy.Direction = eDirection.Up;
+            enemy.Direction.Value = eDirection.Up;
         }
         // 右上
         else if (after_x == before_x + 1 && after_y == before_y + 1) {
-            enemy.Direction = eDirection.Upright;
+            enemy.Direction.Value = eDirection.Upright;
         }
         // 右
         else if (after_x == before_x + 1 && after_y == before_y) {
-            enemy.Direction = eDirection.Right;
+            enemy.Direction.Value = eDirection.Right;
         }
         // 右下
         else if (after_x == before_x + 1 && after_y == before_y - 1) {
-            enemy.Direction = eDirection.Downright;
+            enemy.Direction.Value = eDirection.Downright;
         }
         // 下
         else if (after_x == before_x && after_y == before_y - 1) {
-            enemy.Direction = eDirection.Down;
+            enemy.Direction.Value = eDirection.Down;
         }
         // 左下
         else if (after_x == before_x - 1 && after_y == before_y - 1) {
-            enemy.Direction = eDirection.Downleft;
+            enemy.Direction.Value = eDirection.Downleft;
         }
         // 左
         else if (after_x == before_x - 1 && after_y == before_y) {
-            enemy.Direction = eDirection.Left;
+            enemy.Direction.Value = eDirection.Left;
         }
         // 左上
         else if (after_x == before_x - 1 && after_y == before_y + 1) {
-            enemy.Direction = eDirection.Upleft;
+            enemy.Direction.Value = eDirection.Upleft;
         }
     }
 

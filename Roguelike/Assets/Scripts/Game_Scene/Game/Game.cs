@@ -4,7 +4,7 @@ using UniRx;
 /// <summary>
 /// ゲームシーンに必要なユニーククラス
 /// </summary>
-public class Game : Unique_Component<Game> {
+public class Game : Dynamic_Unique_Component<Game> {
     /// <summary>
     /// 入力されたキーを流すクラス
     /// </summary>
@@ -13,13 +13,14 @@ public class Game : Unique_Component<Game> {
     /// csvファイルの読み込みクラス
     /// </summary>
     public csv_Reader csv_reader;
-
-    public static int counter = 0;
-
     /// <summary>
-    /// インスタンス生成を行う
+    /// シーン異動で破棄されないものを保持するクラス
     /// </summary>
+    Do_Not_Destroy do_not_destroy;
+
     void Awake() {
+        do_not_destroy = GameObject.Find("Do_Not_Destroy").GetComponent<Do_Not_Destroy>();
+        do_not_destroy.Initialize();
         csv_reader = new csv_Reader();
         key_observer = new Key_Observer();
     }

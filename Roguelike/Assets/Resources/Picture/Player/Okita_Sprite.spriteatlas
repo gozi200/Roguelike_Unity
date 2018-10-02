@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Okita_Sprite
+  m_EditorData:
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 0
+    platformSettings: []
+    packingParameters:
+      serializedVersion: 2
+      padding: 8
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+    packedHash:
+      serializedVersion: 2
+      Hash: 4e16cea4c31f6b27cb3510bb70fd725a
+    variantMultiplier: 1
+    bindAsDefault: 1
+    finalFormat: 4
+    hashString: 4e16cea4c31f6b27cb3510bb70fd725a
+    totalSpriteSurfaceArea: 7372800
+    packables:
+    - {fileID: 102900000, guid: 9bb173f974d2ad044943b6b730581aa6, type: 3}
+    packedSpriteRenderDataKeys:
+    - a0cf1c6c748656a4f99ca0fc395f84a1: 21300000
+    - 9ec7f60af431fd94f8555c2bfd51d990: 21300000
+    - 1b94723566e010945802ce252abfee48: 21300000
+    - 197db54c80c00144e904295e930f7291: 21300000
+    - e3bd0d2485567fe4b9ab40dd93b0841d: 21300000
+    - fc5f3d05ab06df246a9da4d42ae61e16: 21300000
+    - d7532f070e2773c4d8fa06c811d213eb: 21300000
+    - c9135bde6ebd1014cb5e7cb5b972cd29: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: a0cf1c6c748656a4f99ca0fc395f84a1, type: 3}
+  - {fileID: 21300000, guid: 9ec7f60af431fd94f8555c2bfd51d990, type: 3}
+  - {fileID: 21300000, guid: 1b94723566e010945802ce252abfee48, type: 3}
+  - {fileID: 21300000, guid: 197db54c80c00144e904295e930f7291, type: 3}
+  - {fileID: 21300000, guid: e3bd0d2485567fe4b9ab40dd93b0841d, type: 3}
+  - {fileID: 21300000, guid: fc5f3d05ab06df246a9da4d42ae61e16, type: 3}
+  - {fileID: 21300000, guid: d7532f070e2773c4d8fa06c811d213eb, type: 3}
+  - {fileID: 21300000, guid: c9135bde6ebd1014cb5e7cb5b972cd29, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - 6Okita_Downleft
+  - 4Okita_Downright
+  - 1Okita_Up
+  - 8Okita_Upleft
+  - 2Okita_Upright
+  - 5Okita_Down
+  - 7Okita_Left
+  - 3Okita_Right
+  m_Tag: Okita_Sprite
+  m_IsVariant: 0

@@ -177,10 +177,18 @@ enum eNode_Status {
 /// <summary>
 /// 立ち絵キャラクターの表情。これに合わせて表示する画像を変える
 /// </summary>
-public enum eMash_Expression {
-        Angry   // 怒り
-      , Smile1  // 笑顔1
-      , Neutral // 普通
-      , Smile2  // 笑顔2
-      , Finish  // 初期化用
-    }
+public enum eCharacter_Expression1 {
+    Angry   // 怒り
+  , Smile1  // 笑顔1
+  , Neutral // 普通
+  , Smile2  // 笑顔2
+  , Finish  // 初期化用
+}
+
+/// <summary>
+/// 喋るメッセージの種類
+/// </summary>
+public enum eMessage_Type {
+    Start // 開始時
+  , end   // 終了時
+}

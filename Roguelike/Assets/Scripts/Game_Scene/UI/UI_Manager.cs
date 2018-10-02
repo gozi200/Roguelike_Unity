@@ -5,9 +5,9 @@ using System;
 using System.Linq;
 
 /// <summary>
-/// UI(主に数値)を管理
+/// UIを管理
 /// </summary>
-public class UI_Manager : MonoBehaviour {
+public class UI_Manager : Static_Unique_Component<UI_Manager> {
     /// <summary>
     /// ゲームシーンのマネージャクラス
     /// </summary>
@@ -17,14 +17,20 @@ public class UI_Manager : MonoBehaviour {
     /// </summary>
     Dungeon_Manager dungeon_manager;
     /// <summary>
-    /// メッセッージウィンドゥを管理するクラス
-    /// </summary>
-    [SerializeField]
-    Message_Window_Manager message_window_manager;
-    /// <summary>
     /// プレイヤーのステータスを管理するクラス
     /// </summary>
     Player_Status player_status;
+
+    /// <summary>
+    /// ミニマップ管理オブジェクト
+    /// </summary>
+    GameObject mini_map_object;
+    /// <summary>
+    /// ミニマップを管理するクラス
+    /// </summary>
+    [NonSerialized]
+    public Mini_Map mini_map;
+
     /// <summary>
     /// キャラクターのセリフデータを扱うクラス
     /// </summary>
@@ -49,31 +55,33 @@ public class UI_Manager : MonoBehaviour {
     /// </summary>
     [SerializeField]
     Text level_text;
-    /// <summary>
-    /// ちからのUI 
-    /// </summary>
-    [SerializeField]
-    Text power_text;
-    /// <summary>
-    /// ちからの最大値のUI
-    /// </summary>
-    [SerializeField]
-    Text max_power_text;
-    /// <summary>
-    /// はらへりポイントのUI
-    /// </summary>
-    [SerializeField]
-    Text hunger_point_text;
-    /// <summary>
-    /// スター保持数のUI
-    /// </summary>
-    [SerializeField]
-    Text keep_star_text;
-    /// <summary>
-    /// NPのUI
-    /// </summary>
-    [SerializeField]
-    Text noble_phantasm_text;
+
+    //TODO:未使用
+    ///// <summary>
+    ///// ちからのUI 
+    ///// </summary>
+    //[SerializeField]
+    //Text power_text;
+    ///// <summary>
+    ///// ちからの最大値のUI
+    ///// </summary>
+    //[SerializeField]
+    //Text max_power_text;
+    ///// <summary>
+    ///// はらへりポイントのUI
+    ///// </summary>
+    //[SerializeField]
+    //Text hunger_point_text;
+    ///// <summary>
+    ///// スター保持数のUI
+    ///// </summary>
+    //[SerializeField]
+    //Text keep_star_text;
+    ///// <summary>
+    ///// NPのUI
+    ///// </summary>
+    //[SerializeField]
+    //Text noble_phantasm_text;
 
     /// <summary>
     /// ログ表示用オブジェクト
@@ -90,55 +98,44 @@ public class UI_Manager : MonoBehaviour {
     /// 会話での表示か、そうでないときかで分ける。
     /// </summary>
     bool talk = true;
-
-    /// <summary>
-    /// 自身のインスタンス
-    /// </summary>
-    public static UI_Manager Instance;
+    public bool Talk { set { talk = value; } get { return talk; } }
 
     void Awake() {
-        // 作られていなかったら自身のデータを入れる
-        if (Instance == null) {
-            Instance = this;
-        }
+        mini_map_object = GameObject.Find("Mini_Map");
+        mini_map = mini_map_object.GetComponent<Mini_Map>();
+
+        character_message_data = new Character_Message_Data();
 
         is_said_scroll_view = new ReactiveProperty<bool>(false);
-        character_message_data = new Character_Message_Data();
     }
 
     void Start() {
         game_manager = GameManager.Instance;
 
-        // ログを表示
+        // メッセージを表示
         is_said_scroll_view.Where(flag => !!flag && !talk).Subscribe(flag => {
-            scroll_view.SetActive(flag);
+        scroll_view.SetActive(flag);
 
-            Observable.NextFrame().Subscribe(_ =>
-            // 文字は上詰め
-            scroll_view.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 0.0f
-            );
+            //// 文字を上詰めに
+            scroll_view.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 0.0f;
 
-            // 3.5秒経過でログを非表示
-            Observable.Timer(TimeSpan.FromMilliseconds(3500))
+            // 3秒経過でログを非表示
+            Observable.Timer(TimeSpan.FromMilliseconds(3000))
             .Subscribe(_ => {
                 is_said_scroll_view.Value = false;
             });
         }).AddTo(this);
 
+
         // 会話時のログ表示
         is_said_scroll_view.Where(flag => !!flag && talk).Subscribe(flag => {
             scroll_view.SetActive(flag);
-
-            Observable.NextFrame().Subscribe(_ =>
-            // 文字は上詰め
-            scroll_view.GetComponentInChildren<ScrollRect>().verticalNormalizedPosition = 0.0f
-            );
         }).AddTo(this);
 
         // ウィンドウは非表示で初期化
-        is_said_scroll_view.Where(flag => !flag).Subscribe(flag =>
-            scroll_view.SetActive(flag)
-        ).AddTo(this);
+        is_said_scroll_view.Where(flag => !flag).Subscribe(flag => {
+            scroll_view.SetActive(flag);
+        }).AddTo(this);
 
         // 現在の階層の表示非表示。安全地帯(拠点など)にいるときは非表示
         game_manager.Now_Place.Subscribe(now_place => {
@@ -151,8 +148,8 @@ public class UI_Manager : MonoBehaviour {
         dungeon_manager = Dungeon_Manager.Instance;
         // 最大の値と現在の値の双方を表示する項目は１つにまとめておく
         var HP    = Observable.Merge(player_status.Hit_Point, player_status.Max_Hit_Point);
-        var power = Observable.Merge(player_status.Power, player_status.Max_Power);
         var floor = Observable.Merge(dungeon_manager.Floor, dungeon_manager.Max_Floor);
+        //var power = Observable.Merge(player_status.Power, player_status.Max_Power); //未使用
 
         // 現在の階層に変更がかかったらUIを更新
         floor.Subscribe(_ =>

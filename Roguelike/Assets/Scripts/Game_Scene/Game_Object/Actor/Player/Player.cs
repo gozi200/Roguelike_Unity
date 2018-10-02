@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UniRx;
+using UnityEngine;
 
 /// <summary>
 /// プレイヤー本体のクラス
@@ -13,11 +14,12 @@ public class Player : Actor {
     /// </summary>
     ePlayer_Where_Move where_move;
     public ePlayer_Where_Move Where_Move { set { where_move = value; } get { return where_move; } }
+
     /// <summary>
     /// 自分の向いている方向を認識する
     /// </summary>
-    public override eDirection Direction { set { direction = value; } get { return direction; } }
-
+    public override ReactiveProperty<eDirection> Direction { set { direction = value; } get { return direction; } }
+    
     /// <summary>
     /// 現在の座標の足元にあるもの
     /// </summary>
@@ -41,11 +43,15 @@ public class Player : Actor {
     int move_value;
     public int Move_Value { set { move_value = value; } get { return move_value; } }
 
+    void Awake() {
+        Direction = new ReactiveProperty<eDirection>();
+    }
+
     void Start() {
         // スポーンは部屋の中なのでRoomで初期化
         where_move = ePlayer_Where_Move.Room_Move;
 
-        gameObject.transform.localScale = new Vector2(0.4f, 0.4f);
+        gameObject.transform.localScale = new Vector2(0.15f, 0.15f);
     }
 
     /// <summary>
@@ -54,7 +60,7 @@ public class Player : Actor {
     /// <param name="width">スポーン座標(x座標)</param>
     /// <param name="height">スポーン座標(y座標)</param>
     public override void Set_Initialize_Position(int width, int height) {
-        position.x = width; 
+        position.x = width;
         position.y = height;
         gameObject.transform.position = new Vector2(position.x,position.y);
     }
@@ -64,8 +70,8 @@ public class Player : Actor {
     /// </summary>
     /// <param name="new_position">変更後の座標</param>
     public override void Set_Position(Vector2Int new_position) {
-        this.position.x = new_position.x;
-        this.position.y = new_position.y;
+        position.x = new_position.x;
+        position.y = new_position.y;
         gameObject.transform.position = new Vector2(position.x, position.y);
     }
 

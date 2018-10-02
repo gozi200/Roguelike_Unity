@@ -21,7 +21,6 @@ public class Change_Alpha : MonoBehaviour {
     /// </summary>
     float alpha_value;
 
-
 	void Start () {
         alpha_value = 0.2f;
         value_changer = 0.0045f;

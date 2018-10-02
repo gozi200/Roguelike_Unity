@@ -15,7 +15,7 @@ public class Player_Status : Actor_Status {
     /// <summary>
     /// 名前
     /// </summary>
-    new string name;
+    string name;
     public string Name { set { name = value; } get{ return name; } }
     /// クラス
     /// </summary>
@@ -68,6 +68,7 @@ public class Player_Status : Actor_Status {
     /// はらへりポイント
     /// </summary>
     ReactiveProperty<int> hunger_point;
+    public ReactiveProperty<int> Hunger_Point { set { hunger_point = value; } get { return hunger_point; } }
     /// <summary>
     /// 満腹度の最大値
     /// </summary>
@@ -192,12 +193,11 @@ public class Player_Status : Actor_Status {
 	,6700000 // 23
 	,8000000 // 24 ひとまずはここまで
 	,Define_Value.MAX_EXP // 25
-        };
+    };
 
-    // DEBUG--------------------------------
-    Key_Observer key;
-    //------------------------------------------
-
+    /// <summary>
+    /// 初期化
+    /// </summary>
     public void Initialize() {
         level = new ReactiveProperty<int>();
         hit_point = new ReactiveProperty<int>();
@@ -209,10 +209,11 @@ public class Player_Status : Actor_Status {
         keep_star = new ReactiveProperty<int>();
         noble_phantasm = new ReactiveProperty<int>();
 
-        // DEBUG------------------------------------
-        key = Game.Instance.key_observer;
-        key.On_Key_Down_AsObservable()
-            .Where(key => key == KeyCode.Backspace)
+        // DEBUG--------------------------------
+        Key_Observer key_observer;
+        key_observer = Game.Instance.key_observer;
+        key_observer.On_Key_Down_AsObservable()
+            .Where(key => key == KeyCode.T)
             .Subscribe(_ => {
                 hit_point.Value = 10000;
             });
@@ -225,7 +226,7 @@ public class Player_Status : Actor_Status {
     /// <param name="use_chara">使用するキャラクターの番号</param>
     public void Set_Parameter(int use_chara) {
         var reader = Game.Instance.csv_reader;
-        var player_status = reader.Load_csv("csv/Actor/Player/Player_csv", Define_Value.UNNECESSARY_COLUMN);
+        var player_status = reader.Load_csv("csv/Actor/Player/Player_csv", Define_Value.UNNECESSARY_COLUMN_3);
 
         ID                     = int.Parse(player_status[use_chara][0]);  // 番号
         name                   = player_status          [use_chara][1];   // 名前
@@ -283,21 +284,7 @@ public class Player_Status : Actor_Status {
         else if (0 == turn_count % 3) {
             --hunger_point.Value;
 
-            // 一定量を下回ったらログで空腹を知らせる
-            if(hunger_point.Value == 50) {
-                Message_Window_Manager.Generic_Log("おなかがへってきた");
-            }
-            if (hunger_point.Value == 20) {
-                Message_Window_Manager.Generic_Log("おなかがへりすぎて目が回ってきた");
-            }
-            // 2になったらログで知らせる
-            if(hunger_point.Value == 2) {
-                Message_Window_Manager.Generic_Log("ダメだ、もうたおれそうだ！");
-            }
-            // 1になったらログで知らせる
-            if(hunger_point.Value == 1) {
-                Message_Window_Manager.Generic_Log("なにかたべないと！");
-            }
+            Message_Window_Manager.Hunger_Log(hunger_point.Value);
         }
 
         // 敵がいれば敵のターンへ
@@ -334,8 +321,8 @@ public class Player_Status : Actor_Status {
             // 一度に２レベル以上あがる場合にも対応
             for (; level.Value < new_Lv; ++level.Value) {
                 int add_hp;
-                int add_atk;
-                int add_def;
+                //int add_atk;
+                //int add_def;
 
                 // 体力の最大値をランダム(3~5)で増やす
                 add_hp = Random.Range(0, 2) + 3;

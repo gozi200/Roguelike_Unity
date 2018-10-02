@@ -3,7 +3,7 @@ using UnityEngine;
 using System.IO;
 
 /// <summary>
-/// csvファイルを読み取る TODO:今は使ってない
+/// csvファイルを読み取る TODO:Excelでマクロ組む
 /// </summary>
 public class csv_Reader {
     /// <summary>

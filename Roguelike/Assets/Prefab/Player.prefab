@@ -173,15 +173,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 354495227f7aeb04889c80e7141f0ee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 114544881938850130}
-  move: {fileID: 0}
-  mode: 0
-  state: 0
-  direction: 0
-  move_value: {x: 5, y: 5}
-  move_value_on_array: 0
-  is_dead: 0
-  position: {x: 0, y: 0, z: 0}
+  feet: 0
+  player_mode: 0
 --- !u!114 &114878869256781798
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -235,7 +228,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 4
+  m_SortingOrder: 10
   m_Sprite: {fileID: 21300000, guid: 7b205ecd4a18dbf4fbe0d9dc26a27b30, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -244,5 +237,5 @@ SpriteRenderer:
   m_Size: {x: 4.3185186, y: 3.7555556}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0

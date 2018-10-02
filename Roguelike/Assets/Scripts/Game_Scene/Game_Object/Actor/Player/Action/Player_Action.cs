@@ -13,21 +13,13 @@ public class Player_Action : MonoBehaviour {
     /// </summary>
     Player_Move player_move;
     /// <summary>
-    /// プレイヤーの攻撃処理を管理するクラス
-    /// </summary>
-    Player_Attack player_attack;
-    /// <summary>
     /// 階段に着いたときの処理を行うクラス
     /// </summary>
     Action_On_Stair action_stair;
     /// <summary>
-    /// キーの入力を流すクラス
+    /// ダンジョン選択画面を管理するスクリプト
     /// </summary>
-    Key_Observer key_observer;
-    /// <summary>
-    /// マップを2次元配列で管理するクラス
-    /// </summary>
-    Map_Layer_2D layer;
+    Decide_Dungeon decide_dungeon_script;
 
     /// <summary>
     /// プレイヤーの状態
@@ -43,18 +35,15 @@ public class Player_Action : MonoBehaviour {
     public void Start() {
         player = Player_Manager.Instance.player_script;
         player_move = Player_Manager.Instance.player_move;
-        player_attack = Player_Manager.Instance.player_attack;
         action_stair = Player_Manager.Instance.action_stair;
-        layer = Dungeon_Manager.Instance.map_layer_2D;
-        key_observer = Game.Instance.key_observer;
+
+        decide_dungeon_script = GameObject.Find("Decide_Dungeon").GetComponent<Decide_Dungeon>();
     }
 
     /// <summary>
     /// 現在の状態に合った行動をする 毎ループ呼び出す ここでゲームオーバー判定を行う
     /// </summary>
     public void Run_Action() {
-        Debug.Log(player.Feet);
-
         // プレイヤーのステータス関係のクラス 死亡判定に使用
         Player_Status player_status = Player_Manager.Instance.player_status;
 
@@ -66,8 +55,7 @@ public class Player_Action : MonoBehaviour {
                 action_stair.Action_Stair();
                 break;
             case ePlayer_State.Decide_Command:
-                var decide_dungeon= new Decide_Dungeon();
-                decide_dungeon.In_Decide();
+                decide_dungeon_script.In_Decide();
                 break;
             case ePlayer_State.Non_Active:
                 Can_Not_Move();

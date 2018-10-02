@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 
 /// <summary>
 /// キャラクターのセリフのデータを管理
@@ -8,6 +10,10 @@ public class Character_Message_Data {
     /// キャラクターが喋る台詞
     /// </summary>
     public string character_speech;
+    /// <summary>
+    /// 喋る台詞を区切ったものを格納する(ウィンドウのページ毎)
+    /// </summary>
+    public List<string> character_speeches;
 
     /// <summary>
     /// Character_Mesasgeクラスの取得に使用
@@ -18,43 +24,38 @@ public class Character_Message_Data {
     /// </summary>
     Character_Message character_message;
 
-    //json用
-    //string character_message_file;
-
     /// <summary>
     /// 初期化
     /// </summary>
     public void Initialize() {
+        character_speeches = new List<string>();
+
         chara_message_obj = GameObject.Find("Character_Message");
         character_message = chara_message_obj.GetComponent<Character_Message>();
-        
-
-        //json使う場合に
-        //character_message_file = File.ReadAllText("Assets/Resources/Json/Enemy_Json.json");
-        //// jsonデータを敵毎に分割
-        //character_messages = Json_Splitter.List_From_Json<string>(character_message_file);
     }
 
     /// <summary>
     /// 次にしゃべるセリフをセットする
     /// </summary>
-    public void Set_Event_Talk() {
+    /// <param name="speech_number">喋る台詞の番号</param>
+    public void Set_Event_Talk(int message_type) {
         var reader = Game.Instance.csv_reader;
-        var character_message_data = reader.Load_csv("csv/Message/", 1);
-        character_speech = character_message_data[0][0];
+        var message_data = reader.Load_csv("csv/Message/Repeat_Character_Message", 1);
+
+        for (int i = 0; i < message_data[message_type].Length; ++i) {
+            character_speeches.Add(message_data[message_type][i]);
+        }
     }
 
     /// <summary>
     /// ゲーム開始時のセリフを喋らせる
     /// </summary>
     public void Start_Talk() {
-        var reader = Game.Instance.csv_reader;
-        var character_message_data = reader.Load_csv("csv/Message/Repeat_Character_Message", 1);
         var player_action = Player_Manager.Instance.player_action;
         player_action.Player_State = ePlayer_State.Non_Active;
-        character_speech = character_message_data[0][0];
+        Set_Event_Talk((int)eMessage_Type.Start);
         character_message.talking = true;
-        character_message.start_talk.Value = true;
+        character_message.talk.Value = true;
     }
 
     /// <summary>

@@ -9,17 +9,9 @@ public class Decide_Dungeon : MonoBehaviour {
     /// </summary>
     GameManager game_manager;
     /// <summary>
-    /// プレイヤーのマネージャークラス
-    /// </summary>
-    Player_Manager player_manager;
-    /// <summary>
     /// プレイヤーアクション
     /// </summary>
     Player_Action player_action;
-    /// <summary>
-    /// エネミーのステータスを管理するクラス
-    /// </summary>
-    Enemy_Status enemy_status;
     /// <summary>
     /// 拠点のマネージャー
     /// </summary>
@@ -39,7 +31,6 @@ public class Decide_Dungeon : MonoBehaviour {
         dungeon_manager = Dungeon_Manager.Instance;
         player_action = Player_Manager.Instance.player_action;
         dungeon_data = new Dungeon_Data();
-        enemy_status = new Enemy_Status();
     }
 
     /// <summary>

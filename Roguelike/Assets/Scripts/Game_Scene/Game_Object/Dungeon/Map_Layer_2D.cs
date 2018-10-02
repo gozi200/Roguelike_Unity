@@ -39,7 +39,7 @@ public class Map_Layer_2D {
 
     /// 座標をインデックスに変換する
     public int To_Index(int x, int y) {
-        return x + (y * width);
+        return y * width + x;
     }
 
     /// <summary>
@@ -116,6 +116,7 @@ public class Map_Layer_2D {
     public bool Is_Player(int coordinates_x, int coordinates_y) {
         return Get_Layer_Number(coordinates_x, coordinates_y) == Define_Value.PLAYER_LAYER_NUMBER;
     }
+
     /// <summary>
     /// 指定された座標が壁かどうかを調べる
     /// </summary>
@@ -148,6 +149,18 @@ public class Map_Layer_2D {
             return;
         }
         coordinates[index_count] = layer_number;
+    }
+
+    /// <summary>
+    /// 2次元座標から1次元配列上の座標をに直したものを返す
+    /// </summary>
+    /// <param name="x">2次元座標のx</param>
+    /// <param name="y">2次元座標のy</param>
+    /// <returns>1次元配列の座標</returns>
+    public int Get(float x, float y) {
+        float one_dimension_coordinates = y * Width + x;
+
+        return (int)one_dimension_coordinates;
     }
 
     /// <summary>

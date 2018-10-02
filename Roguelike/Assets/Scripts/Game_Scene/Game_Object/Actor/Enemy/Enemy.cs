@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UniRx;
+using UnityEngine;
 
 /// <summary>
 /// エネミー本体のクラス
@@ -23,7 +24,7 @@ public class Enemy : Actor {
     /// <summary>
     /// 自分の向いている方向を認識する
     /// </summary>
-    public override eDirection Direction { set { direction = value; } get { return direction; } }
+    public override ReactiveProperty<eDirection> Direction { set { direction = value; } get { return direction; } }
 
     /// <summary>
     /// 自分が迷子になっているか。
@@ -32,7 +33,7 @@ public class Enemy : Actor {
     public bool Is_Lost_Myself { set { is_lost_myself = value; } get { return is_lost_myself; } }
 
     /// <summary>
-    /// 表示する画像を編集する
+    /// 表示する画像
     /// </summary>
     SpriteRenderer sprite_renderer;
 
@@ -41,6 +42,10 @@ public class Enemy : Actor {
     /// </summary>
     public eEnemy_Mode mode;
 
+    void Awake() {
+        direction = new ReactiveProperty<eDirection>();
+    }
+
     void Start() {
         Exist = true;
         Is_Lost_Myself = false;
@@ -48,9 +53,9 @@ public class Enemy : Actor {
         mode = eEnemy_Mode.Move_Room_Mode;
     
         gameObject.AddComponent<SpriteRenderer>();
+
         sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
         sprite_renderer.sortingOrder = Define_Value.ENEMY_LAYER_NUMBER;
-        sprite_renderer.sprite = Resources.Load<Sprite>("Enemy/Enemys");
         gameObject.transform.localScale = new Vector2(0.4f, 0.4f);
     }
 

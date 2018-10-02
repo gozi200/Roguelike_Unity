@@ -4,7 +4,7 @@ using UniRx;
 /// <summary>
 /// ゲームシーンのループを回す
 /// </summary>
-public class GameManager : Unique_Component<GameManager> {
+public class GameManager : Dynamic_Unique_Component<GameManager> {
     /// <summary>
     /// 拠点用マネージャーのオブジェクト
     /// </summary>
@@ -35,15 +35,6 @@ public class GameManager : Unique_Component<GameManager> {
     /// </summary>
     ReactiveProperty<eNow_Place> now_place;
     public ReactiveProperty<eNow_Place> Now_Place { set { now_place = value; } get { return now_place; } }
-
-    /// <summary>
-    /// 最初の１回かどうか
-    /// </summary>
-    bool is_first = true;
-    /// <summary>
-    /// 解除フラグ。Non_Active状態から抜けるのに使用。
-    /// </summary>
-    bool cancel = false;
 
     void Awake() {
         // 拠点からなので、安全地帯を入れる
@@ -87,7 +78,7 @@ public class GameManager : Unique_Component<GameManager> {
                 base_manager.Create_Base();
                 Set_Game_State(eGame_State.Player_Turn);
 
-                if (is_first) {
+                if (Do_Not_Destroy.First_Talk) {
                     var chara_message_data = UI_Manager.Instance.character_message_data;
                     var stand_chara_changer = UI_Manager.Instance.standing_chara_changer;
                     // 最初のセリフなのでここで初期化
@@ -96,7 +87,7 @@ public class GameManager : Unique_Component<GameManager> {
                     chara_message_data.Start_Talk();
                     // 誰に喋らせるかを設定する
                     stand_chara_changer.Set_Sprite(1);
-                    is_first = false;
+                    Do_Not_Destroy.First_Talk = false;
                 }
                 break;
             // ダンジョンを作る

@@ -3,7 +3,7 @@
 /// <summary>
 /// プレイヤーのマネージャクラス
 /// </summary>
-public class Player_Manager : Unique_Component<Player_Manager> {
+public class Player_Manager : Dynamic_Unique_Component<Player_Manager> {
     /// <summary>
     /// プレイヤー本体
     /// </summary>

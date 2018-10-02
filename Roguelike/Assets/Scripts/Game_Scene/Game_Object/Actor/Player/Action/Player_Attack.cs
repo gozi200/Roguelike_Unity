@@ -43,7 +43,7 @@ public class Player_Attack : MonoBehaviour { //TODO:MonoBehaviourいる？
         // 調整用変数 １マス先
         int adjust_value_add = Define_Value.TILE_SCALE;
 
-        switch (player_script.Direction) {
+        switch (player_script.Direction.Value) {
             case eDirection.Up:
                 // 自分の向いている方向の１マス先に敵がいるか判断
                 if (!(map_layer.Is_Enemy(player_x, player_y + tile_scale))) {
@@ -60,7 +60,7 @@ public class Player_Attack : MonoBehaviour { //TODO:MonoBehaviourいる？
                     player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
-                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction)) {
+                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction.Value)) {
                     Attack_Process(adjust_value_add, adjust_value_add);
                 }
                 break;
@@ -78,7 +78,7 @@ public class Player_Attack : MonoBehaviour { //TODO:MonoBehaviourいる？
                     player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
-                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction)) {
+                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction.Value)) {
                     Attack_Process(adjust_value_add, -adjust_value_add);
                 }
                 break;
@@ -96,7 +96,7 @@ public class Player_Attack : MonoBehaviour { //TODO:MonoBehaviourいる？
                     player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
-                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction)) {
+                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction.Value)) {
                     Attack_Process(-adjust_value_add, -adjust_value_add);
                 }
                 break;
@@ -114,7 +114,7 @@ public class Player_Attack : MonoBehaviour { //TODO:MonoBehaviourいる？
                     player_action.Player_State = ePlayer_State.Move;
                     return;
                 }
-                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction)) {
+                if (Actor_Action.Slant_Action_Check(player_script as Actor, player_script.Direction.Value)) {
                     Attack_Process(-adjust_value_add, adjust_value_add);
                 }
                 break;

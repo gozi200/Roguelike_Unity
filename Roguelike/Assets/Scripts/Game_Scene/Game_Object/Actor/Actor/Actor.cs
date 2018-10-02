@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UniRx;
 
 /// <summary>
 /// アクターの基底クラス
@@ -25,11 +26,11 @@ public abstract class Actor : MonoBehaviour {
     /// </summary>
     protected Vector2Int position;
     public abstract Vector2Int Position { set; get; }
-    /// <summary>
-    /// エネミーの向いている方向を判断する
-    /// </summary>
-    protected eDirection direction;
-    public abstract eDirection Direction { set; get; }
+    ///// <summary>
+    ///// アクターの向いている方向を判断する
+    ///// </summary>
+    protected ReactiveProperty<eDirection> direction;
+    public abstract ReactiveProperty<eDirection> Direction { set; get; }
 
     /// <summary>
     /// 自分の初期座標を設定

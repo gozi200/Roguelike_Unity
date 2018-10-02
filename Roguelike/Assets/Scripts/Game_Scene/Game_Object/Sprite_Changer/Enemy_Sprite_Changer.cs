@@ -14,13 +14,14 @@ public class Enemy_Sprite_Changer : MonoBehaviour {
     /// いくつのものをまとめたかを格納
     /// </summary>
     int sprite_count;
+
     /// <summary>
-    /// まとめた画像の１つずつを格納
+    /// まとめた画像を１つずつ格納
     /// </summary>
     Sprite[] sprite_array;
 
     void Start() {
-        enemy_sprites = Resources.Load<SpriteAtlas>("Enemy/Enemys");
+        enemy_sprites = Resources.Load<SpriteAtlas>("Picture/Enemy/Enemys");
         sprite_count = enemy_sprites.spriteCount;
         sprite_array = new Sprite[sprite_count];
         enemy_sprites.GetSprites(sprite_array);
@@ -32,9 +33,11 @@ public class Enemy_Sprite_Changer : MonoBehaviour {
     /// <summary>
     /// 画像をセット
     /// </summary>
-    /// <param name="type">spritesの要素数</param>
-    void Set_Sprite(int type) {
+    /// <param name="index">spritesの要素番号</param>
+    void Set_Sprite(int index) {
         var sprite_renderer = gameObject.GetComponent<SpriteRenderer>();
-        sprite_renderer.sprite = sprite_array[type];
+        sprite_renderer.sprite = sprite_array[index];
+        //TODO:マジックナンバー
+        sprite_renderer.sortingOrder = 2;
     }
 }

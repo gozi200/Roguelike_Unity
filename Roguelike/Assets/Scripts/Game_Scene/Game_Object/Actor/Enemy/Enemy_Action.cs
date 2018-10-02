@@ -1,50 +1,28 @@
 ﻿using UnityEngine;
+using UniRx;
 
 /// <summary>
 /// エネミーの行動を設定する
 /// </summary>
 public class Enemy_Action {
     /// <summary>
-    /// ゲームマネジャー
-    /// </summary>
-    GameManager game_manager;
-
-    /// <summary>
     /// アクターのマネージャクラス
     /// </summary>
     Enemy_Manager enemy_manager;
     /// <summary>
-    /// プレイヤー本体のクラス
-    /// </summary>
-    Player player;
-    /// <summary>
-    /// エネミーのステータス関係を管理するクラス
-    /// </summary>
-    Enemy_Status enemy_status;
-    /// <summary>
     /// エネミーの攻撃処理クラス
     /// </summary>
     Enemy_Attack enemy_attack;
-
-    /// <summary>
-    /// プレイヤーのステータス関係のクラス
-    /// </summary>
-    Player_Status player_status;
     /// <summary>
     /// マップを２次元配列で管理するクラス
     /// </summary>
     Map_Layer_2D map_layer;
 
     public void Initialize() {
-        game_manager = GameManager.Instance;
         enemy_manager = Enemy_Manager.Instance;
-        player = Player_Manager.Instance.player_script;
-        player_status = Player_Manager.Instance.player_status;
-        enemy_status = new Enemy_Status();
         map_layer = Dungeon_Manager.Instance.map_layer_2D;
 
         enemy_attack = new Enemy_Attack();
-        enemy_attack.Initialize();
     }
 
     /// <summary>
@@ -76,14 +54,20 @@ public class Enemy_Action {
                             var enemy = enemy_manager.enemies[i].GetComponent<Enemy>();
                             // 斜め方向へのアクションは不可能になる場合があるので調べる
                             if (Actor_Action.Slant_Action_Check(enemy as Actor, which_player_direction)) {
-                                enemy_attack.Attack_Process(enemy_manager.enemies[i], which_player_direction);
+                                ReactiveProperty<eDirection> player_direction = new ReactiveProperty<eDirection> {
+                                    Value = which_player_direction
+                                };
+                                enemy_attack.Attack_Process(enemy_manager.enemies[i], player_direction);
                                 break;
                             }
                             break;
                         }
                         // 斜め方向を向いていなければ普通に攻撃が通るのでダメージ計算へ
                         else {
-                            enemy_attack.Attack_Process(enemy_manager.enemies[i], which_player_direction);
+                            ReactiveProperty<eDirection> player_direction = new ReactiveProperty<eDirection> {
+                                Value = which_player_direction
+                            };
+                            enemy_attack.Attack_Process(enemy_manager.enemies[i], player_direction);
                             break;
                         }
                     }
@@ -96,8 +80,9 @@ public class Enemy_Action {
                 case 2:
                     break;
             }
+
             // ターンを終える
-            enemy_status.End_Turn();
+            enemy_manager.enemy_status.End_Turn();
         }
     }
 

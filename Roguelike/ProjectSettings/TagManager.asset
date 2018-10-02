@@ -13,6 +13,7 @@ TagManager:
   - Food
   - UI_Text
   - UI_Sprite
+  - Mini_Map
   layers:
   - Default
   - TransparentFX

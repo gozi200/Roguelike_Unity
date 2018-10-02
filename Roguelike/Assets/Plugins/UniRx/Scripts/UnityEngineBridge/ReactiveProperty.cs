@@ -25,6 +25,10 @@ namespace UniRx
     {
 #if !UniRxLibrary
         static readonly IEqualityComparer<T> defaultEqualityComparer = UnityEqualityComparer.GetDefault<T>();
+
+        public void Subscribe(Func<object, object> p) {
+            throw new NotImplementedException();
+        }
 #else
         static readonly IEqualityComparer<T> defaultEqualityComparer = EqualityComparer<T>.Default;
 #endif

@@ -2,6 +2,9 @@
 using UnityEngine.U2D;
 using UnityEngine.UI;
 
+/// <summary>
+/// 喋るキャラの立ち絵を切り替える
+/// </summary>
 public class Standing_Character_Sprite_Changer : MonoBehaviour {
     //TODO:キャラ毎に分ける？ 今は１種類しかいないから問題は無し
     /// <summary>
@@ -25,29 +28,22 @@ public class Standing_Character_Sprite_Changer : MonoBehaviour {
     [SerializeField]
     public GameObject parent;
     /// <summary>
-    /// 表示するテキスト(操作案内)
+    /// 表示するテキスト(閉じる操作案内)
     /// </summary>
     public Text text_info;
-    
+
     /// <summary>
     /// 代入用の移動後の座標
     /// </summary>
     Vector3 set_position;
 
-    /// <summary>
-    /// 表情の種類
-    /// </summary>
-    eMash_Expression expression;
-
     void Start() {
         text_info = parent.GetComponentInChildren<Text>();
 
-        standing_character_sprites = Resources.Load<SpriteAtlas>("Standing_Character/Mash/Mash_Standing_Pose");
+        standing_character_sprites = Resources.Load<SpriteAtlas>("Picture/Standing_Character/Mash/Mash_Standing_Pose");
         sprite_array = new Sprite[standing_character_sprites.spriteCount];
         standing_character_sprites.GetSprites(sprite_array);
         parent.SetActive(false);
-        // 適当なタイミング以外は隠しておく
-        text_info.enabled = false;
     }
 
     /// <summary>

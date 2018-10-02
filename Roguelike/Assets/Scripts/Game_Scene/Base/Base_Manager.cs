@@ -72,7 +72,6 @@ public class Base_Manager : MonoBehaviour {
     public void Create_Base() {
         var map_layer = Dungeon_Manager.Instance.map_layer_2D;
         var player = Player_Manager.Instance.player_script;
-        var player_status = Player_Manager.Instance.player_status;
 
         // 初期化
         map_layer.Initialise(Define_Value.CALDEA_SPAWN_X, Define_Value.CALDEA_SPAWN_Y);

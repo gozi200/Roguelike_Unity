@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/// <summary>
+﻿/// <summary>
 /// ダンジョンの情報を決めるクラス
 /// </summary>
 public class Dungeon_Data {
@@ -16,7 +12,7 @@ public class Dungeon_Data {
     /// <summary>
     /// 名前
     /// </summary>
-    public new string name;
+    public string name;
     /// <summary>
     /// ダンジョンの難易度
     /// </summary>
@@ -51,7 +47,7 @@ public class Dungeon_Data {
     public void Load_Dungeon(eDungeon_Type set_dungeon_type) {
         eDungeon_Type dungeon_type = set_dungeon_type;
         var reader = Game.Instance.csv_reader;
-        var dungeon_data = reader.Load_csv("csv/Dungeon/Dungeon_csv", Define_Value.UNNECESSARY_COLUMN);
+        var dungeon_data = reader.Load_csv("csv/Dungeon/Dungeon_csv", Define_Value.UNNECESSARY_COLUMN_3);
         ID           = int.Parse(dungeon_data[(int)dungeon_type][0]); // 番号
         name         = dungeon_data          [(int)dungeon_type][1];  // 名前
         level        = int.Parse(dungeon_data[(int)dungeon_type][2]); // 難易度

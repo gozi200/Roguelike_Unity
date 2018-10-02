@@ -41,8 +41,6 @@ public class Message_Window_Manager : MonoBehaviour {
         // ログへの書き込みがあったら表示する
         message.Subscribe(message => {
             text_message.text = message;
-
-            scroll_rectangle.verticalNormalizedPosition = 0;
         });
     }
 
@@ -84,6 +82,30 @@ public class Message_Window_Manager : MonoBehaviour {
 
         // 強制的にストリームを流す
         UI_manager.Is_Said_Scroll_View.SetValueAndForceNotify(true);
+    }
+
+    /// <summary>
+    /// 現在の満腹値によってログを出す
+    /// </summary>
+    /// <param name="hunger_point">今の万プフ値</param>
+    public static void Hunger_Log(int hunger_point) {
+        var player_status = Player_Manager.Instance.player_status;
+       
+        // 一定量を下回ったらログで空腹を知らせる
+        if (hunger_point == 50) {
+            Generic_Log("おなかがへってきた");
+        }
+        if (hunger_point == 20) {
+            Generic_Log("おなかがへりすぎて目が回ってきた");
+        }
+        // 2になったらログで知らせる
+        if (hunger_point == 2) {
+           Generic_Log("ダメだ、もうたおれそうだ！");
+        }
+        // 1になったらログで知らせる
+        if (hunger_point == 1) {
+            Generic_Log("なにかたべないと！");
+        }
     }
 
     /// <summary>

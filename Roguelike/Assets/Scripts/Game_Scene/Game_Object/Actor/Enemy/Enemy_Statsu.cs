@@ -30,12 +30,12 @@ public class Enemy_Status : Actor_Status {
     /// 最大体力
     /// </summary>
     int hit_point;
-    public int Hit_Point { set { level = value; } get { return level; } }
+    public int Hit_Point { set { hit_point = value; } get { return hit_point; } }
     /// <summary>
     /// 行動力(1ターンに動ける回数)
     /// </summary>
     int activity;
-    public int Activity { set { level = value; } get { return level; } }
+    public int Activity { set { activity = value; } get { return activity; } }
 
     /// <summary>
     /// 現在いる部屋の番号

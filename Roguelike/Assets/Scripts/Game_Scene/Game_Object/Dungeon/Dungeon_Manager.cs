@@ -6,7 +6,7 @@ using UniRx;
 /// <summary>
 /// ダンジョンのマネージャー
 /// </summary>
-public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
+public class Dungeon_Manager : Dynamic_Unique_Component<Dungeon_Manager> {
     /// <summary>
     /// アクターのマネージャクラス
     /// </summary>
@@ -77,6 +77,16 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
         enemy_manager = Enemy_Manager.Instance;
         tile_state = new ReactiveProperty<eTile_State>(eTile_State.Grass);
         wall_state = new ReactiveProperty<eWall_State>(eWall_State.Tree);
+
+        // DEBUG--------------------------------
+        Key_Observer key_observer;
+        key_observer = Game.Instance.key_observer;
+        key_observer.On_Key_Down_AsObservable()
+            .Where(key => key == KeyCode.Y)
+            .Subscribe(_ => {
+                max_floor.Value = 1;
+            });
+        //------------------------------------------
     }
 
     /// <summary>
@@ -112,28 +122,34 @@ public class Dungeon_Manager : Unique_Component<Dungeon_Manager> {
         GameObject[] items   = GameObject.FindGameObjectsWithTag("Item");
         GameObject[] walls   = GameObject.FindGameObjectsWithTag("Wall");
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] mini_map_tiles = GameObject.FindGameObjectsWithTag("Mini_Map");
 
         List<GameObject> enemy_list = enemy_manager.enemies;
 
         // ダンジョンを生成しなおすのに、一度オブジェクトを消す
-        foreach (GameObject trap in traps) {
+        foreach(GameObject trap in traps) {
             Destroy(trap);
         }
-        foreach (GameObject obj in stairs) {
+        foreach(GameObject obj in stairs) {
             Destroy(obj);
         }
-        foreach (GameObject tile in tiles) {
+        foreach(GameObject tile in tiles) {
             Destroy(tile);
         }
-        foreach (GameObject enemy in enemies) {
+        foreach(GameObject enemy in enemies) {
             Destroy(enemy);
         }
-        foreach (GameObject item in items) {
+        foreach(GameObject item in items) {
             Destroy(item);
         }
-        foreach (GameObject wall in walls) {
-            Destroy(wall.gameObject);
+        foreach(GameObject wall in walls) {
+            Destroy(wall);
         }
+        foreach(GameObject mini_map_tile in mini_map_tiles) {
+            Destroy(mini_map_tile);
+            //mini_map_tile.SetActive(false);
+        }
+
         enemy_list.Clear();
         entrance_list.Clear();
         room_list.Clear();
